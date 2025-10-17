@@ -1,5 +1,10 @@
 {
   "home": {
+    "header": {
+      "shops": "Do'konlar",
+      "about": "Kompaniya haqida",
+      "catalog": "Mahsulotlar katalogi"
+    },
     "welcome": "Xush kelibsiz",
     "login": "Kirish",
     "register": "Ro'yxatdan o'tish"
