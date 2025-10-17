@@ -198,7 +198,7 @@ export default function Header() {
 
   return (
     <header className="relative w-full border-b border-gray-200 bg-white px-8">
-      <div className="container mx-auto flex h-16 items-center justify-between">
+      <div className="container flex h-16 items-center justify-between">
         <nav className="flex items-center gap-6 text-sm h-6">
           <Link href="/shops">
             <NavButton>{t("shops")}</NavButton>
