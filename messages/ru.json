@@ -7,6 +7,11 @@
     },
     "welcome": "Добро пожаловать",
     "login": "Вход",
-    "register": "Регистрация"
+    "register": "Регистрация",
+    "popularProducts": "Хиты продаж",
+    "newArrivals": "Новинки",
+    "specialOffers": "Специально для вас",
+    "seeAll": "Смотреть все",
+    "news": "Новости"
   }
 }
