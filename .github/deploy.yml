@@ -1,0 +1,45 @@
+name: CI/CD Frontend Deployment (Server Build)
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Deploy and Build on Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script_stop: true
+          script: |
+            set -euo pipefail
+            trap 'echo "❌ Error on line $LINENO during deployment. Check the command above for details."; exit 1' ERR
+
+            echo "🔁 Starting deployment on server..."
+            cd ~/Projects/carato-web
+
+            echo "🔄 Pulling latest changes..."
+            git fetch origin master
+            git reset --hard origin/master
+            git clean -fd
+            git pull
+
+            echo "📦 Installing dependencies..."
+            npm ci --omit=dev
+
+            echo "🏗️  Building project..."
+            npm run build
+
+            echo "🚀 Restarting PM2 process..."
+            pm2 restart "carato-web" || pm2 start npm --name "carato-web" -- start
+
+            echo "✅ Deployment completed successfully!"
