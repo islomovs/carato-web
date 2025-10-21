@@ -3,6 +3,7 @@ import BannerCarousel from "@/components/layout/BannerCarousel";
 import ProductsBlock from "@/components/layout/ProductsBlock";
 import CategoriesBlock from "@/components/layout/CategoriesBlock";
 import NewsSection from "@/components/layout/NewsSection";
+import CollectionsSection from "@/components/layout/CollectionsSection";
 
 export default function Home() {
   const t = useTranslations("home");
@@ -124,6 +125,7 @@ export default function Home() {
     <div className="w-full h-full text-center">
       <BannerCarousel />
       <ProductsBlock title={t("popularProducts")} products={sampleProducts} />
+      <CollectionsSection />
       <ProductsBlock title={t("newArrivals")} products={sampleProducts} />
       <CategoriesBlock categories={categories} />
       <ProductsBlock
