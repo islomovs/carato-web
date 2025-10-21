@@ -32,6 +32,7 @@ export default function CollectionsSection() {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeIndex]);
 
   const handleClick = (index: number) => {

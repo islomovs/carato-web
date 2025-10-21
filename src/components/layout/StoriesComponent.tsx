@@ -5,7 +5,6 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { useTranslations } from "next-intl";
 import { PanInfo } from "framer-motion";
 
 const stories = [
@@ -17,7 +16,6 @@ const stories = [
 ];
 
 export default function StoriesSection() {
-  const t = useTranslations("");
   const [activeStory, setActiveStory] = useState<number | null>(null);
   const [progress, setProgress] = useState(0);
   const [isMuted, setIsMuted] = useState(true);
