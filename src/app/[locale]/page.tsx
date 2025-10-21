@@ -4,6 +4,7 @@ import ProductsBlock from "@/components/layout/ProductsBlock";
 import CategoriesBlock from "@/components/layout/CategoriesBlock";
 import NewsSection from "@/components/layout/NewsSection";
 import CollectionsSection from "@/components/layout/CollectionsSection";
+import StoriesSection from "@/components/layout/StoriesComponent";
 
 export default function Home() {
   const t = useTranslations("home");
@@ -124,6 +125,7 @@ export default function Home() {
   return (
     <div className="w-full h-full text-center">
       <BannerCarousel />
+      <StoriesSection />
       <ProductsBlock title={t("popularProducts")} products={sampleProducts} />
       <CollectionsSection />
       <ProductsBlock title={t("newArrivals")} products={sampleProducts} />
