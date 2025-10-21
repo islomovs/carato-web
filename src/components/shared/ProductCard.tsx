@@ -18,22 +18,20 @@ export default function ProductCard({ product }: { product: Product }) {
 
   return (
     <div
-      className="w-full min-w-[300px] cursor-pointer group overflow-hidden"
+      className="w-full cursor-pointer group overflow-hidden"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
       {/* Image section */}
-      <div className="relative w-full h-[360px] overflow-hidden rounded-md">
-        {/* Image */}
+      <div className="relative w-full aspect-[166/196] md:aspect-[329/364] overflow-hidden rounded-md">
         <Image
           src={product.image}
           alt={product.title}
-          width={330}
-          height={360}
-          className="object-cover w-full h-full pointer-events-none"
+          fill
+          className="object-cover w-full h-full pointer-events-none transition-transform duration-300 group-hover:scale-105"
         />
 
-        {/* Semi-transparent overlay */}
+        {/* Overlay */}
         <AnimatePresence>
           {hovered && (
             <motion.div
@@ -42,13 +40,12 @@ export default function ProductCard({ product }: { product: Product }) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.35, ease: "easeOut" }}
-              className="absolute inset-0 bg-[#F8F9FB]/80 pointer-events-none"
-              // ↑ 80% opacity of #F8F9FB so image is visible below
+              className="absolute inset-0 bg-[#F8F9FB]/80"
             />
           )}
         </AnimatePresence>
 
-        {/* Animated button */}
+        {/* Button animation */}
         <AnimatePresence>
           {hovered && (
             <motion.div
@@ -57,10 +54,10 @@ export default function ProductCard({ product }: { product: Product }) {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 28, opacity: 0 }}
               transition={{ duration: 0.35, ease: "easeOut" }}
-              className="absolute bottom-0 left-0 right-0 z-10 pointer-events-auto"
+              className="absolute bottom-0 left-0 right-0 z-10"
             >
               <Button
-                className="w-full h-[36px] uppercase text-[12px] font-medium tracking-wide text-white bg-black rounded-md cursor-pointer"
+                className="w-full h-[36px] uppercase text-[12px] font-medium tracking-wide text-white bg-black rounded-md"
                 size="sm"
                 onClick={() => console.log("Add to cart clicked", product.id)}
               >
@@ -71,7 +68,7 @@ export default function ProductCard({ product }: { product: Product }) {
         </AnimatePresence>
       </div>
 
-      {/* Product info */}
+      {/* Info */}
       <div className="flex flex-col items-start gap-1 pt-2">
         <p className="text-sm font-light text-[#9AA4B2]">Браслеты</p>
         <p className="truncate text-sm font-light text-black">
