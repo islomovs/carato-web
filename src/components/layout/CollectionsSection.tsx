@@ -5,10 +5,12 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { NavButton } from "../ui/nav-button";
 import { useTranslations } from "next-intl";
+import { useRef } from "react";
 
 export default function CollectionsSection() {
   const t = useTranslations("home");
   const [activeIndex, setActiveIndex] = useState(0);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const collections = [
     { title: "Rings", image: "/images/category-placeholder.png" },
@@ -18,13 +20,24 @@ export default function CollectionsSection() {
     { title: "Watches", image: "/images/category-placeholder.png" },
   ];
 
-  // Auto-slide
-  useEffect(() => {
-    const interval = setInterval(() => {
+  const resetTimer = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
       setActiveIndex((prev) => (prev + 1) % collections.length);
     }, 4000);
-    return () => clearInterval(interval);
-  }, [collections.length]);
+  };
+
+  useEffect(() => {
+    resetTimer();
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, [activeIndex]);
+
+  const handleClick = (index: number) => {
+    setActiveIndex(index);
+    resetTimer();
+  };
 
   return (
     <>
@@ -35,7 +48,7 @@ export default function CollectionsSection() {
           return (
             <motion.div
               key={item.title}
-              onClick={() => setActiveIndex(index)}
+              onClick={() => handleClick(index)}
               className="relative cursor-pointer overflow-hidden flex items-end justify-center"
               animate={{
                 flex: isActive ? 992 : 112,
