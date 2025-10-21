@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useRef, useId, useState } from "react";
@@ -27,7 +28,6 @@ export default function BannerCarousel({
   items = [],
   isLoading = false,
 }: BannerCarouselProps) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const swiperRef = useRef<any>(null);
   const id = useId();
 
@@ -39,7 +39,6 @@ export default function BannerCarousel({
   const fallbackBanners: Banner[] = [
     { id: "1", name: "Promo 1", desktopImage: "/images/promo1.jpg" },
     { id: "2", name: "Promo 2", desktopImage: "/images/promo2.jpg" },
-    // { id: "3", name: "Promo 3", desktopImage: "/images/promo3.jpg" },
   ];
 
   const bannerItems = items.length > 0 ? items : fallbackBanners;
@@ -67,7 +66,7 @@ export default function BannerCarousel({
         ) : (
           bannerItems.map((item) => (
             <SwiperSlide key={item.id}>
-              <div className="relative w-full aspect-[72/35] overflow-hidden">
+              <div className="relative w-full overflow-hidden h-[182px] md:h-auto md:aspect-[72/35]">
                 <Image
                   src={item.desktopImage}
                   alt={item.name}
@@ -77,12 +76,22 @@ export default function BannerCarousel({
                   unoptimized
                 />
 
-                {/* Right-side CTA Button */}
-                <div className="max-w-[545px] absolute top-1/5 right-1/12 flex flex-col items-start gap-8">
-                  <h1 className="text-5xl font-light text-start leading-[72px]">
+                <div
+                  className="
+                    absolute inset-0 
+                    flex flex-col justify-center items-start
+                    max-w-[65%] md:max-w-[40%]
+                    px-4 
+                    md:px-0 md:top-1/5 md:right-[8%] md:left-auto
+                    md:items-start md:justify-start
+                    gap-4 md:gap-8
+                  "
+                >
+                  <h1 className="text-lg md:text-5xl font-light text-start md:leading-[72px] text-white md:text-black">
                     Элегантные сережки со скидкой -20%
                   </h1>
-                  <Button className="bg-black text-white w-[280px] h-[52px] text-sm uppercase font-normal rounded-md hover:bg-black z-10 cursor-pointer">
+
+                  <Button className="hidden md:block bg-black text-white w-[280px] h-[52px] text-sm uppercase font-normal rounded-md hover:text-black border border-black hover:bg-white z-10 cursor-pointer">
                     Подробнее
                   </Button>
                 </div>
@@ -92,8 +101,8 @@ export default function BannerCarousel({
         )}
       </Swiper>
 
-      {/* Custom Motion Pagination */}
-      <div className="absolute bottom-[24px] left-0 right-0 flex justify-center items-center gap-1 z-50">
+      {/* Custom Pagination */}
+      <div className="absolute bottom-[16px] md:bottom-[24px] left-0 right-0 flex justify-center items-center gap-1 z-[20]">
         {bannerItems.map((_, index) => (
           <motion.span
             key={index}
