@@ -19,7 +19,7 @@ export default function StoriesSection() {
   const [activeStory, setActiveStory] = useState<number | null>(null);
   const [progress, setProgress] = useState(0);
   const [isMuted, setIsMuted] = useState(true);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const duration = 4000;
 
