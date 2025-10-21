@@ -7,6 +7,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { Manrope, Montserrat } from "next/font/google";
 import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -46,6 +47,7 @@ export default async function RootLayout({ children, params }: Props) {
         <NextIntlClientProvider locale={locale as Locale} messages={resources}>
           <Header />
           {children}
+          <Footer />
         </NextIntlClientProvider>
       </body>
     </html>
