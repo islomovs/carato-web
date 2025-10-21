@@ -10,7 +10,7 @@ import { useRef } from "react";
 export default function CollectionsSection() {
   const t = useTranslations("home");
   const [activeIndex, setActiveIndex] = useState(0);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const collections = [
     { title: "Rings", image: "/images/category-placeholder.png" },
@@ -32,7 +32,7 @@ export default function CollectionsSection() {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeIndex]);
 
   const handleClick = (index: number) => {
