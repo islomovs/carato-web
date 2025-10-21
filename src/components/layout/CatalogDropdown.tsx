@@ -40,7 +40,7 @@ export default function CatalogDropdown({
           transition={{ duration: 0.25, ease: "easeOut" }}
           className="absolute left-0 right-0 bottom-0 top-full bg-white border-t border-[#EEF2F6] shadow-[0_2px_12px_rgba(0,0,0,0.05)] z-50"
         >
-          <div className="flex bg-white">
+          <div className="flex bg-white shadow-md">
             <div className="border-r border-gray-100 flex flex-col gap-4 p-8">
               {categories.map((cat) => (
                 <NavButton
