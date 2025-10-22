@@ -1,0 +1,24 @@
+{
+  "home": {
+    "header": {
+      "catalog": "Mahsulotlar katalogi",
+      "shops": "Do'konlar",
+      "about": "Kompaniya haqida",
+      "wishlist": "Izohlar",
+      "cart": "Savat",
+      "news": "Yangiliklar",
+      "forPartners": "Hamkorlar uchun",
+      "qna": "Savollar va javoblar",
+      "phone": "+998 99 888 0777",
+      "language": "Ilovaning tili"
+    },
+    "welcome": "Xush kelibsiz",
+    "login": "Kirish",
+    "register": "Ro'yxatdan o'tish",
+    "popularProducts": "Sotuvdagi mahsulotlar",
+    "newArrivals": "Yangi kelganlar",
+    "specialOffers": "Maxsus takliflar",
+    "seeAll": "Barchasini ko'rish",
+    "news": "Yangiliklar"
+  }
+}

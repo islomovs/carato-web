@@ -9,6 +9,7 @@ import StoriesSection from "@/components/layout/StoriesComponent";
 export default function Home() {
   const t = useTranslations("home");
 
+  console.log("Translations test: ", t("popularProducts"));
   const sampleProducts = [
     {
       id: 1,
