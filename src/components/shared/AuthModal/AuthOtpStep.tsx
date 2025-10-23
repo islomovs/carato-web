@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import OtpInput from "react-otp-input";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/hooks/useAuth";
 
 type Props = {
   phone: string;
@@ -28,20 +29,33 @@ export default function AuthOtpStep({ phone, onBack, onVerified }: Props) {
     return () => clearTimeout(id);
   }, [timer]);
 
-  const handleSubmit = () => {
-    if (code.length !== 6 || /\D/.test(code)) {
-      setError(t("errors.codeInvalid"));
-      return;
+  const { verify, doResend } = useAuth();
+
+  const handleSubmit = async () => {
+    try {
+      const res = await verify(phone, code);
+      // verify saved tokens in localStorage by hook
+      // If server returns user with fullName null -> navigate to registration step
+      if (!res.fullName) {
+        // open register step (ask fullname), then call completeAuth after register
+        onVerified(); // or route to registration
+      } else {
+        // user is fully authenticated — navigate to app
+        onVerified();
+      }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (err) {
+      setError("Invalid code or server error");
     }
-    setError(null);
-    onVerified();
   };
 
-  const handleResend = () => {
-    if (resendDisabled) return;
-    setTimer(32);
-    setResendDisabled(true);
-    // TODO: call resend API
+  const handleResend = async () => {
+    try {
+      await doResend(phone);
+      setTimer(32);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -54,42 +68,44 @@ export default function AuthOtpStep({ phone, onBack, onVerified }: Props) {
       </p>
 
       {/* ✅ OTP Input */}
-      <div className="mb-10 flex justify-center w-full">
-        <OtpInput
-          value={code}
-          onChange={(val: string) => {
-            setCode(val);
-            setError(null);
-          }}
-          numInputs={6}
-          inputType="tel"
-          containerStyle={{
-            display: "flex",
-            justifyContent: "space-between",
-            width: "100%",
-          }}
-          renderInput={(props) => (
-            <input
-              {...props}
-              placeholder="-"
-              className={`text-center border rounded-[4px] text-[20px] font-medium focus:outline-none ${
-                error ? "border-red-500" : "border-black"
-              }`}
-              style={{
-                width: "60px",
-                height: "60px",
-              }}
-            />
-          )}
-        />
-      </div>
+      <div className="mb-10 flex flex-col items-start">
+        <div className="flex justify-center w-full mb-2">
+          <OtpInput
+            value={code}
+            onChange={(val: string) => {
+              setCode(val);
+              setError(null);
+            }}
+            numInputs={6}
+            inputType="tel"
+            containerStyle={{
+              display: "flex",
+              justifyContent: "space-between",
+              width: "100%",
+            }}
+            renderInput={(props) => (
+              <input
+                {...props}
+                placeholder="-"
+                className={`text-center border rounded-[4px] text-[20px] font-medium focus:outline-none ${
+                  error ? "border-red-500" : "border-black"
+                }`}
+                style={{
+                  width: "60px",
+                  height: "60px",
+                }}
+              />
+            )}
+          />
+        </div>
 
-      {/* ✅ Error text */}
-      {error && (
-        <p className="mt-2 text-[12px] font-normal text-red-600 text-center">
-          {error}
-        </p>
-      )}
+        {/* ✅ Error text */}
+        {error && (
+          <p className="text-[12px] font-normal text-red-600 text-center">
+            {error}
+          </p>
+        )}
+      </div>
 
       {/* ✅ Resend button */}
       <div className="text-center text-[14px] font-normal mb-10">

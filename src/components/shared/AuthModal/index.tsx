@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import AuthPhoneStep from "./AuthPhoneStep";
 import AuthOtpStep from "./AuthOtpStep";
-import AuthRegisterStep from "./AuthRegisterStep";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -103,20 +102,6 @@ export default function AuthModal({
                   </motion.div>
                 )}
 
-                {mode === "register" && (
-                  <motion.div
-                    key="register"
-                    initial={{ opacity: 0, x: 30 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -30 }}
-                    transition={{ duration: 0.25 }}
-                  >
-                    <AuthRegisterStep
-                      onRegistered={() => onClose()}
-                      onBack={() => setMode("phone")}
-                    />
-                  </motion.div>
-                )}
               </AnimatePresence>
             </div>
           </motion.div>

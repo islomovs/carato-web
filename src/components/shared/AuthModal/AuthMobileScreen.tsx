@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import AuthPhoneStep from "./AuthPhoneStep";
 import AuthOtpStep from "./AuthOtpStep";
-import AuthRegisterStep from "./AuthRegisterStep";
 import { AnimatePresence, motion } from "framer-motion";
 
 export default function AuthMobileScreen() {
@@ -47,24 +46,6 @@ export default function AuthMobileScreen() {
                 onVerified={() => {
                   console.log("User verified!");
                 }}
-              />
-            </motion.div>
-          )}
-
-          {mode === "register" && (
-            <motion.div
-              key="register"
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -40 }}
-              transition={{ duration: 0.25 }}
-            >
-              <AuthRegisterStep
-                onRegistered={() => {
-                  console.log("Registered!");
-                  setMode("otp");
-                }}
-                onBack={() => setMode("phone")}
               />
             </motion.div>
           )}

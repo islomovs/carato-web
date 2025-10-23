@@ -6,13 +6,14 @@ import { useForm, Controller } from "react-hook-form";
 import { IMaskInput } from "react-imask";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/hooks/useAuth";
 
 type Props = {
   onNext: (phone: string) => void;
   onOpenRegister?: () => void;
 };
 
-export default function AuthPhoneStep({ onNext, onOpenRegister }: Props) {
+export default function AuthPhoneStep({ onNext }: Props) {
   const t = useTranslations("auth");
   const { control, handleSubmit } = useForm<{ phone: string }>({
     defaultValues: { phone: "+998 " },
@@ -20,14 +21,19 @@ export default function AuthPhoneStep({ onNext, onOpenRegister }: Props) {
 
   const [submitting, setSubmitting] = useState(false);
 
-  const onSubmit = (data: { phone: string }) => {
-    const digits = data.phone.replace(/\D/g, "");
-    if (digits.length !== 12) return; // +998 + 9 digits
+  const { startSendCode } = useAuth();
+
+  const onSubmit = async (data: { phone: string }) => {
+    const formattedPhone = data.phone.replace(/\s|[-]/g, "");
     setSubmitting(true);
-    setTimeout(() => {
+    try {
+      await startSendCode(formattedPhone);
+      onNext(formattedPhone);
+    } catch (err) {
+      console.error(err);
+    } finally {
       setSubmitting(false);
-      onNext(data.phone);
-    }, 600);
+    }
   };
 
   return (
@@ -83,14 +89,6 @@ export default function AuthPhoneStep({ onNext, onOpenRegister }: Props) {
           disabled={submitting}
         >
           {submitting ? t("submitting") : t("continue")}
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full bg-white border border-black rounded-[4px] py-6 text-[14px] font-normal uppercase cursor-pointer"
-          onClick={() => onOpenRegister?.()}
-        >
-          Регистрация
         </Button>
       </div>
     </form>

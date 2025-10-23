@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { PanInfo } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 const stories = [
   { title: "New Collection", image: "/images/news-placeholder.png" },
@@ -16,6 +17,7 @@ const stories = [
 ];
 
 export default function StoriesSection() {
+  const t = useTranslations("home");
   const [activeStory, setActiveStory] = useState<number | null>(null);
   const [progress, setProgress] = useState(0);
   const [isMuted, setIsMuted] = useState(true);
@@ -63,7 +65,7 @@ export default function StoriesSection() {
   };
 
   return (
-    <section className="w-full flex overflow-x-auto no-scrollbar py-8 px-4 md:px-0">
+    <section className="w-full flex overflow-x-auto md:overflow-x-visible no-scrollbar mt-4 md:mt-10 md:px-0 touch-pan-x select-none">
       {stories.map((story, i) => (
         <motion.div
           key={story.title}
@@ -87,21 +89,25 @@ export default function StoriesSection() {
 
       <AnimatePresence>
         {activeStory !== null && (
-          <>
+          <motion.div
+            key="story-overlay"
+            className="fixed inset-0 z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+          >
             {/* background overlay — closes on click */}
-            <motion.div
-              className="fixed inset-0 bg-[#00000066] z-40 cursor-pointer"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+            <div
+              className="absolute inset-0 bg-black/80 cursor-pointer backdrop-blur-sm z-40"
               onClick={() => setActiveStory(null)}
             />
 
             {/* top controls */}
-            <div className="fixed top-[32px] right-[32px] z-[100] flex gap-3">
+            <div className="absolute top-[28px] right-3 md:top-[32px] md:right-[32px] z-60 flex gap-3">
               <button
                 onClick={() => setIsMuted(!isMuted)}
-                className="w-9 h-9 flex items-center justify-center bg-white rounded-md cursor-pointer"
+                className="w-9 h-9 flex items-center justify-center bg-transparent md:bg-white rounded-md cursor-pointer"
               >
                 <Image
                   src={
@@ -114,7 +120,7 @@ export default function StoriesSection() {
               </button>
               <button
                 onClick={() => setActiveStory(null)}
-                className="w-9 h-9 flex items-center justify-center bg-white rounded-md cursor-pointer"
+                className="w-9 h-9 flex items-center justify-center bg-transparent md:bg-white rounded-md cursor-pointer"
               >
                 <Image
                   src="/icons/x-close.svg"
@@ -128,7 +134,7 @@ export default function StoriesSection() {
             {/* story modal */}
             <motion.div
               key="modal"
-              className="fixed z-50 inset-0 flex items-center justify-center"
+              className="absolute inset-0 flex items-center justify-center z-50"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
@@ -137,7 +143,7 @@ export default function StoriesSection() {
               {activeStory > 0 && (
                 <motion.div
                   onClick={() => setActiveStory(activeStory - 1)}
-                  className="absolute left-[10%] z-40 w-[300px] h-[70vh] overflow-hidden cursor-pointer"
+                  className="hidden md:absolute left-[10%] z-40 w-[300px] h-[70vh] overflow-hidden cursor-pointer"
                   whileHover={{ scale: 1.03 }}
                 >
                   <Image
@@ -154,7 +160,7 @@ export default function StoriesSection() {
               {activeStory < stories.length - 1 && (
                 <motion.div
                   onClick={() => setActiveStory(activeStory + 1)}
-                  className="absolute right-[10%] z-40 w-[300px] h-[70vh] overflow-hidden cursor-pointer"
+                  className="hidden md:absolute right-[10%] z-40 w-[300px] h-[70vh] overflow-hidden cursor-pointer"
                   whileHover={{ scale: 1.03 }}
                 >
                   <Image
@@ -169,7 +175,7 @@ export default function StoriesSection() {
 
               {/* Main story */}
               <motion.div
-                className="relative w-[90%] max-w-[409px] h-[90vh] bg-black overflow-hidden flex flex-col items-center justify-center"
+                className="relative w-full h-full bg-black md:w-[90%] md:h-[90vh] md:max-w-[409px] overflow-hidden flex flex-col items-center justify-center"
                 drag="x"
                 dragConstraints={{ left: 0, right: 0 }}
                 onDragEnd={handleDragEnd}
@@ -257,14 +263,14 @@ export default function StoriesSection() {
                 <div className="absolute bottom-6 left-0 right-0 flex justify-center px-6">
                   <Button
                     variant="outline"
-                    className="w-full h-[36px] md:h-[52px] text-sm uppercase font-normal rounded-md bg-white text-black border border-black hover:bg-black hover:!text-white transition-colors duration-200 cursor-pointer"
+                    className="w-full h-[52px] text-sm uppercase font-normal rounded-md bg-white text-black border border-black hover:bg-black hover:!text-white transition-colors duration-200 cursor-pointer"
                   >
-                    See All
+                    {t("learnMore")}
                   </Button>
                 </div>
               </motion.div>
             </motion.div>
-          </>
+          </motion.div>
         )}
       </AnimatePresence>
     </section>
