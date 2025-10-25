@@ -12,13 +12,14 @@
       "phone": "+998 99 888 0777",
       "language": "Ilovaning tili"
     },
-    "welcome": "Xush kelibsiz",
+    "learnMoreBanner": "Batafsil",
     "login": "Kirish",
     "register": "Ro'yxatdan o'tish",
     "popularProducts": "Sotuvdagi mahsulotlar",
     "newArrivals": "Yangi kelganlar",
     "specialOffers": "Maxsus takliflar",
     "seeAll": "Barchasini ko'rish",
-    "news": "Yangiliklar"
+    "news": "Yangiliklar",
+    "learnMore": "Batafsil o'rganish"
   }
 }

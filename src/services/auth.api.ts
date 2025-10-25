@@ -1,4 +1,3 @@
-// src/services/auth/auth.api.ts
 import api from "@/lib/axios/instance";
 
 export type VerifyCodeRes = {
