@@ -1,24 +1,19 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { NavButton } from "../ui/nav-button";
-import { useTranslations } from "next-intl";
-import { useRef } from "react";
+import { useTranslations, useLocale } from "next-intl";
+import { useCollections } from "@/hooks/useCollection";
 
 export default function CollectionsSection() {
   const t = useTranslations("home");
+  const locale = useLocale();
+  const { collections, loading, error } = useCollections(locale);
+
   const [activeIndex, setActiveIndex] = useState(0);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const collections = [
-    { title: "Rings", image: "/images/category-placeholder.png" },
-    { title: "Earrings", image: "/images/category-placeholder.png" },
-    { title: "Necklaces", image: "/images/category-placeholder.png" },
-    { title: "Bracelets", image: "/images/category-placeholder.png" },
-    { title: "Watches", image: "/images/category-placeholder.png" },
-  ];
 
   const resetTimer = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -28,12 +23,26 @@ export default function CollectionsSection() {
   };
 
   useEffect(() => {
-    resetTimer();
+    if (collections.length > 0) resetTimer();
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeIndex]);
+  }, [activeIndex, collections]);
+
+  if (loading)
+    return (
+      <div className="h-[700px] flex items-center justify-center">
+        Загрузка...
+      </div>
+    );
+  if (error)
+    return (
+      <div className="h-[700px] flex items-center justify-center text-red-500">
+        {error}
+      </div>
+    );
+  if (!collections.length) return null;
 
   const handleClick = (index: number) => {
     setActiveIndex(index);
@@ -42,13 +51,13 @@ export default function CollectionsSection() {
 
   return (
     <>
-      {/* Desktop horizontal layout */}
+      {/* Desktop */}
       <section className="hidden md:flex w-full h-[700px] overflow-hidden">
         {collections.map((item, index) => {
           const isActive = index === activeIndex;
           return (
             <motion.div
-              key={item.title}
+              key={item.id}
               onClick={() => handleClick(index)}
               className="relative cursor-pointer overflow-hidden flex items-end justify-center"
               animate={{
@@ -58,7 +67,7 @@ export default function CollectionsSection() {
               style={{ height: "700px" }}
             >
               <Image
-                src={item.image}
+                src={item.desktopImage}
                 alt={item.title}
                 fill
                 className="object-cover"
@@ -96,7 +105,7 @@ export default function CollectionsSection() {
                 ) : (
                   <motion.div
                     key="inactive"
-                    className="absolute bottom-[80px] left-1/2 -translate-x-1/2 rotate-[-90deg] origin-center flex items-center justify-center w-full"
+                    className="absolute bottom-[80px] left-1/2 -translate-x-1/2 rotate-[-90deg] origin-center flex items-start justify-start w-full"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -113,13 +122,13 @@ export default function CollectionsSection() {
         })}
       </section>
 
-      {/* Mobile vertical layout */}
+      {/* Mobile */}
       <section className="flex md:hidden w-full h-[700px] flex-col overflow-hidden">
         {collections.map((item, index) => {
           const isActive = index === activeIndex;
           return (
             <motion.div
-              key={item.title}
+              key={item.id}
               onClick={() => setActiveIndex(index)}
               className="relative cursor-pointer overflow-hidden flex justify-end"
               animate={{
@@ -129,7 +138,7 @@ export default function CollectionsSection() {
               style={{ width: "100%" }}
             >
               <Image
-                src={item.image}
+                src={item.mobileImage}
                 alt={item.title}
                 fill
                 className="object-cover"
