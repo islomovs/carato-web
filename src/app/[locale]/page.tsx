@@ -77,55 +77,11 @@ export default function Home() {
     { id: 6, title: "Gift Sets", image: "/images/category-placeholder.png" },
   ];
 
-  const sampleNews = [
-    {
-      id: 1,
-      title: "New Collection Launch",
-      description: "Discover our latest skincare arrivals.",
-      date: "October 10, 2025",
-      image: "/images/news-placeholder.png",
-    },
-    {
-      id: 2,
-      title: "Autumn Sale Is Here",
-      description: "Up to 30% off your favorite brands.",
-      date: "October 8, 2025",
-      image: "/images/news-placeholder.png",
-    },
-    {
-      id: 3,
-      title: "Behind The Brand",
-      description: "Learn about our sustainable sourcing.",
-      date: "October 5, 2025",
-      image: "/images/news-placeholder.png",
-    },
-    {
-      id: 4,
-      title: "Tips For Better Skincare",
-      description: "Simple habits that improve your skin health.",
-      date: "October 2, 2025",
-      image: "/images/news-placeholder.png",
-    },
-    {
-      id: 5,
-      title: "Customer Favorites",
-      description: "The most-loved products this month.",
-      date: "September 29, 2025",
-      image: "/images/news-placeholder.png",
-    },
-    {
-      id: 6,
-      title: "How To Layer Serums",
-      description: "A quick guide for maximum effect.",
-      date: "September 25, 2025",
-      image: "/images/news-placeholder.png",
-    },
-  ];
-
   return (
     <div className="w-full h-full text-center">
       <BannerCarousel />
       <StoriesSection />
+
       <ProductsBlock title={t("popularProducts")} products={sampleProducts} />
       <CollectionsSection />
       <ProductsBlock title={t("newArrivals")} products={sampleProducts} />

@@ -2,272 +2,392 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
+import { motion, AnimatePresence, PanInfo } from "framer-motion";
+import NextImage from "next/image";
 import { Button } from "@/components/ui/button";
-import { PanInfo } from "framer-motion";
 import { useTranslations } from "next-intl";
+import StoryNavigation from "@/components/shared/stories/StoryNavigation";
+import StoryProgressBars from "../shared/stories/StoryProgressBars";
+import StoryPreviews from "../shared/stories/StoryPreviews";
+import StoryList from "../shared/stories/StoryList";
+import StoryControls from "../shared/stories/StoryControls";
 
-const stories = [
-  { title: "New Collection", image: "/images/news-placeholder.png" },
-  { title: "Summer Sale", image: "/images/category-placeholder.png" },
-  { title: "Limited Edition", image: "/images/promo1.jpg" },
-  { title: "Accessories", image: "/images/news-placeholder.png" },
-  { title: "Watches", image: "/images/news-placeholder.png" },
+interface StoryImage {
+  startTime: string;
+  endTime: string;
+  textUz: string;
+  textRu: string;
+  textEn: string;
+  image: string;
+  sortOrder: number;
+  redirectTo?: string;
+}
+
+interface Story {
+  title: string;
+  startTime: string;
+  endTime: string;
+  image: string;
+  sortOrder: number;
+  isActive: boolean;
+  images: StoryImage[];
+}
+
+// TEMP MOCK DATA (expanded for testing)
+const stories: Story[] = [
+  {
+    title: "New Collection",
+    startTime: "2025-10-25T15:38:31.562Z",
+    endTime: "2025-10-25T15:38:31.562Z",
+    image: "/images/news-placeholder.png",
+    sortOrder: 0,
+    isActive: true,
+    images: [
+      {
+        startTime: "2025-10-25T15:38:31.562Z",
+        endTime: "2025-10-25T15:38:31.562Z",
+        textUz: "Yangi kolleksiya 1",
+        textRu: "Новая коллекция 1",
+        textEn: "New Collection 1",
+        image: "/images/news-placeholder.png",
+        sortOrder: 0,
+        redirectTo: "#",
+      },
+      {
+        startTime: "2025-10-25T15:38:31.562Z",
+        endTime: "2025-10-25T15:38:31.562Z",
+        textUz: "Yangi kolleksiya 2",
+        textRu: "Новая коллекция 2",
+        textEn: "New Collection 2",
+        image: "/images/collection-placeholder.webp",
+        sortOrder: 1,
+        redirectTo: "#",
+      },
+    ],
+  },
+  {
+    title: "Summer Sale",
+    startTime: "2025-10-25T15:38:31.562Z",
+    endTime: "2025-10-25T15:38:31.562Z",
+    image: "/images/promo1.jpg",
+    sortOrder: 1,
+    isActive: true,
+    images: [
+      {
+        startTime: "2025-10-25T15:38:31.562Z",
+        endTime: "2025-10-25T15:38:31.562Z",
+        textUz: "Yozgi chegirmalar boshlandi!",
+        textRu: "Началась летняя распродажа!",
+        textEn: "Summer sale is here!",
+        image: "/images/promo1.jpg",
+        sortOrder: 0,
+        redirectTo: "#",
+      },
+      {
+        startTime: "2025-10-25T15:38:31.562Z",
+        endTime: "2025-10-25T15:38:31.562Z",
+        textUz: "Eng yaxshi narxlar faqat bugun!",
+        textRu: "Лучшие цены только сегодня!",
+        textEn: "Best prices only today!",
+        image: "/images/promo3.jpg",
+        sortOrder: 1,
+        redirectTo: "#",
+      },
+    ],
+  },
+  {
+    title: "Golden Harmony",
+    startTime: "2025-10-25T15:38:31.562Z",
+    endTime: "2025-10-25T15:38:31.562Z",
+    image: "/images/news-golden-harmony.jpg",
+    sortOrder: 2,
+    isActive: true,
+    images: [
+      {
+        startTime: "2025-10-25T15:38:31.562Z",
+        endTime: "2025-10-25T15:38:31.562Z",
+        textUz: "Oltin uyg‘unlik kolleksiyasi",
+        textRu: "Коллекция Золотая гармония",
+        textEn: "Golden Harmony Collection",
+        image: "/images/news-golden-harmony.jpg",
+        sortOrder: 0,
+        redirectTo: "#",
+      },
+    ],
+  },
+  {
+    title: "Crafted Eternity",
+    startTime: "2025-10-25T15:38:31.562Z",
+    endTime: "2025-10-25T15:38:31.562Z",
+    image: "/images/news-crafted-eternity.jpg",
+    sortOrder: 3,
+    isActive: true,
+    images: [
+      {
+        startTime: "2025-10-25T15:38:31.562Z",
+        endTime: "2025-10-25T15:38:31.562Z",
+        textUz: "Abadiyat bilan yaratilgan",
+        textRu: "Создано с вечностью",
+        textEn: "Crafted with Eternity",
+        image: "/images/news-crafted-eternity.jpg",
+        sortOrder: 0,
+        redirectTo: "#",
+      },
+      {
+        startTime: "2025-10-25T15:38:31.562Z",
+        endTime: "2025-10-25T15:38:31.562Z",
+        textUz: "Zargarlikda mukammallik",
+        textRu: "Совершенство в ювелирном искусстве",
+        textEn: "Perfection in jewellery art",
+        image: "/images/jewellery-rings.jpg",
+        sortOrder: 1,
+        redirectTo: "#",
+      },
+    ],
+  },
+  {
+    title: "Grand Opening",
+    startTime: "2025-10-25T15:38:31.562Z",
+    endTime: "2025-10-25T15:38:31.562Z",
+    image: "/images/news-opening.jpg",
+    sortOrder: 4,
+    isActive: true,
+    images: [
+      {
+        startTime: "2025-10-25T15:38:31.562Z",
+        endTime: "2025-10-25T15:38:31.562Z",
+        textUz: "Yangi do‘konimiz ochildi!",
+        textRu: "Открылся наш новый магазин!",
+        textEn: "Our new store is open!",
+        image: "/images/news-opening.jpg",
+        sortOrder: 0,
+        redirectTo: "#",
+      },
+      {
+        startTime: "2025-10-25T15:38:31.562Z",
+        endTime: "2025-10-25T15:38:31.562Z",
+        textUz: "Kelib, yangi kolleksiyani ko‘ring",
+        textRu: "Приходите и посмотрите новую коллекцию",
+        textEn: "Come and see the new collection",
+        image: "/images/banner-placeholder.jpg",
+        sortOrder: 1,
+        redirectTo: "#",
+      },
+    ],
+  },
+  {
+    title: "Bestsellers",
+    startTime: "2025-10-25T15:38:31.562Z",
+    endTime: "2025-10-25T15:38:31.562Z",
+    image: "/images/category-placeholder.png",
+    sortOrder: 5,
+    isActive: true,
+    images: [
+      {
+        startTime: "2025-10-25T15:38:31.562Z",
+        endTime: "2025-10-25T15:38:31.562Z",
+        textUz: "Eng ko‘p sotilgan mahsulotlar",
+        textRu: "Самые продаваемые товары",
+        textEn: "Top selling products",
+        image: "/images/product-placeholder.png",
+        sortOrder: 0,
+        redirectTo: "#",
+      },
+    ],
+  },
 ];
 
 export default function StoriesSection() {
   const t = useTranslations("home");
-  const [activeStory, setActiveStory] = useState<number | null>(null);
+  const [activeStoryIndex, setActiveStoryIndex] = useState<number | null>(null);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const [isMuted, setIsMuted] = useState(true);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   const duration = 4000;
 
-  // autoplay progress
   useEffect(() => {
-    if (activeStory === null) return;
+    if (activeStoryIndex === null) return;
 
-    setProgress(0);
+    const story = stories[activeStoryIndex];
+    if (!story || !story.images.length) return;
+
+    let progressValue = 0;
+    const step = 100 / (duration / 50); // smoother frame steps (every 50ms)
+
+    // clear old timer
     if (timerRef.current) clearInterval(timerRef.current);
 
+    // start new timer
     timerRef.current = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          if (activeStory < stories.length - 1) {
-            setActiveStory(activeStory + 1);
-          } else {
-            setActiveStory(null);
-          }
-          return 0;
-        }
-        return prev + 1;
-      });
-    }, duration / 100);
+      progressValue += step;
 
-    return () => clearInterval(timerRef.current!);
-  }, [activeStory]);
+      if (progressValue >= 100) {
+        const isLastImage = activeImageIndex >= story.images.length - 1;
+        const isLastStory = activeStoryIndex >= stories.length - 1;
+
+        if (!isLastImage) {
+          // next image in same story group
+          setActiveImageIndex((prev) => prev + 1);
+        } else if (!isLastStory) {
+          // move to next story group
+          setActiveStoryIndex((prev) => (prev ?? 0) + 1);
+          setActiveImageIndex(0);
+        } else {
+          // finished all stories
+          setActiveStoryIndex(null);
+          setActiveImageIndex(0);
+        }
+
+        progressValue = 0; // reset internal progress
+      }
+
+      setProgress(progressValue);
+    }, 50);
+
+    // 🖼 preload next image (to remove black flicker)
+    const nextImgSrc =
+      story.images[activeImageIndex + 1]?.image ??
+      stories[activeStoryIndex + 1]?.images?.[0]?.image;
+    if (nextImgSrc) {
+      const img = new globalThis.Image();
+      img.src = nextImgSrc;
+    }
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+    // ✅ key detail: depend on both activeStoryIndex and activeImageIndex
+  }, [activeStoryIndex, activeImageIndex]);
 
   const handleDragEnd = (_: any, info: PanInfo) => {
     const offset = info.offset.x;
     const velocity = info.velocity.x;
+    const story = stories[activeStoryIndex ?? 0];
+
+    if (!story) return;
 
     if (offset > 80 || velocity > 500) {
-      // Swipe right → previous story
-      setActiveStory((prev) => (prev && prev > 0 ? prev - 1 : prev));
+      if (activeImageIndex > 0) {
+        setActiveImageIndex((p) => p - 1);
+      } else if (activeStoryIndex && activeStoryIndex > 0) {
+        setActiveStoryIndex((p) => p! - 1);
+        const prevStory = stories[activeStoryIndex - 1];
+        setActiveImageIndex(prevStory?.images?.length - 1 || 0);
+      }
     } else if (offset < -80 || velocity < -500) {
-      // Swipe left → next story
-      setActiveStory((prev) =>
-        prev !== null && prev < stories.length - 1 ? prev + 1 : prev
-      );
+      if (activeImageIndex < story.images.length - 1) {
+        setActiveImageIndex((p) => p + 1);
+      } else if (activeStoryIndex! < stories.length - 1) {
+        setActiveStoryIndex((p) => p! + 1);
+        setActiveImageIndex(0);
+      }
     }
   };
 
+  const currentStory =
+    activeStoryIndex !== null ? stories[activeStoryIndex] : null;
+  const currentImage = currentStory?.images?.[activeImageIndex] ?? null;
+
   return (
-    <section className="w-full flex overflow-x-auto md:overflow-x-visible no-scrollbar mt-4 md:mt-10 md:px-0 touch-pan-x select-none">
-      {stories.map((story, i) => (
-        <motion.div
-          key={story.title}
-          onClick={() => setActiveStory(i)}
-          className="relative min-w-[144px] h-[200px] cursor-pointer group overflow-hidden shrink-0"
-          whileHover={{ scale: 1.02 }}
-        >
-          <Image
-            src={story.image}
-            alt={story.title}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-          <motion.div className="absolute bottom-0 left-0 right-0 h-[52px] bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <span className="text-white text-[12px] font-[400]">
-              {story.title}
-            </span>
-          </motion.div>
-        </motion.div>
-      ))}
+    <section className="w-full flex overflow-x-auto md:overflow-x-visible no-scrollbar mt-4 md:mt-10 touch-pan-x select-none">
+      <StoryList
+        stories={stories}
+        onSelect={(index) => {
+          setActiveStoryIndex(index);
+          setActiveImageIndex(0);
+        }}
+      />
 
       <AnimatePresence>
-        {activeStory !== null && (
+        {currentStory && (
           <motion.div
             key="story-overlay"
-            className="fixed inset-0 z-50"
+            className="fixed inset-0 z-[9999]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
           >
-            {/* background overlay — closes on click */}
             <div
-              className="absolute inset-0 bg-black/80 cursor-pointer backdrop-blur-sm z-40"
-              onClick={() => setActiveStory(null)}
+              className="absolute inset-0 bg-black/80 cursor-pointer backdrop-blur-sm z-[40]"
+              onClick={() => setActiveStoryIndex(null)}
             />
 
-            {/* top controls */}
-            <div className="absolute top-[28px] right-3 md:top-[32px] md:right-[32px] z-60 flex gap-3">
-              <button
-                onClick={() => setIsMuted(!isMuted)}
-                className="w-9 h-9 flex items-center justify-center bg-transparent md:bg-white rounded-md cursor-pointer"
-              >
-                <Image
-                  src={
-                    isMuted ? "/icons/volume-x.svg" : "/icons/volume-max.svg"
-                  }
-                  alt="volume"
-                  width={20}
-                  height={20}
-                />
-              </button>
-              <button
-                onClick={() => setActiveStory(null)}
-                className="w-9 h-9 flex items-center justify-center bg-transparent md:bg-white rounded-md cursor-pointer"
-              >
-                <Image
-                  src="/icons/x-close.svg"
-                  alt="close"
-                  width={20}
-                  height={20}
-                />
-              </button>
-            </div>
+            <StoryControls
+              isMuted={isMuted}
+              onToggleMute={() => setIsMuted(!isMuted)}
+              onClose={() => setActiveStoryIndex(null)}
+            />
 
-            {/* story modal */}
+            {activeStoryIndex !== null && (
+              <StoryPreviews
+                stories={stories}
+                activeStoryIndex={activeStoryIndex}
+              />
+            )}
+
+            {/* Main Story Modal */}
             <motion.div
-              key="modal"
-              className="absolute inset-0 flex items-center justify-center z-50"
+              className="absolute inset-0 flex items-center justify-center z-[80]"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
             >
-              {/* Left preview */}
-              {activeStory > 0 && (
-                <motion.div
-                  onClick={() => setActiveStory(activeStory - 1)}
-                  className="hidden md:absolute left-[10%] z-40 w-[300px] h-[70vh] overflow-hidden cursor-pointer"
-                  whileHover={{ scale: 1.03 }}
-                >
-                  <Image
-                    src={stories[activeStory - 1].image}
-                    alt="prev"
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-[#00000080]" />
-                </motion.div>
-              )}
-
-              {/* Right preview */}
-              {activeStory < stories.length - 1 && (
-                <motion.div
-                  onClick={() => setActiveStory(activeStory + 1)}
-                  className="hidden md:absolute right-[10%] z-40 w-[300px] h-[70vh] overflow-hidden cursor-pointer"
-                  whileHover={{ scale: 1.03 }}
-                >
-                  <Image
-                    src={stories[activeStory + 1].image}
-                    alt="next"
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-[#00000080]" />
-                </motion.div>
-              )}
-
-              {/* Main story */}
               <motion.div
                 className="relative w-full h-full bg-black md:w-[90%] md:h-[90vh] md:max-w-[409px] overflow-hidden flex flex-col items-center justify-center"
                 drag="x"
                 dragConstraints={{ left: 0, right: 0 }}
                 onDragEnd={handleDragEnd}
               >
-                {/* progress bars */}
-                <div className="absolute top-3 left-3 right-3 flex gap-1 z-50">
-                  {stories.map((_, index) => (
-                    <div
-                      key={index}
-                      className="flex-1 h-[4px] rounded-full bg-[#9AA4B2] overflow-hidden"
-                    >
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{
-                          width:
-                            index === activeStory
-                              ? `${progress}%`
-                              : index < activeStory
-                                ? "100%"
-                                : "0%",
-                        }}
-                        transition={{ ease: "linear", duration: 0.3 }}
-                        className="h-full bg-white"
-                      />
-                    </div>
-                  ))}
-                </div>
+                <StoryProgressBars
+                  progress={progress}
+                  currentStory={currentStory}
+                  activeImageIndex={activeImageIndex}
+                />
 
-                {/* Story image with smooth animation */}
+                {/* Story image */}
                 <AnimatePresence mode="wait">
                   <motion.div
-                    key={stories[activeStory].image}
+                    key={
+                      currentImage?.image ||
+                      `story-${activeStoryIndex}-img-${activeImageIndex}`
+                    }
                     initial={{ opacity: 0, x: 80, scale: 1.05 }}
                     animate={{ opacity: 1, x: 0, scale: 1 }}
                     exit={{ opacity: 0, x: -80, scale: 0.98 }}
                     transition={{ duration: 0.4, ease: "easeInOut" }}
                     className="absolute inset-0"
                   >
-                    <Image
-                      src={stories[activeStory].image}
-                      alt={stories[activeStory].title}
+                    <NextImage
+                      src={
+                        currentImage?.image || "/images/banner-placeholder.jpg"
+                      }
+                      alt={currentStory?.title ?? "story"}
                       fill
                       className="object-cover"
+                      priority
                     />
                   </motion.div>
                 </AnimatePresence>
 
-                {/* navigation arrows */}
-                <div className="absolute inset-0 flex justify-between items-center px-3 z-50">
-                  <button
-                    className="w-9 h-9 bg-white rounded-md flex items-center justify-center cursor-pointer"
-                    onClick={() =>
-                      setActiveStory((prev) =>
-                        prev && prev > 0 ? prev - 1 : prev
-                      )
-                    }
-                  >
-                    <Image
-                      src="/icons/chevron-left.svg"
-                      alt="previous"
-                      width={20}
-                      height={20}
-                    />
-                  </button>
-                  <button
-                    className="w-9 h-9 bg-white rounded-md flex items-center justify-center cursor-pointer"
-                    onClick={() =>
-                      setActiveStory((prev) =>
-                        prev !== null && prev < stories.length - 1
-                          ? prev + 1
-                          : prev
-                      )
-                    }
-                  >
-                    <Image
-                      src="/icons/chevron-right.svg"
-                      alt="next"
-                      width={20}
-                      height={20}
-                    />
-                  </button>
-                </div>
-
-                {/* bottom button */}
-                <div className="absolute bottom-6 left-0 right-0 flex justify-center px-6">
+                {/* Bottom button */}
+                <div className="absolute bottom-6 left-0 right-0 flex flex-col items-center px-6 gap-2 z-[90]">
                   <Button
                     variant="outline"
-                    className="w-full h-[52px] text-sm uppercase font-normal rounded-md bg-white text-black border border-black hover:bg-black hover:!text-white transition-colors duration-200 cursor-pointer"
+                    className="w-full h-[52px] text-sm uppercase font-normal rounded-md bg-white text-black border border-black hover:bg-black hover:text-white transition-colors duration-200"
                   >
                     {t("learnMore")}
                   </Button>
                 </div>
+
+                <StoryNavigation
+                  stories={stories}
+                  activeStoryIndex={activeStoryIndex!}
+                  activeImageIndex={activeImageIndex}
+                  setActiveStoryIndex={setActiveStoryIndex}
+                  setActiveImageIndex={setActiveImageIndex}
+                />
               </motion.div>
             </motion.div>
           </motion.div>
