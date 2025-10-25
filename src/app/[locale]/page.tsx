@@ -135,7 +135,7 @@ export default function Home() {
         products={sampleProducts}
         layout="grid"
       />
-      <NewsSection news={sampleNews} />
+      <NewsSection />
     </div>
   );
 }

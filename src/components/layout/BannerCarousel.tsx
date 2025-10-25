@@ -90,7 +90,7 @@ export default function BannerCarousel() {
                   }}
                 />
 
-                <div className="absolute inset-0 flex flex-col justify-center items-start max-w-[65%] md:max-w-[50%] px-4 md:px-0 md:top-1/5 md:right-[8%] md:left-auto gap-4 md:gap-8">
+                <div className="absolute inset-0 flex flex-col justify-center items-start max-w-[65%] md:max-w-[50%] px-4 md:px-0 md:right-[8%] md:left-auto gap-4 md:gap-8">
                   <h1 className="text-lg md:text-[40px] font-light text-start md:leading-[60px] text-white md:text-black">
                     {item.name}
                   </h1>
@@ -100,7 +100,7 @@ export default function BannerCarousel() {
                       item.redirectTo !== "#" &&
                       window.open(item.redirectTo, "_blank")
                     }
-                    className="hidden md:block bg-black text-white w-[280px] h-[52px] text-sm uppercase  font-normal rounded-md hover:text-black border border-black hover:bg-white"
+                    className="hidden md:block bg-black text-white w-[280px] h-[52px] text-sm uppercase  font-normal rounded-md hover:text-black border border-black hover:bg-white cursor-pointer"
                   >
                     {t("learnMoreBanner")}
                   </Button>
