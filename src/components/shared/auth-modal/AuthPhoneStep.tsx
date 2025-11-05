@@ -1,12 +1,12 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { IMaskInput } from "react-imask";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/hooks/useAuth";
+import { Input } from "@/components/ui/input";
+import { withMask } from "use-mask-input";
 
 type Props = {
   onNext: (phone: string) => void;
@@ -62,15 +62,18 @@ export default function AuthPhoneStep({ onNext }: Props) {
               </div>
             </label>
 
-            <IMaskInput
-              mask="+998 00 000-00-00"
+            <Input
+              type="text"
+              placeholder="+998 90 123-45-67"
+              ref={withMask("+\\9\\9\\8 99 999-99-99", {
+                placeholder: "_",
+                showMaskOnHover: false,
+              })}
               value={field.value}
-              onAccept={(value: any) => field.onChange(value)}
-              overwrite={true}
+              onChange={(e) => field.onChange(e.target.value)}
               className={`w-full rounded-[4px] border p-3 text-[14px] font-normal outline-none ${
                 fieldState.error ? "border-red-600" : "border-black"
               }`}
-              placeholder="+998 90 123-45-67"
             />
 
             {fieldState.error && (

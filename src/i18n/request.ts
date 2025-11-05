@@ -1,9 +1,8 @@
-// app/i18n/getRequestConfig.ts (or wherever you keep it)
 import { getRequestConfig } from "next-intl/server";
 import { hasLocale } from "next-intl";
 import { routing } from "./routing";
 
-const NAMESPACES = ["home", "auth"]; // add more as you create them
+const NAMESPACES = ["home", "auth", "product"];
 
 export default getRequestConfig(async ({ requestLocale }) => {
   const requested = await requestLocale;

@@ -10,7 +10,7 @@ import CatalogDropdown from "./CatalogDropdown";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";
 import MobileLanguageModal from "../shared/MobileLanguageModal";
-import AuthModal from "../shared/AuthModal/index";
+import AuthModal from "../shared/auth-modal/index";
 
 export default function Header() {
   const t = useTranslations("home.header");
@@ -251,7 +251,7 @@ export default function Header() {
   const APPBAR_HEIGHT_PX = 64; // bottom app bar height
 
   return (
-    <header className="relative w-full border-b border-[#EEF2F6] bg-white px-2 md:px-8">
+    <header className="relative w-full flex justify-center border-b border-[#EEF2F6] bg-white px-2 md:px-8">
       <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
       <div className="container flex items-center justify-between py-2">
         {/* Left side: mobile menu button */}

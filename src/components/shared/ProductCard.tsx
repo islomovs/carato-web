@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 export interface Product {
   id: number;
@@ -14,6 +15,7 @@ export interface Product {
 }
 
 export default function ProductCard({ product }: { product: Product }) {
+  const t = useTranslations("product");
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -57,11 +59,11 @@ export default function ProductCard({ product }: { product: Product }) {
               className="absolute bottom-0 left-0 right-0 z-10"
             >
               <Button
-                className="w-full h-[36px] uppercase text-[12px] font-medium tracking-wide text-white bg-black rounded-md"
+                className="w-full h-[36px] uppercase text-[12px] font-medium tracking-wide text-white bg-black rounded-md cursor-pointer"
                 size="sm"
                 onClick={() => console.log("Add to cart clicked", product.id)}
               >
-                Add to Cart
+                {t("addToCart")}
               </Button>
             </motion.div>
           )}
