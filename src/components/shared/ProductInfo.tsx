@@ -7,6 +7,7 @@ import { Button } from "../ui/button";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import SizeModals from "./SizeModals";
+import ShareDropdown from "./auth-modal/ShareDropdown";
 
 export default function ProductInfo() {
   const t = useTranslations("product");
@@ -78,28 +79,24 @@ export default function ProductInfo() {
               height={20}
             />
           </Button>
-          <Button
-            variant="ghost"
-            className="bg-white text-black w-[52px] h-[52px] font-normal rounded-md border border-black cursor-pointer"
-          >
-            <Image src="/icons/share.svg" alt="Share" width={20} height={20} />
-          </Button>
+          <ShareDropdown />
         </div>
 
         <Button
           variant="ghost"
           className="bg-white hover:bg-black text-black hover:text-white w-full h-[52px] font-normal rounded-md border border-black cursor-pointer uppercase transition-colors duration-200"
         >
-          Купить в 1 клик
+          {t("buyInOneClick")}
         </Button>
       </div>
 
       <div className="flex justify-between items-center w-full">
-        <span className="font-normal text-sm">Примерные даты доставки</span>
+        <span className="font-normal text-sm">
+          {t("estimatedDeliveryDates")}
+        </span>
         <span className="font-normal text-sm">20 - 23 сентября</span>
       </div>
 
-      {/* ---- Модалки ---- */}
       <SizeModals
         openNotify={openNotify}
         setOpenNotify={setOpenNotify}
