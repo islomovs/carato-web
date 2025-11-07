@@ -1,4 +1,6 @@
-import FeedbackSection from "@/components/shared/FeedbackSection";
+"use client";
+import { useEffect, useState } from "react";
+import FeedbackSection from "@/components/shared/feedback/FeedbackSection";
 import ProductAccordion from "@/components/shared/ProductAccordion";
 import ProductGallery from "@/components/shared/ProductGallery";
 import ProductInfo from "@/components/shared/ProductInfo";
@@ -6,8 +8,17 @@ import SellerInfoButton from "@/components/shared/SellerInfoButton";
 import ProductsBlock from "@/components/layout/ProductsBlock";
 import { useTranslations } from "next-intl";
 
-export default function ProductDetailsPage() {
+export default function ProductPage() {
   const t = useTranslations("product");
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    onResize();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
   const sampleProducts = [
     {
       id: 1,
@@ -66,76 +77,154 @@ export default function ProductDetailsPage() {
       description: "Deep hydration and smooth texture",
     },
   ];
+
   return (
-    <div className="flex flex-col items-">
-      <div className="w-full flex flex-row items-start px-8 my-[52px] overflow-hidden gap-[52px]">
-        <div className="w-full h-full flex flex-col gap-8">
-          <ProductGallery
-            variant="page"
-            media={[
-              {
-                id: 1,
-                type: "image",
-                src: "/images/news-placeholder.png",
-              },
-              { id: 2, type: "video", src: "/videos/placeholder-video.mp4" },
-              { id: 3, type: "image", src: "/images/category-placeholder.png" },
-              { id: 4, type: "image", src: "/images/banner-placeholder.jpg" },
-              {
-                id: 5,
-                type: "image",
-                src: "/images/news-crafted-eternity.jpg",
-              },
-            ]}
-          />
-          <SellerInfoButton
-            imageSrc="/images/banner-placeholder.jpg"
-            title="JewelStore"
-            rating={4}
-            sellerUrl="/seller/jewelstore"
-          />
-          <ProductAccordion />
-          <FeedbackSection
-            overallRating={4.5}
-            totalReviews={10}
-            feedbacks={[
-              {
-                id: 1,
-                userName: "John Doe",
-                rating: 5,
-                date: "2023-01-01",
-                title: "Great product!",
-                media: [
-                  {
-                    id: 1,
-                    src: "/images/news-placeholder.png",
-                    type: "image",
-                  },
-                  {
-                    id: 2,
-                    src: "/images/category-placeholder.png",
-                    type: "image",
-                  },
-                ],
-                description:
-                  "I really loved this product. It exceeded my expectations!",
-              },
-              {
-                id: 2,
-                userName: "Jane Smith",
-                rating: 4,
-                date: "2023-01-22",
-                title: "Good value for money",
-                description:
-                  "The product is good for the price. I would recommend it.",
-              },
-            ]}
+    <div className="flex flex-col">
+      {/* Desktop layout */}
+      {!isMobile ? (
+        <div
+          className="grid
+          grid-cols-1
+          md:grid-cols-[1fr_minmax(300px,40%)]
+          lg:grid-cols-[minmax(0,1fr)_minmax(0,37%)]
+          gap-[52px]
+          px-4 md:px-8
+          my-[52px]
+          overflow-hidden"
+        >
+          <div className="flex flex-col gap-8">
+            <ProductGallery
+              variant="page"
+              media={[
+                { id: 1, type: "image", src: "/images/news-placeholder.png" },
+                { id: 2, type: "video", src: "/videos/placeholder-video.mp4" },
+                {
+                  id: 3,
+                  type: "image",
+                  src: "/images/category-placeholder.png",
+                },
+                { id: 4, type: "image", src: "/images/banner-placeholder.jpg" },
+                {
+                  id: 5,
+                  type: "image",
+                  src: "/images/news-crafted-eternity.jpg",
+                },
+              ]}
+            />
+            <SellerInfoButton
+              imageSrc="/images/banner-placeholder.jpg"
+              title="JewelStore"
+              rating={4}
+              sellerUrl="/seller/jewelstore"
+            />
+            <ProductAccordion />
+            <FeedbackSection
+              overallRating={4.5}
+              totalReviews={10}
+              feedbacks={[
+                {
+                  id: 1,
+                  userName: "John Doe",
+                  rating: 5,
+                  date: "2023-01-01",
+                  title: "Great product!",
+                  media: [
+                    {
+                      id: 1,
+                      src: "/images/news-placeholder.png",
+                      type: "image",
+                    },
+                    {
+                      id: 2,
+                      src: "/images/category-placeholder.png",
+                      type: "image",
+                    },
+                  ],
+                  description:
+                    "I really loved this product. It exceeded my expectations!",
+                },
+                {
+                  id: 2,
+                  userName: "Jane Smith",
+                  rating: 4,
+                  date: "2023-01-22",
+                  title: "Good value for money",
+                  description:
+                    "The product is good for the price. I would recommend it.",
+                },
+              ]}
+            />
+          </div>
+          <ProductInfo />
+        </div>
+      ) : (
+        // ✅ Mobile layout
+        <div className="flex flex-col w-full overflow-hidden">
+          {/* Product gallery at top (scrolls naturally) */}
+          <div className="w-full">
+            <ProductGallery
+              variant="modal"
+              media={[
+                { id: 1, type: "image", src: "/images/news-placeholder.png" },
+                { id: 2, type: "video", src: "/videos/placeholder-video.mp4" },
+                {
+                  id: 3,
+                  type: "image",
+                  src: "/images/category-placeholder.png",
+                },
+                { id: 4, type: "image", src: "/images/banner-placeholder.jpg" },
+                {
+                  id: 5,
+                  type: "image",
+                  src: "/images/news-crafted-eternity.jpg",
+                },
+              ]}
+            />
+          </div>
+
+          {/* Page content below gallery */}
+          <div className="flex flex-col gap-8 px-4 py-8 relative bg-white">
+            <ProductInfo />
+            <SellerInfoButton
+              imageSrc="/images/banner-placeholder.jpg"
+              title="JewelStore"
+              rating={4}
+              sellerUrl="/seller/jewelstore"
+            />
+            <ProductAccordion />
+            <FeedbackSection
+              overallRating={4.5}
+              totalReviews={10}
+              feedbacks={[
+                {
+                  id: 1,
+                  userName: "John Doe",
+                  rating: 5,
+                  date: "2023-01-01",
+                  title: "Great product!",
+                  description:
+                    "I really loved this product. It exceeded my expectations!",
+                },
+                {
+                  id: 2,
+                  userName: "Jane Smith",
+                  rating: 4,
+                  date: "2023-01-22",
+                  title: "Good value for money",
+                  description:
+                    "The product is good for the price. I would recommend it.",
+                },
+              ]}
+            />
+          </div>
+
+          <ProductsBlock
+            title={t("recommended")}
+            products={sampleProducts}
+            hideSeeAll
           />
         </div>
-        <ProductInfo />
-      </div>
-
-      <ProductsBlock title={t("recommended")} products={sampleProducts} hideSeeAll />
+      )}
     </div>
   );
 }

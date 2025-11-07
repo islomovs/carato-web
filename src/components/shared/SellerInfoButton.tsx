@@ -26,7 +26,7 @@ export default function SellerInfoButton({
     <Button
       variant="link"
       onClick={() => router.push(sellerUrl)}
-      className="flex items-center gap-3 w-full !p-0 rounded-md hover:bg-gray-50 cursor-pointer"
+      className="flex items-center gap-3 w-full !p-0 rounded-md cursor-pointer hover:underline-none "
     >
       <div className="w-12 h-12 flex-shrink-0">
         <Image

@@ -18,7 +18,9 @@ export default function ProductInfo() {
   const [openDetermine, setOpenDetermine] = useState(false);
 
   return (
-    <div className="flex flex-col gap-8 w-full">
+    <div className="flex flex-col gap-8 w-full pb-[100px]">
+      {" "}
+      {/* padding bottom for fixed bar space */}
       {/* ---- Блок информации ---- */}
       <div className="flex flex-col justify-start items-start gap-2 w-full">
         <h2 className="font-light text-base text-[#697586]">БРАСЛЕТЫ</h2>
@@ -44,7 +46,6 @@ export default function ProductInfo() {
           <span className="font-light text-sm underline ml-2">4 отзыва</span>
         </div>
       </div>
-
       {/* ---- Цены ---- */}
       <div className="flex items-center">
         <span className="font-medium text-2xl">242 542 325 UZS</span>
@@ -55,15 +56,13 @@ export default function ProductInfo() {
           -50%
         </span>
       </div>
-
       {/* ---- Размеры ---- */}
       <ProductSizeSelector
         onOpenNotify={() => setOpenNotify(true)}
         onOpenDetermine={() => setOpenDetermine(true)}
       />
-
-      {/* ---- Кнопки ---- */}
-      <div className="flex flex-col gap-3">
+      {/* ---- Кнопки (Desktop) ---- */}
+      <div className="hidden md:flex flex-col gap-3">
         <div className="flex gap-3 w-full">
           <Button className="bg-black text-white flex-1 h-[52px] text-sm uppercase font-normal rounded-md hover:text-black border border-black hover:bg-white cursor-pointer">
             {t("addToCart")}
@@ -89,20 +88,28 @@ export default function ProductInfo() {
           {t("buyInOneClick")}
         </Button>
       </div>
-
-      <div className="flex justify-between items-center w-full">
-        <span className="font-normal text-sm">
+      {/* ---- Ожидаемые даты ---- */}
+      <div className="flex justify-between items-center w-full bg-[#F8FAFC] p-4">
+        <span className="font-normal text-sm text-[#667085]">
           {t("estimatedDeliveryDates")}
         </span>
         <span className="font-normal text-sm">20 - 23 сентября</span>
       </div>
-
       <SizeModals
         openNotify={openNotify}
         setOpenNotify={setOpenNotify}
         openDetermine={openDetermine}
         setOpenDetermine={setOpenDetermine}
       />
+      {/* ---- Mobile fixed bottom buttons ---- */}
+      <div className="fixed bottom-0 left-0 w-full bg-white md:hidden border-t border-gray-200 px-4 py-3 flex gap-4 z-20">
+        <Button className="bg-white text-black flex-1 h-[48px] text-sm uppercase font-normal rounded-md border border-black hover:bg-black hover:text-white transition-colors duration-200">
+          {t("buyInOneClick")}
+        </Button>
+        <Button className="bg-black text-white flex-1 h-[48px] text-sm uppercase font-normal rounded-md hover:text-black border border-black hover:bg-white transition-colors duration-200">
+          {t("addToCart")}
+        </Button>
+      </div>
     </div>
   );
 }

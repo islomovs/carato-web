@@ -18,7 +18,7 @@ export default function AccordionPoint({ title, content }: Props) {
       <Button
         variant="ghost"
         onClick={() => setOpen(!open)}
-        className="flex justify-between items-center w-full py-[26px] !px-0 uppercase font-[400] text-[14px] cursor-pointer"
+        className="flex justify-between items-center w-full py-[26px] !px-0 uppercase font-[400] text-[14px] cursor-pointer hover:bg-transparent"
       >
         <span>{title}</span>
         {open ? (

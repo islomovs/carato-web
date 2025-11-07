@@ -11,6 +11,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";
 import MobileLanguageModal from "../shared/MobileLanguageModal";
 import AuthModal from "../shared/auth-modal/index";
+import { usePathname } from "next/navigation";
 
 export default function Header() {
   const t = useTranslations("home.header");
@@ -246,187 +247,218 @@ export default function Header() {
     { src: "/icons/youtube.svg", alt: "YouTube", href: "#" },
   ];
 
-  // header/appbar heights — adjust to your actual sizes if different
-  const HEADER_HEIGHT_PX = 64; // header height (desktop & mobile)
-  const APPBAR_HEIGHT_PX = 64; // bottom app bar height
+  const pathname = usePathname();
+  const locale =
+    typeof window !== "undefined"
+      ? localStorage.getItem("locale") || "ru"
+      : "ru";
+
+  const hiddenHeaderPaths = [`/${locale}/product`];
+  console.log("Current pathname:", pathname);
+  const shouldHideHeader = hiddenHeaderPaths.some((path) =>
+    pathname.startsWith(path)
+  );
+
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const handleResize = () => setIsMobile(window.innerWidth < 768);
+      handleResize();
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }
+  }, []);
+
+  const HEADER_HEIGHT_PX = 64;
+  const APPBAR_HEIGHT_PX = 64;
+
+  const shouldShowHeader = !isMobile || !shouldHideHeader;
 
   return (
-    <header className="relative w-full flex justify-center border-b border-[#EEF2F6] bg-white px-2 md:px-8">
-      <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
-      <div className="container flex items-center justify-between py-2">
-        {/* Left side: mobile menu button */}
-        <div className="flex items-center gap-2 md:hidden">
-          <button
-            onClick={() => setMenuOpen((prev) => !prev)}
-            aria-label="menu"
-            className="w-9 h-9 flex items-center justify-center rounded-md hover:bg-[#EEF2F6] transition-colors cursor-pointer"
-          >
-            <Image
-              src={menuOpen ? "/icons/x-close.svg" : "/icons/menu.svg"}
-              alt="menu"
-              width={20}
-              height={20}
-            />
-          </button>
-        </div>
-
-        {/* Desktop nav */}
-        <nav className="hidden md:flex items-center justify-center gap-6 text-sm h-10 mt-2">
-          <Link href="/shops">
-            <NavButton>{t("shops")}</NavButton>
-          </Link>
-          <Link href="/about">
-            <NavButton>{t("about")}</NavButton>
-          </Link>
-          <NavButton
-            onClick={() => setIsCatalogOpen((prev) => !prev)}
-            active={isCatalogOpen}
-          >
-            {t("catalog")}
-          </NavButton>
-        </nav>
-
-        <Link
-          href="/"
-          className="text-lg md:text-xl font-semibold flex items-center"
-          style={{ paddingTop: 8, paddingBottom: 8 }}
-        >
-          <Image
-            src="/images/logo.png"
-            alt="Carato"
-            width={120}
-            height={40}
-            className="object-contain"
-          />
-        </Link>
-
-        {/* Right icons */}
-        <div className="flex items-center gap-2">
-          {/* Mobile */}
-          <div className="flex md:hidden items-center gap-2">
-            <button className="w-9 h-9 flex items-center justify-center rounded-md hover:bg-[#EEF2F6] transition-colors cursor-pointer">
+    shouldShowHeader && (
+      <header className="relative w-full flex justify-center border-b border-[#EEF2F6] bg-white px-2 md:px-8">
+        <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
+        <div className="container flex items-center justify-between py-2">
+          {/* Left side: mobile menu button */}
+          <div className="flex items-center gap-2 md:hidden">
+            <button
+              onClick={() => setMenuOpen((prev) => !prev)}
+              aria-label="menu"
+              className="w-9 h-9 flex items-center justify-center rounded-md hover:bg-[#EEF2F6] transition-colors cursor-pointer"
+            >
               <Image
-                src="/icons/search.svg"
-                alt="search"
+                src={menuOpen ? "/icons/x-close.svg" : "/icons/menu.svg"}
+                alt="menu"
                 width={20}
                 height={20}
               />
             </button>
-            <Link
-              href="/auth"
-              className="w-9 h-9 flex items-center justify-center rounded-md hover:bg-[#EEF2F6] transition-colors cursor-pointer"
-            >
-              <Image src="/icons/user.svg" alt="user" width={20} height={20} />
+          </div>
+
+          {/* Desktop nav */}
+          <nav className="hidden md:flex items-center justify-center gap-6 text-sm h-10 mt-2">
+            <Link href="/shops">
+              <NavButton>{t("shops")}</NavButton>
             </Link>
-          </div>
+            <Link href="/about">
+              <NavButton>{t("about")}</NavButton>
+            </Link>
+            <NavButton
+              onClick={() => setIsCatalogOpen((prev) => !prev)}
+              active={isCatalogOpen}
+            >
+              {t("catalog")}
+            </NavButton>
+          </nav>
 
-          {/* Desktop icons */}
-          <div className="hidden md:flex items-center gap-2">
-            {icons.map((src, idx) => (
-              <button
-                key={idx}
-                aria-label="icon"
-                className="w-9 h-9 flex items-center justify-center rounded-md hover:bg-[#EEF2F6] transition-colors cursor-pointer"
-                onClick={() => setAuthOpen(true)}
-              >
-                <Image src={src} alt={`icon-${idx}`} width={16} height={16} />
-              </button>
-            ))}
-            <LanguageSwitcher />
-          </div>
-        </div>
-      </div>
-
-      {/* Catalog dropdown */}
-      {isCatalogOpen && (
-        <CatalogDropdown
-          isOpen={isCatalogOpen}
-          selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
-          categories={categories}
-        />
-      )}
-
-      {/* Mobile menu overlay: rendered only when open, positioned between header and appbar */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.18, ease: "easeOut" }}
-            // fixed so it sits above content but below header/appbar visually
-            style={{
-              top: HEADER_HEIGHT_PX,
-              bottom: APPBAR_HEIGHT_PX,
-            }}
-            className="fixed left-0 right-0 z-40 bg-white flex flex-col justify-between overflow-hidden"
+          <Link
+            href="/"
+            className="text-lg md:text-xl font-semibold flex items-center"
+            style={{ paddingTop: 8, paddingBottom: 8 }}
           >
-            {/* Scrollable list */}
-            <div className="overflow-y-auto py-2">
-              {mobileMenuItems.map(({ title, icon, href }, idx) => (
-                <Link
-                  key={idx}
-                  href={href}
-                  onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-4 px-4 py-3"
-                >
-                  <Image src={icon} alt={title} width={20} height={20} />
-                  <span className="text-[14px] font-[400] text-gray-900">
-                    {title}
-                  </span>
-                </Link>
-              ))}
+            <Image
+              src="/images/logo.png"
+              alt="Carato"
+              width={120}
+              height={40}
+              className="object-contain"
+            />
+          </Link>
 
-              {/* Language Switcher button */}
-              <button
-                onClick={() => setLangModalOpen(true)}
-                className="flex items-center gap-4 px-4 py-3 w-full text-left"
-              >
+          {/* Right icons */}
+          <div className="flex items-center gap-2">
+            {/* Mobile */}
+            <div className="flex md:hidden items-center gap-2">
+              <button className="w-9 h-9 flex items-center justify-center rounded-md hover:bg-[#EEF2F6] transition-colors cursor-pointer">
                 <Image
-                  src={
-                    currentLang === "ru"
-                      ? "/images/ru-flag.png"
-                      : "/images/uz-flag.png"
-                  }
-                  alt={currentLang}
+                  src="/icons/search.svg"
+                  alt="search"
                   width={20}
                   height={20}
-                  className="rounded-full w-5 h-5 object-cover border-[#00000014] border-[0.83px]"
                 />
-                <span className="text-[14px] font-[400] text-gray-900">
-                  {currentLang === "ru" ? "Русский" : "Oʻzbek"}
-                </span>
               </button>
+              <Link
+                href="/auth"
+                className="w-9 h-9 flex items-center justify-center rounded-md hover:bg-[#EEF2F6] transition-colors cursor-pointer"
+              >
+                <Image
+                  src="/icons/user.svg"
+                  alt="user"
+                  width={20}
+                  height={20}
+                />
+              </Link>
             </div>
 
-            {/* Bottom block: socials + copyright; pinned to bottom */}
-            <div className="absolute left-0 right-0 bottom-[24px] flex flex-col items-center">
-              <div className="flex items-center gap-6 justify-center mb-8">
-                {socialIcons.map(({ src, alt, href }) => (
+            {/* Desktop icons */}
+            <div className="hidden md:flex items-center gap-2">
+              {icons.map((src, idx) => (
+                <button
+                  key={idx}
+                  aria-label="icon"
+                  className="w-9 h-9 flex items-center justify-center rounded-md hover:bg-[#EEF2F6] transition-colors cursor-pointer"
+                  onClick={() => setAuthOpen(true)}
+                >
+                  <Image src={src} alt={`icon-${idx}`} width={16} height={16} />
+                </button>
+              ))}
+              <LanguageSwitcher />
+            </div>
+          </div>
+        </div>
+
+        {/* Catalog dropdown */}
+        {isCatalogOpen && (
+          <CatalogDropdown
+            isOpen={isCatalogOpen}
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+            categories={categories}
+          />
+        )}
+
+        {/* Mobile menu overlay: rendered only when open, positioned between header and appbar */}
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.18, ease: "easeOut" }}
+              // fixed so it sits above content but below header/appbar visually
+              style={{
+                top: HEADER_HEIGHT_PX,
+                bottom: APPBAR_HEIGHT_PX,
+              }}
+              className="fixed left-0 right-0 z-40 bg-white flex flex-col justify-between overflow-hidden"
+            >
+              {/* Scrollable list */}
+              <div className="overflow-y-auto py-2">
+                {mobileMenuItems.map(({ title, icon, href }, idx) => (
                   <Link
-                    key={alt}
+                    key={idx}
                     href={href}
                     onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-4 px-4 py-3"
                   >
-                    <Image src={src} alt={alt} width={20} height={20} />
+                    <Image src={icon} alt={title} width={20} height={20} />
+                    <span className="text-[14px] font-[400] text-gray-900">
+                      {title}
+                    </span>
                   </Link>
                 ))}
+
+                {/* Language Switcher button */}
+                <button
+                  onClick={() => setLangModalOpen(true)}
+                  className="flex items-center gap-4 px-4 py-3 w-full text-left"
+                >
+                  <Image
+                    src={
+                      currentLang === "ru"
+                        ? "/images/ru-flag.png"
+                        : "/images/uz-flag.png"
+                    }
+                    alt={currentLang}
+                    width={20}
+                    height={20}
+                    className="rounded-full w-5 h-5 object-cover border-[#00000014] border-[0.83px]"
+                  />
+                  <span className="text-[14px] font-[400] text-gray-900">
+                    {currentLang === "ru" ? "Русский" : "Oʻzbek"}
+                  </span>
+                </button>
               </div>
 
-              <p className="text-lg font-[300] uppercase text-gray-500 text-center">
-                © 2025. Carato Jewellery Official
-              </p>
-            </div>
-          </motion.div>
-        )}
-        <MobileLanguageModal
-          open={langModalOpen}
-          onClose={() => setLangModalOpen(false)}
-          currentLang={currentLang}
-          setCurrentLang={setCurrentLang}
-        />
-      </AnimatePresence>
-    </header>
+              {/* Bottom block: socials + copyright; pinned to bottom */}
+              <div className="absolute left-0 right-0 bottom-[24px] flex flex-col items-center">
+                <div className="flex items-center gap-6 justify-center mb-8">
+                  {socialIcons.map(({ src, alt, href }) => (
+                    <Link
+                      key={alt}
+                      href={href}
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      <Image src={src} alt={alt} width={20} height={20} />
+                    </Link>
+                  ))}
+                </div>
+
+                <p className="text-lg font-[300] uppercase text-gray-500 text-center">
+                  © 2025. Carato Jewellery Official
+                </p>
+              </div>
+            </motion.div>
+          )}
+          <MobileLanguageModal
+            open={langModalOpen}
+            onClose={() => setLangModalOpen(false)}
+            currentLang={currentLang}
+            setCurrentLang={setCurrentLang}
+          />
+        </AnimatePresence>
+      </header>
+    )
   );
 }

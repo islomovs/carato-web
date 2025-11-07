@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
@@ -18,6 +17,7 @@ export default function ProductGallery({
   initialIndex = 0,
 }: Props) {
   const [index, setIndex] = useState(initialIndex);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isPlaying, setIsPlaying] = useState(false);
   const [isFullscreenOpen, setIsFullscreenOpen] = useState(
     variant === "fullscreen"
@@ -63,13 +63,17 @@ export default function ProductGallery({
     return (
       <>
         {/* Gallery left */}
-        <div className="w-full lg:max-w-[794px]">
+        <div className="w-full">
           {/* Grid layout updated: 2 items in first row, 3 in second */}
           <div className="grid gap-[20px]">
             {/* Row 1 — two large images */}
             <div className="grid grid-cols-2 gap-[20px]">
               {media.slice(0, 2).map((m, i) => (
-                <div key={m.id} className="relative" style={{ height: 526 }}>
+                <div
+                  key={m.id}
+                  className="relative cursor-pointer"
+                  style={{ height: 526 }}
+                >
                   <MediaItem
                     media={m}
                     onClick={() => {
@@ -86,7 +90,11 @@ export default function ProductGallery({
             {/* Row 2 — three smaller images */}
             <div className="grid grid-cols-3 gap-[20px]">
               {media.slice(2, 5).map((m, i) => (
-                <div key={m.id} className="relative" style={{ height: 264 }}>
+                <div
+                  key={m.id}
+                  className="relative cursor-pointer"
+                  style={{ height: 264 }}
+                >
                   <MediaItem
                     media={m}
                     onClick={() => {
@@ -118,8 +126,22 @@ export default function ProductGallery({
 
   if (variant === "modal") {
     return (
-      <div className="w-full aspect-[4/5] h-full overflow-hidden">
-        <ModalMediaSwiper media={media} startIndex={index} />
+      <div className="w-full aspect-[4/5] overflow-hidden rounded-none">
+        <ModalMediaSwiper
+          media={media}
+          startIndex={index}
+          onClick={() => {
+            setIndex(index + 1 >= media.length ? 0 : index + 1);
+            setIsFullscreenOpen(true);
+          }}
+        />
+        {isFullscreenOpen && (
+          <FullscreenViewer
+            media={media}
+            startIndex={index}
+            onClose={() => setIsFullscreenOpen(false)}
+          />
+        )}
       </div>
     );
   }
