@@ -18,13 +18,13 @@ export default function ProductInfo() {
   const [openDetermine, setOpenDetermine] = useState(false);
 
   return (
-    <div className="flex flex-col gap-8 w-full pb-[100px]">
+    <div className="flex flex-col gap-8 w-full pb-[10px]">
       {" "}
       {/* padding bottom for fixed bar space */}
       {/* ---- Блок информации ---- */}
       <div className="flex flex-col justify-start items-start gap-2 w-full">
         <h2 className="font-light text-base text-[#697586]">БРАСЛЕТЫ</h2>
-        <h1 className="font-normal text-[28px]">
+        <h1 className="font-normal text-[28px] text-start">
           Браслет с черно-синим кристалом, 18к золота
         </h1>
         <div className="flex items-center">

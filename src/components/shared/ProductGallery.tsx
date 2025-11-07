@@ -126,7 +126,7 @@ export default function ProductGallery({
 
   if (variant === "modal") {
     return (
-      <div className="w-full aspect-[4/5] overflow-hidden rounded-none">
+      <div className="w-full h-full aspect-[4/5] overflow-hidden rounded-none">
         <ModalMediaSwiper
           media={media}
           startIndex={index}

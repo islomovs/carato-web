@@ -20,7 +20,7 @@ export default function ProductSizeSelector({
 
   return (
     <div className="flex flex-col gap-2 w-full">
-      <p className="text-[#667085] text-[12px] font-normal">
+      <p className="text-[#667085] text-[12px] font-normal text-start">
         {t("size", { size: selectedSize })}
       </p>
 
