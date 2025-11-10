@@ -46,7 +46,7 @@ export default async function RootLayout({ children, params }: Props) {
       <body className="antialiased">
         <NextIntlClientProvider locale={locale as Locale} messages={resources}>
           <Header />
-          {children}
+          <main className="pt-16">{children}</main>
           <Footer />
         </NextIntlClientProvider>
       </body>

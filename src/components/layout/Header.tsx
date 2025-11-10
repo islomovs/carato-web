@@ -4,14 +4,15 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { LanguageSwitcher } from "../shared/LanguageSwitcher";
-import { NavButton } from "../ui/nav-button";
 import CatalogDropdown from "./CatalogDropdown";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { useEffect } from "react";
 import MobileLanguageModal from "../shared/MobileLanguageModal";
 import AuthModal from "../shared/auth-modal/index";
 import { usePathname } from "next/navigation";
+import DesktopNav from "../shared/DesktopNav";
+import MobileMenu from "../shared/MobileMenu";
+import HeaderIcons from "../shared/HeaderIcons";
 
 export default function Header() {
   const t = useTranslations("home.header");
@@ -254,7 +255,6 @@ export default function Header() {
       : "ru";
 
   const hiddenHeaderPaths = [`/${locale}/product`];
-  console.log("Current pathname:", pathname);
   const shouldHideHeader = hiddenHeaderPaths.some((path) =>
     pathname.startsWith(path)
   );
@@ -277,7 +277,7 @@ export default function Header() {
 
   return (
     shouldShowHeader && (
-      <header className="relative w-full flex justify-center border-b border-[#EEF2F6] bg-white px-2 md:px-8">
+      <header className="fixed top-0 left-0 w-full flex justify-center border-b border-[#EEF2F6] bg-white px-2 md:px-8 z-50">
         <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
         <div className="container flex items-center justify-between py-2">
           {/* Left side: mobile menu button */}
@@ -296,21 +296,11 @@ export default function Header() {
             </button>
           </div>
 
-          {/* Desktop nav */}
-          <nav className="hidden md:flex items-center justify-center gap-6 text-sm h-10 mt-2">
-            <Link href="/shops">
-              <NavButton>{t("shops")}</NavButton>
-            </Link>
-            <Link href="/about">
-              <NavButton>{t("about")}</NavButton>
-            </Link>
-            <NavButton
-              onClick={() => setIsCatalogOpen((prev) => !prev)}
-              active={isCatalogOpen}
-            >
-              {t("catalog")}
-            </NavButton>
-          </nav>
+          <DesktopNav
+            t={t}
+            isCatalogOpen={isCatalogOpen}
+            setIsCatalogOpen={setIsCatalogOpen}
+          />
 
           <Link
             href="/"
@@ -351,24 +341,10 @@ export default function Header() {
               </Link>
             </div>
 
-            {/* Desktop icons */}
-            <div className="hidden md:flex items-center gap-2">
-              {icons.map((src, idx) => (
-                <button
-                  key={idx}
-                  aria-label="icon"
-                  className="w-9 h-9 flex items-center justify-center rounded-md hover:bg-[#EEF2F6] transition-colors cursor-pointer"
-                  onClick={() => setAuthOpen(true)}
-                >
-                  <Image src={src} alt={`icon-${idx}`} width={16} height={16} />
-                </button>
-              ))}
-              <LanguageSwitcher />
-            </div>
+            <HeaderIcons icons={icons} setAuthOpen={setAuthOpen} />
           </div>
         </div>
 
-        {/* Catalog dropdown */}
         {isCatalogOpen && (
           <CatalogDropdown
             isOpen={isCatalogOpen}
@@ -378,78 +354,17 @@ export default function Header() {
           />
         )}
 
-        {/* Mobile menu overlay: rendered only when open, positioned between header and appbar */}
         <AnimatePresence>
           {menuOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.18, ease: "easeOut" }}
-              // fixed so it sits above content but below header/appbar visually
-              style={{
-                top: HEADER_HEIGHT_PX,
-                bottom: APPBAR_HEIGHT_PX,
-              }}
-              className="fixed left-0 right-0 z-40 bg-white flex flex-col justify-between overflow-hidden"
-            >
-              {/* Scrollable list */}
-              <div className="overflow-y-auto py-2">
-                {mobileMenuItems.map(({ title, icon, href }, idx) => (
-                  <Link
-                    key={idx}
-                    href={href}
-                    onClick={() => setMenuOpen(false)}
-                    className="flex items-center gap-4 px-4 py-3"
-                  >
-                    <Image src={icon} alt={title} width={20} height={20} />
-                    <span className="text-[14px] font-[400] text-gray-900">
-                      {title}
-                    </span>
-                  </Link>
-                ))}
-
-                {/* Language Switcher button */}
-                <button
-                  onClick={() => setLangModalOpen(true)}
-                  className="flex items-center gap-4 px-4 py-3 w-full text-left"
-                >
-                  <Image
-                    src={
-                      currentLang === "ru"
-                        ? "/images/ru-flag.png"
-                        : "/images/uz-flag.png"
-                    }
-                    alt={currentLang}
-                    width={20}
-                    height={20}
-                    className="rounded-full w-5 h-5 object-cover border-[#00000014] border-[0.83px]"
-                  />
-                  <span className="text-[14px] font-[400] text-gray-900">
-                    {currentLang === "ru" ? "Русский" : "Oʻzbek"}
-                  </span>
-                </button>
-              </div>
-
-              {/* Bottom block: socials + copyright; pinned to bottom */}
-              <div className="absolute left-0 right-0 bottom-[24px] flex flex-col items-center">
-                <div className="flex items-center gap-6 justify-center mb-8">
-                  {socialIcons.map(({ src, alt, href }) => (
-                    <Link
-                      key={alt}
-                      href={href}
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      <Image src={src} alt={alt} width={20} height={20} />
-                    </Link>
-                  ))}
-                </div>
-
-                <p className="text-lg font-[300] uppercase text-gray-500 text-center">
-                  © 2025. Carato Jewellery Official
-                </p>
-              </div>
-            </motion.div>
+            <MobileMenu
+              items={mobileMenuItems}
+              socialIcons={socialIcons}
+              currentLang={currentLang}
+              setLangModalOpen={setLangModalOpen}
+              closeMenu={() => setMenuOpen(false)}
+              HEADER_HEIGHT_PX={HEADER_HEIGHT_PX}
+              APPBAR_HEIGHT_PX={APPBAR_HEIGHT_PX}
+            />
           )}
           <MobileLanguageModal
             open={langModalOpen}

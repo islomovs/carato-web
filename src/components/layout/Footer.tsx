@@ -15,7 +15,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="hidden md:block w-full bg-white pt-[72px]">
+    <footer className="hidden md:block w-full bg-white pt-10">
       <div className="relative flex items-center justify-center py-4">
         <div className="absolute left-[32px] flex items-center gap-[24px]">
           {[

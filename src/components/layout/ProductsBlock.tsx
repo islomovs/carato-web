@@ -33,15 +33,21 @@ export default function ProductsBlock({
   const handleOpen = (product: Product) => setSelectedProduct(product);
   const handleClose = () => setSelectedProduct(null);
 
-  // Prevent background/body scrolling while modal open
   useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+
     if (selectedProduct) {
-      document.body.style.overflow = "hidden";
+      html.style.overflow = "hidden";
+      body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = "";
+      html.style.overflow = "";
+      body.style.overflow = "";
     }
+
     return () => {
-      document.body.style.overflow = "";
+      html.style.overflow = "";
+      body.style.overflow = "";
     };
   }, [selectedProduct]);
 
