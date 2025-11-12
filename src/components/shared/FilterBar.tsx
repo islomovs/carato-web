@@ -1,7 +1,9 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import React, { RefObject } from "react";
+import React, { RefObject, useState } from "react";
+import FilterDrawer from "./FilterDrawer";
+import FilterChipsDesktop from "./filter/FilterChipsDesktop";
 
 interface Props {
   refBar: RefObject<HTMLDivElement | null>;
@@ -9,16 +11,45 @@ interface Props {
 }
 
 export default function FilterBar({ refBar, total }: Props) {
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [selectedFilters, setSelectedFilters] = useState<
+    Record<string, string[]>
+  >({});
+
+  const hasFilters = Object.values(selectedFilters).some(
+    (arr) => arr.length > 0
+  );
+
+  const handleRemove = (title: string, option: string) => {
+    setSelectedFilters((prev) => {
+      const newOptions = prev[title].filter((item) => item !== option);
+      const updated = { ...prev, [title]: newOptions };
+      if (newOptions.length === 0) delete updated[title];
+      return updated;
+    });
+  };
+
+  const handleClearAll = () => setSelectedFilters({});
+
   return (
     <>
+      <FilterDrawer
+        open={filterOpen}
+        onClose={() => setFilterOpen(false)}
+        total={total}
+        selected={selectedFilters}
+        setSelected={setSelectedFilters}
+      />
+
       <div
         ref={refBar}
-        className="sticky top-16 z-40 border-t border-b border-[#EEF2F6] bg-white"
+        className="sticky top-16 z-40 border-t border-[#EEF2F6] bg-white"
       >
-        <div className="w-full flex items-center justify-between px-8 py-[22px]">
+        <div className="w-full flex items-center justify-between px-4 md:px-8 py-[22px]">
           <Button
+            onClick={() => setFilterOpen(true)}
             variant="outline"
-            className="flex items-center gap-2 px-3 py-1.5 text-[12px] font-[400] h-auto border-[#E3E8EE] cursor-pointer"
+            className="flex items-center gap-2 px-3 py-1.5 h-auto border-[#E3E8EE] cursor-pointer"
           >
             <Image
               src="/icons/settings.svg"
@@ -26,12 +57,22 @@ export default function FilterBar({ refBar, total }: Props) {
               width={20}
               height={20}
             />
-            <span>ФИЛЬТРЫ</span>
+            <span className="text-[12px] font-normal uppercase">ФИЛЬТРЫ</span>
           </Button>
           <div className="text-[14px] font-[300]">
             {total.toLocaleString("ru-RU")} ИЗДЕЛИЙ
           </div>
         </div>
+
+        {/* ✅ Filter chips section */}
+        {hasFilters && (
+          <FilterChipsDesktop
+            hasFilters={hasFilters}
+            selectedFilters={selectedFilters}
+            handleRemove={handleRemove}
+            handleClearAll={handleClearAll}
+          />
+        )}
       </div>
     </>
   );
