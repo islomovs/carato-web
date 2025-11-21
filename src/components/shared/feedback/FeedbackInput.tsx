@@ -23,7 +23,9 @@ export default function FeedbackInput({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex gap-0.5">
-        <label className="text-xs font-[500] mb-2 block">{label}</label>
+        <label className="text-xs font-normal text-[#697586] mb-2 block">
+          {label}
+        </label>
         {error && <span className="text-xs font-[400] text-red-600">*</span>}
       </div>
 

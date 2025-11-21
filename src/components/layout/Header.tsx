@@ -254,7 +254,8 @@ export default function Header() {
       ? localStorage.getItem("locale") || "ru"
       : "ru";
 
-  const hiddenHeaderPaths = [`/${locale}/product`];
+  console.log(" pathname", pathname);
+  const hiddenHeaderPaths = [`/${locale}/product`, `/${locale}/cart`];
   const shouldHideHeader = hiddenHeaderPaths.some((path) =>
     pathname.startsWith(path)
   );

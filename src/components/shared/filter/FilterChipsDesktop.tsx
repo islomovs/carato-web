@@ -13,18 +13,16 @@ export default function FilterChipsDesktop({
   handleClearAll: () => void;
 }) {
   return (
-    <div className="px-4 md:px-8 py-3 border-t border-[#EEF2F6] bg-white">
-      {/* Mobile horizontal scroll */}
-      <div
-        className="flex md:flex-wrap gap-3 overflow-x-auto md:overflow-visible -mx-4 md:mx-0 px-4 md:px-0"
-        style={{
-          msOverflowStyle: "none",
-          scrollbarWidth: "none",
-        }}
-      >
-        <style>{`.mobile-scroll::-webkit-scrollbar { display: none; }`}</style>
-
-        <div className="mobile-scroll flex gap-3">
+    <div className="md:px-8 py-3 border-t border-[#EEF2F6] bg-white">
+      {/* Mobile horizontal scroll / Desktop wraps */}
+      <div className="overflow-x-auto md:overflow-visible">
+        <div
+          className="flex gap-3 md:flex-wrap pl-4 md:pl-0 mobile-scroll no-scrollbar"
+          style={{
+            msOverflowStyle: "none",
+            scrollbarWidth: "none",
+          }}
+        >
           {Object.entries(selectedFilters).map(([title, options]) =>
             options.map((option) => (
               <button
