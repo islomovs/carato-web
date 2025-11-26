@@ -1,14 +1,13 @@
 "use client";
 
 import React, { useMemo, useRef, useState } from "react";
-import { Product } from "@/components/shared/ProductCard";
 import CatalogHeader from "../shared/CatalogHeader";
 import FilterBar from "../shared/FilterBar";
 import ProductGrid from "../shared/ProductGrid";
 import CatalogPagination from "../shared/CatalogPagination";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { useSticky } from "@/hooks/useSticky";
+import { Product } from "@/services/productSetProducts";
 
 const PAGE_SIZE = 20;
 
@@ -18,9 +17,12 @@ export default function CatalogPage() {
     () =>
       Array.from({ length: 123 }).map((_, i) => ({
         id: i + 1,
-        title: `Пример товара ${i + 1}`,
+        slug: `product-${i + 1}`,
+        name: `Пример товара ${i + 1}`,
         price: Math.round(i * 90000),
-        image: `/images/product-placeholder.png`,
+        images: [{ image: `/images/product-placeholder.png` }],
+        discountPrice: null,
+        discountPercent: 0,
         description: "Описание продукта",
       })),
     []

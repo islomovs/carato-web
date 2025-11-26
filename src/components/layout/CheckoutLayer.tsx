@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 import { TotalsColumn } from "../shared/TotalsColumn";
 import { useTranslations } from "next-intl";
@@ -11,10 +10,9 @@ import { DeliveryOptionsSection } from "../shared/DeliveryOptionsSection";
 import AddressSection from "../shared/AddressSection";
 import DateTimeSection from "../shared/DateTimeSection";
 import PaymentMethodsSection from "../shared/PaymentMethodsSection";
-import { Button } from "../ui/button";
 import PromocodeField from "../shared/PromocodeField";
 import PageHeader from "../shared/PageHeader";
-import useLockScroll from "@/hooks/useLockScroll";
+import { useRouter } from "next/navigation";
 
 type DeliveryOption = "courier" | "yandex";
 export type PaymentOption = "click" | "payme" | "cash";
@@ -53,12 +51,18 @@ export default function CheckoutLayer({
   const totalFinalPrice = totalPrice + deliveryPrice;
   const containerClass = "w-full mx-auto h-full bg-white flex flex-col";
 
+  const router = useRouter();
+
+  function onBack() {
+    router.back();
+  }
+
   if (!open && !fullPage) return null;
 
   return (
     open && (
       <div
-        className={fullPage ? "fixed inset-0 z-50" : "fixed inset-0 z-50"}
+        className={fullPage ? "" : "fixed inset-0 z-50"}
         aria-modal={!fullPage}
         role={fullPage ? "region" : "dialog"}
       >
@@ -79,10 +83,10 @@ export default function CheckoutLayer({
           }
         >
           <div className="flex flex-row h-full md:mb-20">
-            <div className="w-full mx-auto h-full bg-white flex flex-col md:px-8 md:pt-[52px]">
+            <div className="w-full mx-auto h-full bg-white flex flex-col md:px-4 md:pt-[52px]">
               <PageHeader
                 title="Оформление"
-                onBack={onClose}
+                onBack={onBack}
                 onClose={onClose}
                 absoluteClose={true}
                 centeredTitle={true}
@@ -90,7 +94,7 @@ export default function CheckoutLayer({
                 className="md:relative md:justify-start md:gap-8 md:border-0 md:top-auto md:z-auto md:bg-transparent md:px-0 md:py-0"
               />
 
-              <div className="flex-1 space-y-6 px-4 pt-8 md:px-0 pb-56 md:pb-20 overflow-auto">
+              <div className="flex-1 space-y-6 px-4 pt-8 md:px-4 pb-56 md:pb-20 overflow-auto">
                 {/* Контактная информация */}
                 <ContactInfoSection
                   control={control}

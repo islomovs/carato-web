@@ -17,6 +17,7 @@
     "buyInOneClick": "Купить в 1 клик",
     "estimatedDeliveryDates": "Примерные даты доставки",
     "leaveFeedback": "Оставить отзыв",
+    "reviews": "отзывов",
     "basedOnTotalReviews": "на основе {totalReviews} отзывов",
     "selectRating": "Выберите оценку",
     "shortReviewRequired": "Короткий отзыв обязателен",
@@ -27,6 +28,9 @@
     "ifYouWantToDescribeTheReview": "Если хотите описать отзыв",
     "uploadPhotoOrVideo": "Загрузите фото или видео",
     "jpegPngMovAndAviMax5Files": "JPEG, PNG, MOV, MP4 и AVI макс 5 штук до 5 МБ каждый",
-    "recommended": "Рекомендуем также"
+    "recommended": "Рекомендуем также",
+    "uzs": "СУМ",
+    "addedToCartSuccess": "Товар успешно добавлен в корзину",
+    "addedToCartError": "Не удалось добавить товар в корзину"
   }
 }

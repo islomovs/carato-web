@@ -1,7 +1,10 @@
 import Image from "next/image";
 import { Button } from "../ui/button";
+import { useTranslations } from "next-intl";
 
 export function EmptyCart() {
+  const t = useTranslations("cart");
+
   return (
     <div className="flex flex-col items-center justify-center text-center min-h-[calc(100vh-65px)] md:min-h-[calc(100vh-430px)]">
       <Image
@@ -11,17 +14,22 @@ export function EmptyCart() {
         height={80}
         className="text-[#CDD5DF]"
       />
-      <p className="mt-3 text-xl font-medium">Нет товаров в корзине</p>
+      <p className="mt-3 text-xl font-medium">{t("emptyMessage")}</p>
       <p className="mt-3 text-sm font-normal">
-        Выберите товары для покупки и они
-        <br />
-        отобразятся здесь для дальнейшей покупки
+        {t("emptyDescription")
+          .split("\n")
+          .map((line, i) => (
+            <span key={i}>
+              {line}
+              <br />
+            </span>
+          ))}
       </p>
       <Button
         variant="default"
         className="mt-9 uppercase text-sm font-normal py-2 px-3 rounded-md"
       >
-        Перейти в каталог
+        {t("goToCatalog")}
       </Button>
     </div>
   );

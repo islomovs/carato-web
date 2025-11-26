@@ -1,72 +1,38 @@
-import { useTranslations } from "next-intl";
 import BannerCarousel from "@/components/layout/BannerCarousel";
 import ProductsBlock from "@/components/layout/ProductsBlock";
 import CategoriesBlock from "@/components/layout/CategoriesBlock";
 import NewsSection from "@/components/layout/NewsSection";
 import CollectionsSection from "@/components/layout/CollectionsSection";
 import StoriesSection from "@/components/layout/StoriesComponent";
+import { getProductSets } from "@/services/productSets";
+import { getProductsBySet } from "@/services/productSetProducts";
+import { getTranslations } from "next-intl/server";
 
-export default function Home() {
-  const t = useTranslations("home");
+export default async function Home() {
+  const t = await getTranslations("home");
+  const locale = "ru";
 
-  const sampleProducts = [
-    {
-      id: 1,
-      title: "Riche Coffee Scrub",
-      price: 89000,
-      image: "/images/product-placeholder.png",
-      description: "Natural coffee scrub for smooth skin",
-    },
-    {
-      id: 2,
-      title: "The Ordinary Niacinamide 10% + Zinc 1%",
-      price: 135000,
-      image: "/images/product-placeholder.png",
-      description: "Balances sebum and minimizes pores",
-    },
-    {
-      id: 3,
-      title: "Riche Enzyme Powder Cleanser",
-      price: 119000,
-      image: "/images/product-placeholder.png",
-      description: "Gentle powder cleanser with enzymes",
-    },
-    {
-      id: 4,
-      title: "The Ordinary Hyaluronic Acid 2% + B5",
-      price: 125000,
-      image: "/images/product-placeholder.png",
-      description: "Deep hydration and smooth texture",
-    },
-    {
-      id: 11,
-      title: "2Riche Coffee Scrub",
-      price: 89000,
-      image: "/images/product-placeholder.png",
-      description: "Natural coffee scrub for smooth skin",
-    },
-    {
-      id: 12,
-      title: "2The Ordinary Niacinamide 10% + Zinc 1%",
-      price: 135000,
-      image: "/images/product-placeholder.png",
-      description: "Balances sebum and minimizes pores",
-    },
-    {
-      id: 13,
-      title: "2Riche Enzyme Powder Cleanser",
-      price: 119000,
-      image: "/images/product-placeholder.png",
-      description: "Gentle powder cleanser with enzymes",
-    },
-    {
-      id: 14,
-      title: "2The Ordinary Hyaluronic Acid 2% + B5",
-      price: 125000,
-      image: "/images/product-placeholder.png",
-      description: "Deep hydration and smooth texture",
-    },
-  ];
+  const sets = await getProductSets(locale);
+
+  // Map your needed sets
+  const bestsellersSet = sets.find((x) => x.slug === "bestsellers");
+  const expensiveSet = sets.find((x) => x.slug === "expensive");
+  const priceMore20kSet = sets.find((x) => x.slug === "priceIsMoreThan20000");
+
+  // 2. Fetch product blocks in parallel
+  const [popularProducts, newArrivals, specialOffers] = await Promise.all([
+    bestsellersSet
+      ? getProductsBySet(bestsellersSet.slug, 1, 8, locale)
+      : Promise.resolve([]),
+
+    priceMore20kSet
+      ? getProductsBySet(priceMore20kSet.slug, 1, 8, locale)
+      : Promise.resolve([]),
+
+    expensiveSet
+      ? getProductsBySet(expensiveSet.slug, 1, 8, locale)
+      : Promise.resolve([]),
+  ]);
 
   const categories = [
     { id: 1, title: "Face Care", image: "/images/category-placeholder.png" },
@@ -82,13 +48,13 @@ export default function Home() {
       <BannerCarousel />
       <StoriesSection />
 
-      <ProductsBlock title={t("popularProducts")} products={sampleProducts} />
+      <ProductsBlock title={t("popularProducts")} products={popularProducts} />
       <CollectionsSection />
-      <ProductsBlock title={t("newArrivals")} products={sampleProducts} />
+      <ProductsBlock title={t("newArrivals")} products={newArrivals} />
       <CategoriesBlock categories={categories} />
       <ProductsBlock
         title={t("specialOffers")}
-        products={sampleProducts}
+        products={specialOffers}
         layout="grid"
       />
       <NewsSection />

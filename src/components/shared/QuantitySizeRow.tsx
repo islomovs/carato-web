@@ -1,16 +1,14 @@
 import Image from "next/image";
-import { Button } from "../ui/button";
 import { ChevronDown } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "../ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { useTranslations } from "next-intl";
+import { Spinner } from "../ui/spinner";
 
 type QuantitySizeRowProps = {
+  isSyncing: boolean;
   quantity: number;
   size: string;
+  stockQuantity: number;
   onIncrement: () => void;
   onDecrement: () => void;
   onRemove: () => void;
@@ -18,35 +16,42 @@ type QuantitySizeRowProps = {
 };
 
 export function QuantitySizeRow({
+  isSyncing,
   quantity,
   size,
+  stockQuantity,
   onIncrement,
   onDecrement,
   onRemove,
   onToggleWishlist,
 }: QuantitySizeRowProps) {
+  const t = useTranslations("cart");
+
   return (
     <div className="flex items-end gap-4">
       {/* Quantity */}
       <div className="flex-1 md:flex-none flex flex-col gap-2">
         <label className="text-[12px] font-normal text-[#697586] hidden md:flex items-center">
-          Количество<span className="ml-[2px] text-[#F24835]">*</span>
+          {t("quantity")}
+          <span className="ml-[2px] text-[#F24835]">*</span>
         </label>
         <div className="flex justify-between items-center border border-black px-3 py-2 w-full md:w-32 h-11 rounded-md">
           <button
             onClick={onDecrement}
             disabled={quantity <= 1}
-            className="disabled:opacity-30 disabled:cursor-not-allowed"
+            className="disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
           >
             -
           </button>
 
-          <span className="mx-2 text-sm font-medium">{quantity}</span>
+          <span className="mx-2 text-sm font-medium">
+            {isSyncing ? <Spinner /> : quantity}
+          </span>
 
           <button
             onClick={onIncrement}
-            disabled={quantity >= 5}
-            className="disabled:opacity-30 disabled:cursor-not-allowed"
+            disabled={quantity >= stockQuantity}
+            className="disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
           >
             +
           </button>
@@ -56,18 +61,13 @@ export function QuantitySizeRow({
       {/* Size */}
       <div className="flex-1 md:flex-none flex flex-col gap-2">
         <label className="text-xs font-normal text-[#697586] hidden md:flex items-center">
-          Размер <span className="ml-[2px] text-[#F24835]">*</span>
+          {t("size")} <span className="ml-[2px] text-[#F24835]">*</span>
         </label>
         <DropdownMenu>
           <DropdownMenuTrigger className="flex items-center justify-between border border-black px-3 py-2 w-full md:w-32 h-11 rounded-md cursor-pointer">
             <span className="text-sm font-medium">{size}</span>
             <ChevronDown className="w-5 h-5" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem>M</DropdownMenuItem>
-            <DropdownMenuItem>L</DropdownMenuItem>
-            <DropdownMenuItem>XL</DropdownMenuItem>
-          </DropdownMenuContent>
         </DropdownMenu>
       </div>
 

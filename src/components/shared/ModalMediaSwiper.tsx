@@ -38,7 +38,7 @@ export default function ModalMediaSwiper({
   };
 
   return (
-    <div className="relative w-full h-full flex justify-center items-end">
+    <div className="w-full h-full flex flex-col justify-center md:gap-6 items-center">
       <Swiper
         modules={[Navigation, Keyboard]}
         navigation={{ prevEl: `.${prevClass}`, nextEl: `.${nextClass}` }}
@@ -52,7 +52,7 @@ export default function ModalMediaSwiper({
       >
         {media.map((item) => (
           <SwiperSlide key={item.id}>
-            <div className="relative w-full h-full flex items-center justify-center bg-gray-50">
+            <div className="relative w-full h-full flex items-center justify-center">
               <MediaItem media={item} fullHeight onClick={onClick} />
             </div>
           </SwiperSlide>
@@ -60,7 +60,7 @@ export default function ModalMediaSwiper({
       </Swiper>
 
       {/* Pagination + arrows */}
-      <div className="absolute bottom-4 md:bottom-0 flex items-center gap-2 justify-center z-20">
+      <div className="flex items-center gap-2 justify-center z-20">
         <button
           className={`${prevClass} cursor-pointer hidden md:flex items-center justify-center w-14 h-14 ml-8 md:ml-[32px]`}
         >

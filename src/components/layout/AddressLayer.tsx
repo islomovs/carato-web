@@ -57,7 +57,7 @@ export default function AddressLayer({
               />
 
               {/* content */}
-              <div className="flex-1 overflow-auto px-4 pt-8 pb-[120px] md:pb-[152px] space-y-6 md:px-10 md:py-5">
+              <div className="flex-1 overflow-auto px-4 pt-8 pb-[120px] space-y-6 md:px-10 md:py-5">
                 <TextField
                   label="Адрес доставки"
                   placeholder="Город, улица, дом"
@@ -92,7 +92,7 @@ export default function AddressLayer({
               </div>
 
               {/* bottom fixed button */}
-              <div className="fixed bottom-0 left-0 right-0 px-4 py-3 bg-white border-t border-[#EEF2F6] md:static md:flex md:justify-end">
+              <div className="fixed bottom-0 left-0 right-0 px-4 py-3 md:px-10 md:pr-[54px] md:py-5 bg-white border-t border-[#EEF2F6] md:static md:flex md:justify-end">
                 <Button
                   onClick={handleConfirm}
                   className="cursor-pointer w-full py-[26px] md:px-4 bg-black text-white rounded-[10px] md:rounded-md font-medium md:font-normal hover:bg-white hover:text-black border border-black md:w-auto flex items-center justify-center uppercase"

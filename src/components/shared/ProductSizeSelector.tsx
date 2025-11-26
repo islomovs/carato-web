@@ -1,45 +1,69 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { NavButton } from "../ui/nav-button";
+import { Product } from "@/services/product";
 
 interface ProductSizeSelectorProps {
   onOpenNotify: () => void;
   onOpenDetermine: () => void;
+  variants?: Product["variants"];
+  onSizeSelect?: (sizeId: number) => void; // New callback to pass selected size ID
 }
 
 export default function ProductSizeSelector({
   onOpenNotify,
   onOpenDetermine,
+  variants,
+  onSizeSelect,
 }: ProductSizeSelectorProps) {
-  const sizes = ["50", "52", "54", "56"];
-  const [selectedSize, setSelectedSize] = useState("52");
   const t = useTranslations("product");
+
+  const safeVariants = variants ?? [];
+  // Filter out undefined sizes
+  const sizes = safeVariants.filter((v) => v.size?.id && v.size?.name);
+
+  const [selectedSizeId, setSelectedSizeId] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (sizes.length > 0 && !selectedSizeId) {
+      setSelectedSizeId(sizes[0].size.id!);
+      onSizeSelect?.(sizes[0].size.id!);
+    }
+  }, [sizes, selectedSizeId, onSizeSelect]);
+
+  const handleSizeClick = (id: number) => {
+    setSelectedSizeId(id);
+    onSizeSelect?.(id);
+  };
+
+  const selectedSizeName =
+    sizes.find((v) => v.size.id === selectedSizeId)?.size.name ?? "";
 
   return (
     <div className="flex flex-col gap-2 w-full">
       <p className="text-[#667085] text-[12px] font-normal text-start">
-        {t("size", { size: selectedSize })}
+        {t("size", { size: selectedSizeName })}
       </p>
 
       <div className="flex gap-2">
-        {sizes.map((size) => {
-          const isSelected = size === selectedSize;
+        {sizes.map((v) => {
+          const isSelected = v.size.id === selectedSizeId;
           return (
             <Button
-              key={size}
-              onClick={() => setSelectedSize(size)}
+              key={v.size.id}
+              onClick={() => handleSizeClick(v.size.id!)}
               className={`w-[36px] h-[36px] rounded-[4px] text-[12px] font-normal cursor-pointer
                 ${
                   isSelected
                     ? "bg-black text-white border border-black hover:bg-black hover:text-white"
-                    : "bg-white text-black border border-black"
+                    : "bg-white text-black border border-black hover:bg-gray-100"
                 }`}
               variant="ghost"
             >
-              {size}
+              {v.size.name}
             </Button>
           );
         })}

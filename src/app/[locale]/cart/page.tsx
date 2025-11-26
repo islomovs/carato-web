@@ -5,194 +5,69 @@ import ProductsBlock from "../../../components/layout/ProductsBlock";
 import { EmptyCart } from "@/components/shared/EmptyCart";
 import { CartItem } from "@/components/shared/CartItem";
 import { TotalsColumn } from "@/components/shared/TotalsColumn";
-import Image from "next/image";
 import CheckoutLayer from "@/components/layout/CheckoutLayer";
 import { useRouter } from "next/navigation";
 import PageHeader from "@/components/shared/PageHeader";
 import useLockScroll from "@/hooks/useLockScroll";
-
-const sampleProducts = [
-  {
-    id: 1,
-    title: "Детский рюкзак с героями мультфильмов",
-    price: 125_000,
-    oldPrice: 150_000,
-    image: "/images/collection-placeholder.webp",
-    tags: ["рюкзак", "детский"],
-  },
-  {
-    id: 2,
-    title: "Набор игрушек для развития моторики",
-    price: 75_000,
-    oldPrice: 95_000,
-    image: "/images/collection-placeholder.webp",
-    tags: ["развивающий", "игрушка"],
-  },
-  {
-    id: 3,
-    title: "Детские наушники с микрофоном",
-    price: 180_000,
-    oldPrice: 200_000,
-    image: "/images/product-placeholder.png",
-    tags: ["наушники", "детские"],
-  },
-  {
-    id: 4,
-    title: "Конструктор магнитный 100 деталей",
-    price: 220_000,
-    oldPrice: 250_000,
-    image: "/images/collection-placeholder.webp",
-    tags: ["конструктор", "развивающий"],
-  },
-  {
-    id: 5,
-    title: "Детский спортивный костюм",
-    price: 300_000,
-    oldPrice: 350_000,
-    image: "/images/news-placeholder.png",
-    tags: ["одежда", "детская"],
-  },
-  {
-    id: 6,
-    title: "Мягкая игрушка «Медвежонок»",
-    price: 65_000,
-    oldPrice: 80_000,
-    image: "/images/jewellery-rings.jpg",
-    tags: ["игрушка", "мягкая"],
-  },
-];
-
-type CartItemType = {
-  id: number;
-  title: string;
-  size: string;
-  quantity: number;
-  price: number;
-  oldPrice?: number;
-  deliveryDate: string;
-  image: string;
-  isWishlist: boolean;
-};
-
-const initialCartItems: CartItemType[] = [
-  {
-    id: 1,
-    title: "Браслет с черно-синим кристалом, 18к золота",
-    size: "M",
-    quantity: 2,
-    price: 242542325,
-    oldPrice: 485084650,
-    deliveryDate: "20 - 23 сентября",
-    image: "/images/news-placeholder.png",
-    isWishlist: false,
-  },
-  {
-    id: 2,
-    title: "Ожерелье с подвеской в виде звезды, серебро 925",
-    size: "L",
-    quantity: 1,
-    price: 153153153,
-    oldPrice: 306306306,
-    deliveryDate: "22 - 25 сентября",
-    image: "/images/category-placeholder.png",
-    isWishlist: true,
-  },
-  {
-    id: 3,
-    title: "Кольцо с изумрудом и бриллиантами, белое золото 14к",
-    size: "XL",
-    quantity: 1,
-    price: 312312312,
-    oldPrice: 624624624,
-    deliveryDate: "25 - 28 сентября",
-    image: "/images/banner-placeholder.jpg",
-    isWishlist: false,
-  },
-  {
-    id: 4,
-    title:
-      "Серьги с рубинами и сапфирами, розовое золото 18к Серьги с рубинами и сапфирами, розовое золото 18к",
-    size: "M",
-    quantity: 1,
-    price: 121121121,
-    oldPrice: 242242242,
-    deliveryDate: "18 - 21 сентября",
-    image: "/images/news-crafted-eternity.jpg",
-    isWishlist: false,
-  },
-  {
-    id: 5,
-    title: "Часы с кожаным ремешком и золотым корпусом",
-    size: "L",
-    quantity: 1,
-    price: 423423423,
-    oldPrice: 846846846,
-    deliveryDate: "30 сентября - 3 октября",
-    image: "/images/product-placeholder.png",
-    isWishlist: true,
-  },
-];
+import { useCartStore } from "@/lib/cartStore";
+import { useTranslations } from "next-intl";
+import { CartSkeleton } from "@/components/shared/CartSkeleton";
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState<CartItemType[]>(initialCartItems);
-  const [openCheckout, setOpenCheckout] = useState(false);
   const router = useRouter();
+  const [openCheckout, setOpenCheckout] = useState(false);
+  const t = useTranslations("cart");
+
+  const {
+    cartItems,
+    fetchCart,
+    addToCart,
+    updateQuantity,
+    removeItem,
+    loading,
+  } = useCartStore();
+
+  useEffect(() => {
+    fetchCart();
+  }, [fetchCart]);
 
   useEffect(() => {
     if (openCheckout) {
-      document.body.style.paddingRight = "0px";
       document.body.style.overflow = "hidden";
     } else {
-      document.body.style.paddingRight = "";
       document.body.style.overflow = "";
     }
   }, [openCheckout]);
 
-  const incrementQty = (id: number) => {
-    setCartItems((items) =>
-      items.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    );
+  const handleRemove = (slug: string, sizeId: number) => {
+    removeItem(slug, sizeId);
   };
 
-  const decrementQty = (id: number) => {
-    setCartItems((items) =>
-      items.map((item) =>
-        item.id === id && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      )
-    );
-  };
+  // Total price WITH DISCOUNT applied (if discountPrice exists)
+  const totalPrice = cartItems.reduce((acc, item) => {
+    const finalPrice = item.product.discountPrice ?? item.product.price;
+    return acc + finalPrice * item.quantity;
+  }, 0);
 
-  const toggleWishlist = (id: number) => {
-    setCartItems((items) =>
-      items.map((item) =>
-        item.id === id ? { ...item, isWishlist: !item.isWishlist } : item
-      )
-    );
-  };
+  // Total OLD price (WITHOUT discount, always the original price)
+  const totalOldPrice = cartItems.reduce((acc, item) => {
+    return acc + item.product.price * item.quantity;
+  }, 0);
 
-  const removeItem = (id: number) => {
-    setCartItems((items) => items.filter((item) => item.id !== id));
-  };
-
-  const totalPrice = cartItems.reduce(
-    (acc, item) => acc + item.price * item.quantity,
-    0
-  );
-
-  const totalOldPrice = cartItems.reduce(
-    (acc, item) => acc + (item.oldPrice || 0) * item.quantity,
-    0
-  );
-
+  // Savings
   const savings = totalOldPrice - totalPrice;
 
-  const isDesktop = typeof window !== "undefined" && window.innerWidth >= 1024;
+  console.log("Cart totals:", {
+    totalPrice,
+    totalOldPrice,
+    savings,
+    cartItems,
+  });
 
+  const isDesktop = typeof window !== "undefined" && window.innerWidth >= 1024;
   const isEmpty = cartItems.length === 0;
+
+  console.log("Cart items:", cartItems);
 
   return (
     <>
@@ -213,28 +88,36 @@ export default function CartPage() {
             >
               {/* Desktop title */}
               <h1 className="hidden md:block text-[28px] font-normal mt-[52px] mb-8">
-                Корзина {cartItems.length > 0 ? `(${cartItems.length})` : ""}
+                {t("title")}{" "}
+                {cartItems.length > 0 ? `(${cartItems.length})` : ""}
               </h1>
 
+              {loading && <CartSkeleton rows={3} />}
+
               <div className="flex-1">
-                {cartItems.length === 0 && <EmptyCart />}
+                {isEmpty && !loading && <EmptyCart />}
               </div>
 
               <div
                 className={`flex flex-col gap-8 ${isEmpty ? "mt-0" : "mt-8"} md:mt-0`}
               >
                 {/* Cart items */}
-                {cartItems.length > 0 &&
-                  cartItems.map((item) => (
-                    <CartItem
-                      key={item.id}
-                      item={item}
-                      onIncrement={() => incrementQty(item.id)}
-                      onDecrement={() => decrementQty(item.id)}
-                      onRemove={() => removeItem(item.id)}
-                      onToggleWishlist={() => toggleWishlist(item.id)}
-                    />
-                  ))}
+                {cartItems.map((item) => (
+                  <CartItem
+                    key={`${item.product.id}-${item.product.variants[0]?.size.id}`}
+                    item={item}
+                    updateQuantity={(slug, sizeId, quantity) =>
+                      updateQuantity(slug, sizeId, quantity)
+                    }
+                    removeItem={() =>
+                      handleRemove(
+                        item.product.slug,
+                        item.product.variants[0].size.id
+                      )
+                    }
+                    onToggleWishlist={() => {}}
+                  />
+                ))}
               </div>
             </div>
 
@@ -255,13 +138,13 @@ export default function CartPage() {
           </div>
         </div>
 
-        {cartItems.length > 0 && (
+        {/* {cartItems.length > 0 && (
           <ProductsBlock
             title="Рекомендуем"
-            products={sampleProducts}
+            products={}
             hideSeeAll
           />
-        )}
+        )} */}
       </div>
 
       {!isDesktop && (
@@ -271,7 +154,6 @@ export default function CartPage() {
           totalPrice={totalPrice}
           fullPage={true}
           onSubmit={(payload) => {
-            // handle checkout payload (send to API / redirect)
             console.log("checkout", payload);
             setOpenCheckout(false);
           }}

@@ -35,13 +35,6 @@ export default function Header() {
     };
   }, [menuOpen]);
 
-  const icons = [
-    "/icons/search.svg",
-    "/icons/shopping-bag.svg",
-    "/icons/heart.svg",
-    "/icons/user.svg",
-  ];
-
   const categories = [
     {
       id: "skincare",
@@ -254,7 +247,6 @@ export default function Header() {
       ? localStorage.getItem("locale") || "ru"
       : "ru";
 
-  console.log(" pathname", pathname);
   const hiddenHeaderPaths = [`/${locale}/product`, `/${locale}/cart`];
   const shouldHideHeader = hiddenHeaderPaths.some((path) =>
     pathname.startsWith(path)
@@ -342,7 +334,7 @@ export default function Header() {
               </Link>
             </div>
 
-            <HeaderIcons icons={icons} setAuthOpen={setAuthOpen} />
+            <HeaderIcons setAuthOpen={setAuthOpen} />
           </div>
         </div>
 

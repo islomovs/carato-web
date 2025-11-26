@@ -5,14 +5,7 @@ import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-
-export interface Product {
-  id: number;
-  title: string;
-  price: number;
-  image: string;
-  description?: string;
-}
+import { Product } from "@/services/product";
 
 export default function ProductCard({ product }: { product: Product }) {
   const t = useTranslations("product");
@@ -27,8 +20,8 @@ export default function ProductCard({ product }: { product: Product }) {
       {/* Image section */}
       <div className="relative w-full aspect-[166/196] md:aspect-[329/364] overflow-hidden rounded-md">
         <Image
-          src={product.image}
-          alt={product.title}
+          src={product.images[0]?.image || "/images/product-placeholder.png"}
+          alt={product.name || "Product Image"}
           fill
           className="object-cover w-full h-full pointer-events-none transition-transform duration-300 group-hover:scale-105"
         />
@@ -61,7 +54,6 @@ export default function ProductCard({ product }: { product: Product }) {
               <Button
                 className="w-full h-[36px] uppercase text-[12px] font-medium tracking-wide text-white bg-black rounded-md cursor-pointer"
                 size="sm"
-                onClick={() => console.log("Add to cart clicked", product.id)}
               >
                 {t("addToCart")}
               </Button>
@@ -73,9 +65,7 @@ export default function ProductCard({ product }: { product: Product }) {
       {/* Info */}
       <div className="flex flex-col items-start gap-1 pt-2">
         <p className="text-sm font-light text-[#9AA4B2]">Браслеты</p>
-        <p className="truncate text-sm font-light text-black">
-          {product.title}
-        </p>
+        <p className="truncate text-sm font-light text-black">{product.name}</p>
         <p className="text-lg font-medium text-black mb-3">
           {product.price} UZS
         </p>

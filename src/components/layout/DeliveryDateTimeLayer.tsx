@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { Button } from "../ui/button";
 import { motion, AnimatePresence } from "framer-motion";
@@ -190,7 +190,7 @@ export default function DeliveryDateTimeLayer({
               </div>
 
               {/* bottom fixed button */}
-              <div className="fixed bottom-0 left-0 right-0 px-4 py-3 bg-white border-t border-[#EEF2F6] md:static md:flex md:justify-end">
+              <div className="fixed bottom-0 left-0 right-0 px-4 py-3 md:px-10 md:pr-[54px] md:py-5 bg-white border-t border-[#EEF2F6] md:static md:flex md:justify-end">
                 <Button
                   onClick={handleConfirm}
                   disabled={!selectedDate || !selectedTime}

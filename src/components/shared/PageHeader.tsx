@@ -27,7 +27,7 @@ export default function PageHeader({
   return (
     <div
       className={`sticky top-0 z-50 bg-white flex items-center 
-      px-2 py-[22px] border-b border-[#EEF2F6] ${className}
+      px-2 py-[22px] border-b md:px-4 border-[#EEF2F6] ${className}
       md:border-0`}
     >
       {/* Mobile back */}
