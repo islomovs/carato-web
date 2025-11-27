@@ -41,7 +41,7 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
     }
 
     if (!selectedSize) {
-      toast.error("Please select a size before adding to cart");
+      toast.error(t("selectSize"));
       return;
     }
 
@@ -180,7 +180,7 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
       />
 
       {/* Auth modal */}
-      <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
+      <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} initialMode="phone" />
     </div>
   );
 }

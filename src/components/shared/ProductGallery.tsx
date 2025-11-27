@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import MediaItem, { MediaItemT } from "./MediaItem";
 import FullscreenViewer from "./FullscreenViewer";
 import ModalMediaSwiper from "./ModalMediaSwiper";

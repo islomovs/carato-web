@@ -1,14 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import ProductsBlock from "../../../components/layout/ProductsBlock";
+// import ProductsBlock from "../../../components/layout/ProductsBlock";
 import { EmptyCart } from "@/components/shared/EmptyCart";
 import { CartItem } from "@/components/shared/CartItem";
 import { TotalsColumn } from "@/components/shared/TotalsColumn";
 import CheckoutLayer from "@/components/layout/CheckoutLayer";
 import { useRouter } from "next/navigation";
 import PageHeader from "@/components/shared/PageHeader";
-import useLockScroll from "@/hooks/useLockScroll";
 import { useCartStore } from "@/lib/cartStore";
 import { useTranslations } from "next-intl";
 import { CartSkeleton } from "@/components/shared/CartSkeleton";
@@ -18,14 +17,8 @@ export default function CartPage() {
   const [openCheckout, setOpenCheckout] = useState(false);
   const t = useTranslations("cart");
 
-  const {
-    cartItems,
-    fetchCart,
-    addToCart,
-    updateQuantity,
-    removeItem,
-    loading,
-  } = useCartStore();
+  const { cartItems, fetchCart, updateQuantity, removeItem, loading } =
+    useCartStore();
 
   useEffect(() => {
     fetchCart();

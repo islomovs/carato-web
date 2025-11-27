@@ -1,0 +1,34 @@
+{
+  "profile": {
+    "title": "Мой аккаунт",
+    "contactInformation": "Контактная информация",
+    "phone": "Номер телефона",
+    "fullName": "ФИО",
+    "fullNamePlaceholder": "Введите ваше полное имя",
+    "addressInformation": "Информация об адресе",
+    "address": "Адрес",
+    "addressPlaceholder": "Город, улица, дом",
+    "entrance": "Подъезд",
+    "entrancePlaceholder": "Введите подъезд",
+    "floor": "Этаж",
+    "floorPlaceholder": "Введите этаж",
+    "errors": {
+      "fullNameRequired": "Полное имя обязательно",
+      "phoneRequired": "Номер телефона обязателен",
+      "phoneInvalid": "Неверный номер телефона",
+      "addressRequired": "Адрес обязателен",
+      "regionRequired": "Область обязательна",
+      "cityRequired": "Город обязателен",
+      "streetRequired": "Улица обязательна"
+    },
+    "exit": "Выйти из аккаунта",
+    "emptyMessage": "У вас пока нет заказов",
+    "emptyDescription": "Выберите товары для покупки и они\nотобразятся здесь",
+    "goToCatalog": "Перейти в каталог",
+    "emptyReviewsMessage": "У вас пока нет отзывов",
+    "emptyReviewsDescription": "Оставьте отзывы о купленных товарах\nи они отобразятся здесь",
+    "sending": "Отправка...",
+    "sendCode": "ОТПРАВИТЬ КОД",
+    "loggedOutSuccessfully": "Вы успешно вышли из аккаунта"
+  }
+}

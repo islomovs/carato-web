@@ -1,16 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-
-type MobileMenuItem = {
-  title: string;
-  icon: string;
-  href: string;
-};
+import { useTranslations } from "next-intl";
 
 type MobileMenuProps = {
-  items: MobileMenuItem[];
-  socialIcons: { src: string; alt: string; href: string }[];
   currentLang: string;
   setLangModalOpen: (val: boolean) => void;
   closeMenu: () => void;
@@ -19,14 +12,36 @@ type MobileMenuProps = {
 };
 
 export default function MobileMenu({
-  items,
-  socialIcons,
   currentLang,
   setLangModalOpen,
   closeMenu,
   HEADER_HEIGHT_PX,
   APPBAR_HEIGHT_PX,
 }: MobileMenuProps) {
+  const t = useTranslations("home.header");
+  const mobileMenuItems = [
+    { title: t("catalog"), icon: "/icons/grid.svg", href: "/catalog" },
+    { title: t("shops"), icon: "/icons/shop.svg", href: "/shops" },
+    { title: t("about"), icon: "/icons/about.svg", href: "/about" },
+    { title: t("wishlist"), icon: "/icons/heart.svg", href: "/wishlist" },
+    { title: t("cart"), icon: "/icons/shopping-bag.svg", href: "/cart" },
+    { title: t("news"), icon: "/icons/book.svg", href: "/news" },
+    {
+      title: t("forPartners"),
+      icon: "/icons/coins-hand.svg",
+      href: "/partners",
+    },
+    { title: t("qna"), icon: "/icons/help-circle.svg", href: "/q-and-a" },
+    { title: t("phone"), icon: "/icons/phone.svg", href: "/about" },
+  ];
+
+  const socialIcons = [
+    { src: "/icons/telegram.svg", alt: "Telegram", href: "#" },
+    { src: "/icons/facebook.svg", alt: "Facebook", href: "#" },
+    { src: "/icons/instagram.svg", alt: "Instagram", href: "#" },
+    { src: "/icons/youtube.svg", alt: "YouTube", href: "#" },
+  ];
+
   return (
     <motion.div
       key="mobile-menu"
@@ -38,7 +53,7 @@ export default function MobileMenu({
       className="fixed left-0 right-0 z-40 bg-white flex flex-col justify-between overflow-hidden"
     >
       <div className="overflow-y-auto py-2">
-        {items.map(({ title, icon, href }, idx) => (
+        {mobileMenuItems.map(({ title, icon, href }, idx) => (
           <Link
             key={`${title}-${idx}`}
             href={href}

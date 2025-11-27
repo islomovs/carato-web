@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -5,14 +6,21 @@ import OtpInput from "react-otp-input";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 type Props = {
   phone: string;
   onBack: () => void;
   onVerified: () => void;
+  initialPhone?: string;
 };
 
-export default function AuthOtpStep({ phone, onBack, onVerified }: Props) {
+export default function AuthOtpStep({
+  phone,
+  onBack,
+  onVerified,
+  initialPhone,
+}: Props) {
   const t = useTranslations("auth");
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -33,28 +41,24 @@ export default function AuthOtpStep({ phone, onBack, onVerified }: Props) {
 
   const handleSubmit = async () => {
     try {
-      const res = await verify(phone, code);
-      // verify saved tokens in localStorage by hook
-      // If server returns user with fullName null -> navigate to registration step
-      if (!res.fullName) {
-        // open register step (ask fullname), then call completeAuth after register
-        onVerified(); // or route to registration
-      } else {
-        // user is fully authenticated — navigate to app
-        onVerified();
-      }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const res = await verify(initialPhone || phone, code);
+
+      toast.success(t("loggedIn"));
+      onVerified();
     } catch (err) {
-      setError("Invalid code or server error");
+      setError(t("errors.codeInvalid"));
+      toast.error(t("errors.codeInvalid"));
     }
   };
 
   const handleResend = async () => {
     try {
-      await doResend(phone);
+      await doResend(initialPhone || phone);
       setTimer(32);
+      toast.success(t("resendCodeSuccess"));
     } catch (err) {
       console.error(err);
+      toast.error(t("errors.resendFailed"));
     }
   };
 

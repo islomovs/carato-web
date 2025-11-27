@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { QuantitySizeRow } from "./QuantitySizeRow";
 import type { CartItem } from "@/lib/cartStore";
@@ -26,17 +26,21 @@ export function CartItem({
   const [syncing, setSyncing] = useState(false);
 
   // Debounced API call
-  const syncQuantity = useCallback(
-    debounce((newQty: number) => {
+  const debouncedRef = useRef<(qty: number) => void>(() => {});
+  useEffect(() => {
+    debouncedRef.current = debounce((newQty: number) => {
       updateQuantity(
         item.product.slug,
         item.product.variants[0].size.id,
         newQty
       );
       setSyncing(false);
-    }, 700),
-    [item.product.slug, item.product.variants, updateQuantity]
-  );
+    }, 700);
+  }, [item.product.slug, item.product.variants, updateQuantity]);
+
+  const syncQuantity = (newQty: number) => {
+    debouncedRef.current(newQty);
+  };
 
   const handleIncrement = () => {
     if (localQty < item.product.stockQuantity) {

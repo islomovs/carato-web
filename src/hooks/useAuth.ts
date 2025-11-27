@@ -1,10 +1,6 @@
 // src/hooks/useAuth.ts
 import { useCallback } from "react";
-import {
-  sendCode,
-  verifyCode,
-  resendCode,
-} from "@/services/auth.api";
+import { sendCode, verifyCode, resendCode } from "@/services/auth.api";
 import { setTokenPair, clearTokenPair } from "@/lib/axios/instance";
 
 export function useAuth() {
@@ -25,7 +21,6 @@ export function useAuth() {
 
   const logout = useCallback(() => {
     clearTokenPair();
-    // optionally redirect or clear app state
   }, []);
 
   return { startSendCode, verify, doResend, logout };

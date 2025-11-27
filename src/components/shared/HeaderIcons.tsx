@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { LanguageSwitcher } from "../shared/LanguageSwitcher";
+import { getTokenPair } from "@/lib/axios/instance";
 
 type HeaderIconsProps = {
   setAuthOpen: (val: boolean) => void;
@@ -28,9 +29,17 @@ export default function HeaderIcons({
     },
     {
       icon: "/icons/user.svg",
-      action: () => setAuthOpen(true),
+      action: () => {
+        if (isAuthenticated) {
+          router.push("/profile");
+        } else {
+          setAuthOpen(true);
+        }
+      },
     },
   ];
+
+  const isAuthenticated = Boolean(getTokenPair().token);
 
   return (
     <div className="hidden md:flex items-center gap-2">

@@ -18,7 +18,6 @@ export default function AuthPhoneStep({ onNext }: Props) {
   const { control, handleSubmit } = useForm<{ phone: string }>({
     defaultValues: { phone: "+998 " },
   });
-
   const [submitting, setSubmitting] = useState(false);
 
   const { startSendCode } = useAuth();

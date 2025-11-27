@@ -29,7 +29,11 @@ interface CartStore {
   error: string | null;
 
   fetchCart: () => Promise<void>;
-  addToCart: (slug: string, sizeId: number, quantity?: number) => Promise<void>;
+  addToCart: (
+    slug: string,
+    sizeId: number,
+    quantity?: number
+  ) => Promise<boolean>;
   updateQuantity: (
     slug: string,
     sizeId: number,

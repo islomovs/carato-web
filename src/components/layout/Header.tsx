@@ -24,16 +24,13 @@ export default function Header() {
   const [authOpen, setAuthOpen] = useState(false);
 
   useEffect(() => {
-    if (menuOpen) {
+    if (menuOpen || isCatalogOpen) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
     }
-
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [menuOpen]);
+  }, [menuOpen, isCatalogOpen]);
+  console.log("Is Catalog Open: ", isCatalogOpen);
 
   const categories = [
     {
@@ -218,29 +215,6 @@ export default function Header() {
     },
   ];
 
-  const mobileMenuItems = [
-    { title: t("catalog"), icon: "/icons/grid.svg", href: "/catalog" },
-    { title: t("shops"), icon: "/icons/shop.svg", href: "/shops" },
-    { title: t("about"), icon: "/icons/about.svg", href: "/about" },
-    { title: t("wishlist"), icon: "/icons/heart.svg", href: "/wishlist" },
-    { title: t("cart"), icon: "/icons/shopping-bag.svg", href: "/cart" },
-    { title: t("news"), icon: "/icons/book.svg", href: "/news" },
-    {
-      title: t("forPartners"),
-      icon: "/icons/coins-hand.svg",
-      href: "/partners",
-    },
-    { title: t("qna"), icon: "/icons/help-circle.svg", href: "/q-and-a" },
-    { title: t("phone"), icon: "/icons/phone.svg", href: "/about" },
-  ];
-
-  const socialIcons = [
-    { src: "/icons/telegram.svg", alt: "Telegram", href: "#" },
-    { src: "/icons/facebook.svg", alt: "Facebook", href: "#" },
-    { src: "/icons/instagram.svg", alt: "Instagram", href: "#" },
-    { src: "/icons/youtube.svg", alt: "YouTube", href: "#" },
-  ];
-
   const pathname = usePathname();
   const locale =
     typeof window !== "undefined"
@@ -271,7 +245,11 @@ export default function Header() {
   return (
     shouldShowHeader && (
       <header className="fixed top-0 left-0 w-full flex justify-center border-b border-[#EEF2F6] bg-white px-2 md:px-8 z-50">
-        <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
+        <AuthModal
+          open={authOpen}
+          onClose={() => setAuthOpen(false)}
+          initialMode="phone"
+        />
         <div className="container flex items-center justify-between py-2">
           {/* Left side: mobile menu button */}
           <div className="flex items-center gap-2 md:hidden">
@@ -289,12 +267,14 @@ export default function Header() {
             </button>
           </div>
 
+          {/* Left size btns: shops, about, catalog */}
           <DesktopNav
             t={t}
             isCatalogOpen={isCatalogOpen}
             setIsCatalogOpen={setIsCatalogOpen}
           />
 
+          {/* Main logo */}
           <Link
             href="/"
             className="text-lg md:text-xl font-semibold flex items-center"
@@ -334,6 +314,7 @@ export default function Header() {
               </Link>
             </div>
 
+            {/* Desktop btns: search, cart, wishlist, profile, language */}
             <HeaderIcons setAuthOpen={setAuthOpen} />
           </div>
         </div>
@@ -350,8 +331,6 @@ export default function Header() {
         <AnimatePresence>
           {menuOpen && (
             <MobileMenu
-              items={mobileMenuItems}
-              socialIcons={socialIcons}
               currentLang={currentLang}
               setLangModalOpen={setLangModalOpen}
               closeMenu={() => setMenuOpen(false)}
