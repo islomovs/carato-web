@@ -1,0 +1,25 @@
+{
+  "checkout": {
+    "title": "Оформление заказа",
+    "contactInfo": "Контактная информация",
+    "deliveryDateTime": "Дата и время доставки",
+    "chooseDeliveryDateTime": "Выберите дату и время доставки",
+    "deliveryDate": "Дата доставки",
+    "deliveryTime": "Время доставки",
+    "freeDelivery": "БЕСПЛАТНАЯ ДОСТАВКА",
+    "deliveryCost": "СУМ ЗА ДОСТАВКУ",
+    "fullName": "Полное имя",
+    "phone": "Номер телефона",
+    "paymentMethod": "Способ оплаты",
+    "back": "Назад",
+    "close": "Закрыть",
+    "errors": {
+      "fullNameRequired": "Полное имя обязательно",
+      "phoneRequired": "Номер телефона обязателен",
+      "phoneInvalid": "Неверный номер телефона",
+      "deliveryDateRequired": "Дата доставки обязательна",
+      "deliveryTimeRequired": "Время доставки обязательно",
+      "paymentRequired": "Способ оплаты обязателен"
+    }
+  }
+}

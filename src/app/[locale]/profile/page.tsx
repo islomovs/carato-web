@@ -5,8 +5,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import ReviewsBlock from "@/components/shared/ReviewsBlock";
-import MyOrdersBlock from "@/components/shared/MyOrdersBlock";
-import PersonalInfoBlock from "@/components/shared/PersonalInfoBlock";
+import MyOrdersBlock from "@/components/shared/profile/my-orders/MyOrdersBlock";
+import PersonalInfoBlock from "@/components/shared/profile/PersonalInfoBlock";
 
 const tabs = [
   { id: "personal", label: "Личные данные" },
@@ -25,7 +25,7 @@ export default function Profile() {
         <h1 className="font-normal md:text-[28px]">{t("title")}</h1>
 
         {/* -------- TABS -------- */}
-        <div className="border-y border-y-[#EEF2F6] w-full">
+        <div className="sticky top-[73px] bg-white z-50 border-y border-y-[#EEF2F6] w-full">
           <div className="flex justify-center gap-[40px] relative">
             {tabs.map((tab) => {
               const isActive = tab.id === active;

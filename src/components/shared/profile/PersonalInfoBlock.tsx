@@ -1,17 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { motion } from "framer-motion";
 import { useTranslations } from "use-intl";
-import { TextField } from "./TextField";
+import { TextField } from "../TextField";
 import { Controller, useForm } from "react-hook-form";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import { withMask } from "use-mask-input";
 import { cn } from "@/lib/utils";
-import { Input } from "../ui/input";
+import { Input } from "../../ui/input";
 import AuthModal from "@/components/shared/auth-modal/index";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useUserInfo } from "@/hooks/useUserInfo";
+import { UserInfo } from "@/services/user";
+import SkeletonPersonalInfoBlock from "./SkeletonPersonalInfoBlock";
 
 function normalizePhone(phone: string) {
   return phone.replace(/\D/g, "");
@@ -21,24 +24,35 @@ export default function PersonalInfoBlock() {
   const t = useTranslations("profile");
   const [authOpen, setAuthOpen] = useState(false);
 
-  const [fullname, setFullname] = useState("");
-  const [fullnameTouched, setFullnameTouched] = useState(false);
-
+  const { userInfo, loading, error } = useUserInfo();
+  const form = useForm<UserInfo>({ defaultValues: {} });
+  const { control, register, watch, handleSubmit, reset } = form;
   const DEFAULT_PHONE = "+998 ";
-  // inside Profile component
-  const { control, watch } = useForm<{ phone: string }>({
-    defaultValues: { phone: DEFAULT_PHONE },
-  });
+
+  useEffect(() => {
+    if (userInfo) {
+      reset({
+        fullName: userInfo.fullName || "",
+        phone: userInfo.phone || DEFAULT_PHONE,
+        address: userInfo.address || "",
+        apartmentNumber: userInfo.apartmentNumber || "",
+        entrance: userInfo.entrance || "",
+        floor: userInfo.floor || "",
+      });
+    }
+  }, [userInfo, reset]);
 
   const watchedPhone = watch("phone");
-
-  const originalNormalizedRef = useRef<string>(normalizePhone(DEFAULT_PHONE));
-
+  const originalNormalizedRef = useRef<string>("");
+  useEffect(() => {
+    if (userInfo?.phone) {
+      originalNormalizedRef.current = normalizePhone(userInfo.phone);
+    }
+  }, [userInfo]);
   const normalizedPhone = useMemo(
     () => normalizePhone(watchedPhone || ""),
     [watchedPhone]
   );
-
   const phoneChanged = normalizedPhone !== originalNormalizedRef.current;
 
   const sendBtnClasses = cn(
@@ -56,7 +70,6 @@ export default function PersonalInfoBlock() {
   const { startSendCode, logout } = useAuth();
   const router = useRouter();
 
-  // handle send code click
   const handleSendCode = async () => {
     setSendError(null);
 
@@ -82,15 +95,30 @@ export default function PersonalInfoBlock() {
       setSending(false);
     }
   };
+
+  if (loading) return <SkeletonPersonalInfoBlock />;
+  if (error)
+    return (
+      <div className="text-red-600">
+        {t("loadError")}
+        <button onClick={() => location.reload()} className="underline ml-2">
+          {t("retry")}
+        </button>
+      </div>
+    );
+
   return (
     <>
-      <motion.div
+      <motion.form
         key="personal"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -10 }}
         transition={{ duration: 0.25 }}
         className="w-full flex flex-col gap-10 items-start max-w-[910px]"
+        onSubmit={handleSubmit((data) => {
+          console.log("Form submitted with data:", data);
+        })}
       >
         {/* CONTACT INFO */}
         <div className="flex flex-col gap-6 w-full">
@@ -99,15 +127,10 @@ export default function PersonalInfoBlock() {
             <TextField
               label={t("fullName")}
               type="text"
-              value={fullname}
               placeholder={t("fullNamePlaceholder")}
-              error={
-                fullnameTouched && !fullname.trim()
-                  ? t("errors.fullNameRequired")
-                  : false
-              }
-              onChange={(e) => setFullname(e.target.value)}
-              onBlur={() => setFullnameTouched(true)}
+              {...register("fullName", {
+                required: t("errors.fullNameRequired"),
+              })}
             />
             <Controller
               control={control}
@@ -137,7 +160,7 @@ export default function PersonalInfoBlock() {
                         placeholder: "_",
                         showMaskOnHover: false,
                       })}
-                      value={field.value}
+                      value={field.value ?? ""}
                       onChange={(e) => field.onChange(e.target.value)}
                       className={`flex-1 rounded-[4px] border p-3 text-[14px] font-normal outline-none ${
                         fieldState.error ? "border-red-600" : "border-black"
@@ -184,15 +207,28 @@ export default function PersonalInfoBlock() {
           <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
             <TextField
               label={t("address")}
+              {...register("address", {
+                required: t("errors.addressRequired"),
+              })}
               type="text"
               placeholder={t("addressPlaceholder")}
               isRequired
             />
             <TextField
+              label={t("apartmentNumber")}
+              {...register("apartmentNumber")}
+              placeholder={t("apartmentNumberPlaceholder")}
+            />
+            <TextField
               label={t("entrance")}
+              {...register("entrance")}
               placeholder={t("entrancePlaceholder")}
             />
-            <TextField label={t("floor")} placeholder={t("floorPlaceholder")} />
+            <TextField
+              label={t("floor")}
+              {...register("floor")}
+              placeholder={t("floorPlaceholder")}
+            />
           </div>
         </div>
         <Button
@@ -205,7 +241,7 @@ export default function PersonalInfoBlock() {
         >
           {t("exit")}
         </Button>
-      </motion.div>
+      </motion.form>
 
       <AuthModal
         open={authOpen}

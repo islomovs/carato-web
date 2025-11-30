@@ -322,6 +322,7 @@ export default function Header() {
         {isCatalogOpen && (
           <CatalogDropdown
             isOpen={isCatalogOpen}
+            setIsCatalogOpen={setIsCatalogOpen}
             selectedCategory={selectedCategory}
             setSelectedCategory={setSelectedCategory}
             categories={categories}
