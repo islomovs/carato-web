@@ -40,6 +40,7 @@ export const useFeedback = (
   useEffect(() => {
     if (!slug) return;
     fetchFeedback();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchFeedback, refreshFlag]);
 
   const createFeedback = async (payload: {

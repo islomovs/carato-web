@@ -103,8 +103,6 @@ export const useCartStore = create<CartStore>((set, get) => {
         const productRes = await api.get(`/api/v1/products/${slug}`);
         const product = productRes.data;
 
-        const variant = product.variants.find((v: any) => v.size.id === sizeId);
-
         updatedCart = [
           ...cart,
           {

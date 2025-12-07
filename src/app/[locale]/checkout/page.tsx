@@ -10,7 +10,7 @@ export default function CheckoutPage() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.25 }}
     >
-      <CheckoutLayer open={true} fullPage totalPrice={123456} />
+      <CheckoutLayer open={true} fullPage />
     </motion.div>
   );
 }

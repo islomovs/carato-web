@@ -2,7 +2,7 @@
 import Image from "next/image";
 import DeliveryDateTimeLayer from "../../layout/DeliveryDateTimeLayer";
 import { useState } from "react";
-import { UseFormSetValue, UseFormWatch, Control } from "react-hook-form";
+import { UseFormSetValue } from "react-hook-form";
 
 interface DateTimeSectionProps {
   setValue: UseFormSetValue<any>;

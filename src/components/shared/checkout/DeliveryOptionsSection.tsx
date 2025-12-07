@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Image from "next/image";
 import { Button } from "../../ui/button";
-import { Control, UseFormSetValue, UseFormWatch } from "react-hook-form";
+import { UseFormSetValue, UseFormWatch } from "react-hook-form";
 
 interface DeliveryOptionsSectionProps {
   watch: UseFormWatch<any>;

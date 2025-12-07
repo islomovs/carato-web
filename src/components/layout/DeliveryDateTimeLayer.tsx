@@ -7,7 +7,7 @@ import { Button } from "../ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import PageHeader from "../shared/PageHeader";
 import useLockScroll from "@/hooks/useLockScroll";
-import { Control, UseFormSetValue } from "react-hook-form";
+import { UseFormSetValue } from "react-hook-form";
 import { useTranslations } from "next-intl";
 
 function parseDeliveryDate(label: string, time: string): string | null {

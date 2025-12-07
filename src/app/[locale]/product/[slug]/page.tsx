@@ -6,7 +6,6 @@ import ProductAccordion from "@/components/shared/product/ProductAccordion";
 import ProductGallery from "@/components/shared/product/ProductGallery";
 import ProductInfo from "@/components/shared/product/ProductInfo";
 import SellerInfoButton from "@/components/shared/product/SellerInfoButton";
-import ProductsBlock from "@/components/layout/ProductsBlock";
 import { usePathname } from "next/navigation";
 import { useProductBySlug } from "@/hooks/useProductBySlug";
 import { MediaItemT } from "@/components/shared/product/MediaItem";
@@ -36,64 +35,13 @@ export default function ProductPage() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  const sampleProducts = [
-    {
-      id: 1,
-      title: "Riche Coffee Scrub",
-      price: 89000,
-      image: "/images/product-placeholder.png",
-      description: "Natural coffee scrub for smooth skin",
-    },
-    {
-      id: 2,
-      title: "The Ordinary Niacinamide 10% + Zinc 1%",
-      price: 135000,
-      image: "/images/product-placeholder.png",
-      description: "Balances sebum and minimizes pores",
-    },
-    {
-      id: 3,
-      title: "Riche Enzyme Powder Cleanser",
-      price: 119000,
-      image: "/images/product-placeholder.png",
-      description: "Gentle powder cleanser with enzymes",
-    },
-    {
-      id: 4,
-      title: "The Ordinary Hyaluronic Acid 2% + B5",
-      price: 125000,
-      image: "/images/product-placeholder.png",
-      description: "Deep hydration and smooth texture",
-    },
-    {
-      id: 11,
-      title: "2Riche Coffee Scrub",
-      price: 89000,
-      image: "/images/product-placeholder.png",
-      description: "Natural coffee scrub for smooth skin",
-    },
-    {
-      id: 12,
-      title: "2The Ordinary Niacinamide 10% + Zinc 1%",
-      price: 135000,
-      image: "/images/product-placeholder.png",
-      description: "Balances sebum and minimizes pores",
-    },
-    {
-      id: 13,
-      title: "2Riche Enzyme Powder Cleanser",
-      price: 119000,
-      image: "/images/product-placeholder.png",
-      description: "Gentle powder cleanser with enzymes",
-    },
-    {
-      id: 14,
-      title: "2The Ordinary Hyaluronic Acid 2% + B5",
-      price: 125000,
-      image: "/images/product-placeholder.png",
-      description: "Deep hydration and smooth texture",
-    },
-  ];
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-[80vh]">
+        <p>Ошибка загрузки продукта. Пожалуйста, попробуйте позже.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col">

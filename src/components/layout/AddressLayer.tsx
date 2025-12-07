@@ -28,7 +28,7 @@ export default function AddressLayer({
   onClose,
   onSelect,
 }: AddressLayerProps) {
-  const { register, getValues } = useForm<AddressValues>({
+  const { register, getValues, setValue } = useForm<AddressValues>({
     defaultValues: {
       address: "",
       apartmentNumber: "",
@@ -109,7 +109,10 @@ export default function AddressLayer({
                   placeholder="Введите комментарий"
                   rows={4}
                   multiline
-                  {...register("comment")}
+                  value={getValues("comment")}
+                  onChange={(val: string) => {
+                    setValue("comment", val);
+                  }}
                 />
               </div>
 
