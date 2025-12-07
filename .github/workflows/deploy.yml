@@ -33,6 +33,10 @@ jobs:
             git clean -fd
             git pull
 
+            echo "📦 Loading Node/NPM..."
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
             echo "📦 Installing dependencies..."
             npm install
 
