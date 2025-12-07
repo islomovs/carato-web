@@ -1,6 +1,8 @@
 {
   "product": {
     "addToCart": "Добавить в корзину",
+    "addedToWishlist": "Добавлено в избранное",
+    "removedFromWishlist": "Удалено из избранного",
     "size": "Размер: {size}",
     "defineSize": "Определить размер",
     "noSize": "Нет размера?",

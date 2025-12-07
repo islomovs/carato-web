@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import ProductCard from "../shared/product/ProductCard";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,8 @@ import { Navigation, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import { Product } from "@/services/product";
+import useLockScroll from "@/hooks/useLockScroll";
+import ProductsBlockModal from "../shared/product/ProductsBlockModal";
 
 interface ProductsBlockProps {
   title: string;
@@ -23,7 +26,11 @@ export default function ProductsBlock({
   hideSeeAll = false,
 }: ProductsBlockProps) {
   const t = useTranslations("home");
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const handleOpen = (product: Product) => setSelectedProduct(product);
+  const handleClose = () => setSelectedProduct(null);
 
+  useLockScroll(selectedProduct ? true : false);
 
   return (
     <>
@@ -46,14 +53,18 @@ export default function ProductsBlock({
           >
             {products.map((product) => (
               <SwiperSlide key={product.id}>
-                  <ProductCard product={product} />
+                <ProductCard product={product} onOpen={handleOpen} />
               </SwiperSlide>
             ))}
           </Swiper>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5 w-full">
             {products.map((product) => (
-                <ProductCard key={product.id} product={product} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                onOpen={handleOpen}
+              />
             ))}
           </div>
         )}
@@ -67,6 +78,13 @@ export default function ProductsBlock({
           </Button>
         )}
       </div>
+      {selectedProduct && (
+        <ProductsBlockModal
+          slug={selectedProduct.slug}
+          onClose={handleClose}
+          selectedProduct={selectedProduct}
+        />
+      )}
     </>
   );
 }
