@@ -5,7 +5,6 @@ import PageHeader from "../../PageHeader";
 import useLockScroll from "@/hooks/useLockScroll";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import OrderInfoRow from "./OrderInfoRow";
 import { useTranslations } from "next-intl";
 import { useOrderById } from "@/hooks/useOrderById";
 import OrderDetailsSkeleton from "./OrderDetailsSkeleton";

@@ -10,8 +10,10 @@ interface Props {
   setExpanded: (title: string | null) => void;
   isOptionActive: (title: string, opt: string) => boolean;
   toggleOption: (title: string, opt: string) => void;
-  price: [number, number];
-  setPrice: (val: [number, number]) => void;
+  priceRange: [number, number];
+  setPriceRange: (val: [number, number]) => void;
+  weightRange: [number, number];
+  setWeightRange: (val: [number, number]) => void;
   appliedCount: (title: string) => number;
 }
 
@@ -21,8 +23,10 @@ export default function FilterAccordion({
   setExpanded,
   isOptionActive,
   toggleOption,
-  price,
-  setPrice,
+  priceRange,
+  setPriceRange,
+  weightRange,
+  setWeightRange,
   appliedCount,
 }: Props) {
   return (
@@ -39,9 +43,6 @@ export default function FilterAccordion({
             <span className="ml-1 text-gray-500">
               ({appliedCount(filter.title)})
             </span>
-          )}
-          {filter.title === "Цена" && (price[0] > 0 || price[1] < 500000) && (
-            <span className="ml-1 text-gray-500">(1)</span>
           )}
         </span>
         {expanded === filter.title ? (
@@ -60,8 +61,14 @@ export default function FilterAccordion({
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            {filter.title === "Цена" ? (
-              <FilterPriceRange price={price} setPrice={setPrice} />
+            {filter.title === "Цена" || filter.title === "Вес" ? (
+              <FilterPriceRange
+                price={filter.title === "Цена" ? priceRange : weightRange}
+                setPrice={
+                  filter.title === "Цена" ? setPriceRange : setWeightRange
+                }
+                filterType={filter.title}
+              />
             ) : (
               <FilterOptionsList
                 title={filter.title}

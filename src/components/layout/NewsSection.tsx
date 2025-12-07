@@ -19,7 +19,7 @@ export default function NewsSection() {
 
   const page = 1;
   const size = 6;
-  const { news, loading, error } = useNews(locale, page, size);
+  const { news, loading, error } = useNews(page, size);
 
   const [isMobile, setIsMobile] = useState(false);
 

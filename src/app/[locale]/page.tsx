@@ -34,15 +34,6 @@ export default async function Home() {
       : Promise.resolve([]),
   ]);
 
-  const categories = [
-    { id: 1, title: "Face Care", image: "/images/category-placeholder.png" },
-    { id: 2, title: "Body Care", image: "/images/category-placeholder.png" },
-    { id: 3, title: "Hair Care", image: "/images/category-placeholder.png" },
-    { id: 4, title: "Sunscreens", image: "/images/category-placeholder.png" },
-    { id: 5, title: "Accessories", image: "/images/category-placeholder.png" },
-    { id: 6, title: "Gift Sets", image: "/images/category-placeholder.png" },
-  ];
-
   return (
     <div className="w-full h-full text-center">
       <BannerCarousel />
@@ -51,7 +42,7 @@ export default async function Home() {
       <ProductsBlock title={t("popularProducts")} products={popularProducts} />
       <CollectionsSection />
       <ProductsBlock title={t("newArrivals")} products={newArrivals} />
-      <CategoriesBlock categories={categories} />
+      <CategoriesBlock />
       <ProductsBlock
         title={t("specialOffers")}
         products={specialOffers}

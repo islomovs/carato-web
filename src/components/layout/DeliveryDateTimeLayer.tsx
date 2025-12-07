@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -6,26 +7,52 @@ import { Button } from "../ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import PageHeader from "../shared/PageHeader";
 import useLockScroll from "@/hooks/useLockScroll";
+import { Control, UseFormSetValue } from "react-hook-form";
+import { useTranslations } from "next-intl";
+
+function parseDeliveryDate(label: string, time: string): string | null {
+  // Extract the "dd.MM" part
+  const match = label.match(/(\d{2})\.(\d{2})/);
+  if (!match) return null;
+
+  const day = parseInt(match[1], 10);
+  const month = parseInt(match[2], 10) - 1; // JS months are 0-based
+  const now = new Date();
+  let year = now.getFullYear();
+
+  // If selected month is before current month, assume next year
+  if (month < now.getMonth()) year += 1;
+
+  // Split time
+  const [hours, minutes] = time.split(":").map(Number);
+
+  const date = new Date(year, month, day, hours, minutes, 0, 0);
+  return date.toISOString(); // 2025-11-29T15:57:25.705Z
+}
 
 type DeliveryDateTimeLayerProps = {
   open: boolean;
   onClose: () => void;
-  onSelect: (date: string, time: string, price: number) => void;
-  deliveryOptions?: { label: string; price: number }[];
-  timeOptions?: string[];
+  setValue: UseFormSetValue<any>;
+  setDisplayDateTime: (value: string) => void;
+  setDeliveryPrice: (price: number) => void;
 };
 
 export default function DeliveryDateTimeLayer({
   open,
   onClose,
-  onSelect,
-  deliveryOptions = [
+  setValue,
+  setDisplayDateTime,
+  setDeliveryPrice,
+}: DeliveryDateTimeLayerProps) {
+  const t = useTranslations("checkout");
+  const deliveryOptions = [
     { label: "Завтра, 08.10", price: 0 },
     { label: "Послезавтра, 09.10", price: 0 },
     { label: "Суббота, 10.10", price: 100_000 },
     { label: "Воскресенье, 11.10", price: 100_000 },
-  ],
-  timeOptions = [
+  ];
+  const timeOptions = [
     "10:00",
     "11:00",
     "13:00",
@@ -50,16 +77,26 @@ export default function DeliveryDateTimeLayer({
     "09:00",
     "12:00",
     "17:00",
-  ],
-}: DeliveryDateTimeLayerProps) {
+  ];
+
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
   const handleConfirm = () => {
     if (!selectedDate || !selectedTime) return;
-    const option = deliveryOptions.find((d) => d.label === selectedDate);
-    const price = option?.price || 0;
-    onSelect(selectedDate, selectedTime, price);
+
+    const isoString = parseDeliveryDate(selectedDate, selectedTime);
+    if (!isoString) return;
+
+    setValue("deliveryPreferredTime", isoString);
+    setDisplayDateTime(`${selectedDate} в ${selectedTime}`);
+
+    const selectedOption = deliveryOptions.find(
+      (d) => d.label === selectedDate
+    );
+    if (selectedOption) setDeliveryPrice(selectedOption.price);
+
+    onClose();
   };
 
   useLockScroll(open);
@@ -90,7 +127,7 @@ export default function DeliveryDateTimeLayer({
           >
             <div className="md:max-w-[520px] mx-auto md:mx-0 h-full bg-white flex flex-col">
               <PageHeader
-                title="Дата и время доставки"
+                title={t("deliveryDateTime")}
                 onBack={onClose}
                 onClose={onClose}
                 centeredTitle={true}
@@ -103,13 +140,15 @@ export default function DeliveryDateTimeLayer({
                 {/* Дата доставки */}
                 <div>
                   <h3 className="text-[14px] font-normal mb-6">
-                    Дата доставки
+                    {t("deliveryDate")}
                   </h3>
                   <div className="grid grid-cols-2 gap-3 md:gap-5">
                     {deliveryOptions.map((opt) => {
                       const selected = selectedDate === opt.label;
+
                       return (
                         <Button
+                          type="button"
                           variant="default"
                           key={opt.label}
                           onClick={() => setSelectedDate(opt.label)}
@@ -147,13 +186,14 @@ export default function DeliveryDateTimeLayer({
                 {/* Время доставки */}
                 <div>
                   <h3 className="text-[14px] font-normal mb-6">
-                    Время доставки
+                    {t("deliveryTime")}
                   </h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-5">
                     {timeOptions.map((time) => {
                       const selected = selectedTime === time;
                       return (
                         <Button
+                          type="button"
                           variant="default"
                           key={time}
                           onClick={() => setSelectedTime(time)}
@@ -192,6 +232,7 @@ export default function DeliveryDateTimeLayer({
               {/* bottom fixed button */}
               <div className="fixed bottom-0 left-0 right-0 px-4 py-3 md:px-10 md:pr-[54px] md:py-5 bg-white border-t border-[#EEF2F6] md:static md:flex md:justify-end">
                 <Button
+                  type="button"
                   onClick={handleConfirm}
                   disabled={!selectedDate || !selectedTime}
                   className="cursor-pointer w-full py-[26px] md:px-4 bg-black text-white rounded-[10px] md:rounded-md font-medium md:font-normal hover:bg-white hover:text-black border border-black md:w-auto flex items-center justify-center min-w-[235px] uppercase"
@@ -200,10 +241,10 @@ export default function DeliveryDateTimeLayer({
                     ? `${
                         deliveryOptions.find((d) => d.label === selectedDate)
                           ?.price === 0
-                          ? "БЕСПЛАТНАЯ ДОСТАВКА"
-                          : `${deliveryOptions.find((d) => d.label === selectedDate)?.price?.toLocaleString()} UZS ЗА ДОСТАВКУ`
+                          ? t("freeDelivery")
+                          : `${deliveryOptions.find((d) => d.label === selectedDate)?.price?.toLocaleString()} ${t("deliveryCost")}`
                       }`
-                    : "Выберите дату и время доставки"}
+                    : t("chooseDeliveryDateTime")}
                 </Button>
               </div>
             </div>

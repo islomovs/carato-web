@@ -1,81 +1,121 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import React, { useMemo, useRef, useState } from "react";
-import CatalogHeader from "../shared/CatalogHeader";
-import FilterBar from "../shared/FilterBar";
-import ProductGrid from "../shared/ProductGrid";
-import CatalogPagination from "../shared/CatalogPagination";
+import React, { useRef, useState, useEffect } from "react";
+import CatalogHeader from "../shared/catalog/CatalogHeader";
+import FilterBar from "../shared/catalog/FilterBar";
+import ProductGrid from "../shared/catalog/ProductGrid";
+import CatalogPagination from "../shared/catalog/CatalogPagination";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { Product } from "@/services/productSetProducts";
+import { useProducts } from "@/hooks/useProducts";
+import { INITIAL_FILTERS } from "@/services/product";
+import { useCategories } from "@/hooks/useCategories";
+import { resolveSlugType } from "@/lib/slugResolver";
 
 const PAGE_SIZE = 20;
 
-export default function CatalogPage() {
+interface CatalogPageProps {
+  slug?: string | null;
+}
+
+export default function CatalogPage({ slug }: CatalogPageProps) {
   const t = useTranslations("catalog");
-  const sampleProducts: Product[] = useMemo(
-    () =>
-      Array.from({ length: 123 }).map((_, i) => ({
-        id: i + 1,
-        slug: `product-${i + 1}`,
-        name: `Пример товара ${i + 1}`,
-        price: Math.round(i * 90000),
-        images: [{ image: `/images/product-placeholder.png` }],
-        discountPrice: null,
-        discountPercent: 0,
-        description: "Описание продукта",
-      })),
-    []
-  );
 
-  const [page, setPage] = useState(1);
-  const total = sampleProducts.length;
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const { categories, loading: catLoading } = useCategories();
 
-  const startIndex = (page - 1) * PAGE_SIZE;
-  const pageProducts = sampleProducts.slice(startIndex, startIndex + PAGE_SIZE);
+  const resolved =
+    !catLoading && slug ? resolveSlugType(slug, categories) : null;
+
+  const {
+    products,
+    page,
+    setPage,
+    totalPages,
+    totalElements,
+    loading,
+    updateFilters,
+  } = useProducts(PAGE_SIZE, INITIAL_FILTERS);
+
+  useEffect(() => {
+    if (!resolved) return;
+
+    updateFilters({
+      [resolved.type]: resolved.value,
+    });
+  }, [resolved?.type, resolved?.value]);
+
+  const productsReady = !slug || (!catLoading && resolved);
+  const displayedProducts = productsReady ? products : [];
+  const isLoading = loading || !productsReady;
 
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
-  const visibleProducts = sampleProducts.slice(0, visibleCount);
+  const mobileProducts = products.slice(0, visibleCount);
 
   const handleShowMore = () => {
-    setVisibleCount((prev) => Math.min(prev + PAGE_SIZE, total));
+    setVisibleCount((prev) => Math.min(prev + PAGE_SIZE, totalElements));
   };
 
   const refTitle = useRef<HTMLDivElement | null>(null);
   const refBar = useRef<HTMLDivElement | null>(null);
 
+  const [selectedFilters, setSelectedFilters] = useState<
+    Record<string, string[]>
+  >({
+    Категория: resolved?.label ? [resolved.label] : [],
+  });
+
+  useEffect(() => {
+    if (resolved?.label) {
+      setSelectedFilters({
+        Категория: [resolved.label],
+      });
+    }
+  }, [resolved?.label]);
+
   return (
     <div className="w-full">
       <CatalogHeader refTitle={refTitle} />
-      <FilterBar refBar={refBar} total={total} />
+      {catLoading || !resolved ? (
+        <div className="w-full h-[48px] bg-gray-100 rounded-md animate-pulse mb-4" />
+      ) : (
+        <FilterBar
+          refBar={refBar}
+          total={totalElements}
+          selectedFilters={selectedFilters}
+          setSelectedFilters={setSelectedFilters}
+          onUpdateFilters={updateFilters}
+        />
+      )}
 
       <div className="w-full p-4 md:px-8 md:pt-8 items-center mb-40">
-        {/* Mobile view — incremental load */}
+        {/* Mobile view — Load More */}
         <div className="md:hidden">
-          <ProductGrid products={visibleProducts} />
+          <ProductGrid products={mobileProducts} loading={loading} />
 
-          {visibleCount < total && (
+          {visibleCount < totalElements && (
             <div className="flex justify-center mt-10">
               <Button
                 variant="outline"
                 onClick={handleShowMore}
                 className="w-[400px] max-w-full py-[8px] text-[12px] text-black border-black hover:bg-gray-50"
               >
-                {t("loadMore", { count: total - visibleCount })}
+                {t("loadMore", { count: totalElements - visibleCount })}
               </Button>
             </div>
           )}
         </div>
 
-        {/* Desktop view — pagination */}
+        {/* Desktop view — Pagination */}
         <div className="hidden md:block">
-          <ProductGrid products={pageProducts} />
-          <CatalogPagination
-            page={page}
-            totalPages={totalPages}
-            setPage={setPage}
-          />
+          <ProductGrid products={displayedProducts} loading={isLoading} />
+          {totalPages > 1 && (
+            <CatalogPagination
+              page={page}
+              totalPages={totalPages}
+              setPage={setPage}
+            />
+          )}
         </div>
       </div>
     </div>

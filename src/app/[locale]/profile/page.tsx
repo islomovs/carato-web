@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import ReviewsBlock from "@/components/shared/ReviewsBlock";
+import ReviewsBlock from "@/components/shared/product/ReviewsBlock";
 import MyOrdersBlock from "@/components/shared/profile/my-orders/MyOrdersBlock";
 import PersonalInfoBlock from "@/components/shared/profile/PersonalInfoBlock";
 

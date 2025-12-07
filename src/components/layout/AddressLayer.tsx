@@ -7,10 +7,20 @@ import FeedbackInput from "../shared/feedback/FeedbackInput";
 import PageHeader from "../shared/PageHeader";
 import useLockScroll from "@/hooks/useLockScroll";
 
+import { useForm } from "react-hook-form";
+
+type AddressValues = {
+  address: string;
+  apartmentNumber: string;
+  entrance: string;
+  floor: string;
+  comment: string;
+};
+
 type AddressLayerProps = {
   open: boolean;
   onClose: () => void;
-  onSelect: (date: string, time: string, price: number) => void;
+  onSelect: (values: AddressValues) => void;
 };
 
 export default function AddressLayer({
@@ -18,7 +28,19 @@ export default function AddressLayer({
   onClose,
   onSelect,
 }: AddressLayerProps) {
-  const handleConfirm = () => {};
+  const { register, getValues } = useForm<AddressValues>({
+    defaultValues: {
+      address: "",
+      apartmentNumber: "",
+      entrance: "",
+      floor: "",
+      comment: "",
+    },
+  });
+
+  const handleConfirm = () => {
+    onSelect(getValues());
+  };
 
   useLockScroll(open);
 
@@ -60,34 +82,34 @@ export default function AddressLayer({
               <div className="flex-1 overflow-auto px-4 pt-8 pb-[120px] space-y-6 md:px-10 md:py-5">
                 <TextField
                   label="Адрес доставки"
-                  placeholder="Город, улица, дом"
                   isRequired
-                />
-                <TextField label="Подъезд" placeholder="Введите подъезд" />
-                <TextField label="Этаж" placeholder="Введите этаж" />
-                <FeedbackInput
-                  label="Комментарий для курьера"
-                  value=""
-                  onChange={() => {}}
-                  placeholder="Введите комментарий"
-                  rows={4}
-                  multiline
+                  placeholder="Город, улица, дом"
+                  {...register("address")}
                 />
 
                 <TextField
-                  label="Адрес доставки"
-                  placeholder="Город, улица, дом"
-                  isRequired
+                  label="Квартира"
+                  placeholder="Номер квартиры"
+                  {...register("apartmentNumber")}
                 />
-                <TextField label="Подъезд" placeholder="Введите подъезд" />
-                <TextField label="Этаж" placeholder="Введите этаж" />
+
+                <TextField
+                  label="Подъезд"
+                  placeholder="Введите подъезд"
+                  {...register("entrance")}
+                />
+
+                <TextField
+                  label="Этаж"
+                  placeholder="Введите этаж"
+                  {...register("floor")}
+                />
                 <FeedbackInput
                   label="Комментарий для курьера"
-                  value=""
-                  onChange={() => {}}
                   placeholder="Введите комментарий"
                   rows={4}
                   multiline
+                  {...register("comment")}
                 />
               </div>
 
@@ -95,6 +117,7 @@ export default function AddressLayer({
               <div className="fixed bottom-0 left-0 right-0 px-4 py-3 md:px-10 md:pr-[54px] md:py-5 bg-white border-t border-[#EEF2F6] md:static md:flex md:justify-end">
                 <Button
                   onClick={handleConfirm}
+                  type="button"
                   className="cursor-pointer w-full py-[26px] md:px-4 bg-black text-white rounded-[10px] md:rounded-md font-medium md:font-normal hover:bg-white hover:text-black border border-black md:w-auto flex items-center justify-center uppercase"
                 >
                   Подтвердить

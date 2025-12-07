@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from "react";
 import { getAllOrders, MyOrdersAll } from "@/services/order";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 interface UseMyOrdersReturn {
   orders: MyOrdersAll[] | null;
@@ -18,13 +18,13 @@ export function useMyOrders(page = 1, size = 10): UseMyOrdersReturn {
   const [orders, setOrders] = useState<MyOrdersAll[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const locale = useLocale();
 
   const fetchOrders = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const locale = navigator.language || "ru";
       const data = await getAllOrders(page, size, locale);
       setOrders(data);
     } catch (err: any) {

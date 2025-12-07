@@ -1,16 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import { useTranslations } from "next-intl";
-import ProductCard from "../shared/ProductCard";
+import ProductCard from "../shared/product/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import { Product } from "@/services/product";
-import ProductsBlockModal from "../shared/ProductsBlockModal";
-import useLockScroll from "@/hooks/useLockScroll";
 
 interface ProductsBlockProps {
   title: string;
@@ -26,12 +23,7 @@ export default function ProductsBlock({
   hideSeeAll = false,
 }: ProductsBlockProps) {
   const t = useTranslations("home");
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  const handleOpen = (product: Product) => setSelectedProduct(product);
-  const handleClose = () => setSelectedProduct(null);
-
-  useLockScroll(selectedProduct ? true : false);
 
   return (
     <>
@@ -54,18 +46,14 @@ export default function ProductsBlock({
           >
             {products.map((product) => (
               <SwiperSlide key={product.id}>
-                <div onClick={() => handleOpen(product)}>
                   <ProductCard product={product} />
-                </div>
               </SwiperSlide>
             ))}
           </Swiper>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5 w-full">
             {products.map((product) => (
-              <div key={product.id} onClick={() => handleOpen(product)}>
-                <ProductCard product={product} />
-              </div>
+                <ProductCard key={product.id} product={product} />
             ))}
           </div>
         )}
@@ -79,15 +67,6 @@ export default function ProductsBlock({
           </Button>
         )}
       </div>
-
-      {/* ------------- PRODUCT MODAL / BOTTOM SHEET ------------- */}
-      {selectedProduct && (
-        <ProductsBlockModal
-          slug={selectedProduct.slug}
-          onClose={handleClose}
-          selectedProduct={selectedProduct}
-        />
-      )}
     </>
   );
 }

@@ -2,11 +2,7 @@
 import { create } from "zustand";
 import api from "@/lib/axios/instance";
 import { debounce } from "./debounce";
-
-interface CartVariant {
-  size: { id: number; name: string };
-  stockQuantity: number;
-}
+import { ProductVariant } from "@/services/product";
 
 export interface CartItem {
   product: {
@@ -18,7 +14,7 @@ export interface CartItem {
     discountPrice?: number;
     discountPercent?: number;
     images: { image: string }[];
-    variants: CartVariant[];
+    variants: ProductVariant[];
   };
   quantity: number;
 }
@@ -41,6 +37,9 @@ interface CartStore {
   ) => Promise<void>;
   decrementItem: (slug: string, sizeId: number) => Promise<void>;
   removeItem: (slug: string, sizeId: number) => Promise<void>;
+  totalQuantity: () => number;
+  totalPrice: () => number;
+  totalOldPrice: () => number;
 }
 
 export const useCartStore = create<CartStore>((set, get) => {
@@ -194,6 +193,29 @@ export const useCartStore = create<CartStore>((set, get) => {
       } catch (err) {
         console.error("Remove error:", err);
       }
+    },
+
+    totalQuantity: () => {
+      const cart = get().cartItems;
+      return cart.reduce((acc, item) => acc + item.quantity, 0);
+    },
+
+    totalPrice: () => {
+      const cart = get().cartItems;
+      return cart.reduce((acc, item) => {
+        const price =
+          item.product.variants[0].discountPrice ??
+          item.product.variants[0].price;
+        return acc + price * item.quantity;
+      }, 0);
+    },
+
+    totalOldPrice: () => {
+      const cart = get().cartItems;
+      return cart.reduce((acc, item) => {
+        const price = item.product.variants[0].price;
+        return acc + price * item.quantity;
+      }, 0);
     },
   };
 });

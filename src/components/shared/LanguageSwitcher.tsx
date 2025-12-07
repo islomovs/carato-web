@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { Check } from "lucide-react";
+import useLockScroll from "@/hooks/useLockScroll";
 
 const languages = [
   {
@@ -39,8 +40,12 @@ export function LanguageSwitcher() {
     router.push(newPath);
   };
 
+  const [isOpened, setIsOpened] = React.useState(false);
+
+  useLockScroll(isOpened);
+
   return (
-    <DropdownMenu>
+    <DropdownMenu onOpenChange={setIsOpened}>
       <DropdownMenuTrigger
         asChild
         className="hover:bg-[#EEF2F6] cursor-pointer !h-9 !w-9 border-0"

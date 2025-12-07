@@ -2,23 +2,31 @@
 
 import { useState, useEffect } from "react";
 // import ProductsBlock from "../../../components/layout/ProductsBlock";
-import { EmptyCart } from "@/components/shared/EmptyCart";
-import { CartItem } from "@/components/shared/CartItem";
-import { TotalsColumn } from "@/components/shared/TotalsColumn";
+import { EmptyCart } from "@/components/shared/cart/EmptyCart";
+import { CartItem } from "@/components/shared/cart/CartItem";
+import { TotalsColumn } from "@/components/shared/checkout/TotalsColumn";
 import CheckoutLayer from "@/components/layout/CheckoutLayer";
 import { useRouter } from "next/navigation";
 import PageHeader from "@/components/shared/PageHeader";
 import { useCartStore } from "@/lib/cartStore";
 import { useTranslations } from "next-intl";
-import { CartSkeleton } from "@/components/shared/CartSkeleton";
+import { CartSkeleton } from "@/components/shared/cart/CartSkeleton";
 
 export default function CartPage() {
   const router = useRouter();
   const [openCheckout, setOpenCheckout] = useState(false);
   const t = useTranslations("cart");
 
-  const { cartItems, fetchCart, updateQuantity, removeItem, loading } =
-    useCartStore();
+  const {
+    cartItems,
+    fetchCart,
+    updateQuantity,
+    removeItem,
+    loading,
+    totalQuantity,
+    totalPrice,
+    totalOldPrice,
+  } = useCartStore();
 
   useEffect(() => {
     fetchCart();
@@ -36,26 +44,8 @@ export default function CartPage() {
     removeItem(slug, sizeId);
   };
 
-  // Total price WITH DISCOUNT applied (if discountPrice exists)
-  const totalPrice = cartItems.reduce((acc, item) => {
-    const finalPrice = item.product.discountPrice ?? item.product.price;
-    return acc + finalPrice * item.quantity;
-  }, 0);
-
-  // Total OLD price (WITHOUT discount, always the original price)
-  const totalOldPrice = cartItems.reduce((acc, item) => {
-    return acc + item.product.price * item.quantity;
-  }, 0);
-
   // Savings
-  const savings = totalOldPrice - totalPrice;
-
-  console.log("Cart totals:", {
-    totalPrice,
-    totalOldPrice,
-    savings,
-    cartItems,
-  });
+  const savings = totalOldPrice() - totalPrice();
 
   const isDesktop = typeof window !== "undefined" && window.innerWidth >= 1024;
   const isEmpty = cartItems.length === 0;
@@ -116,16 +106,9 @@ export default function CartPage() {
 
             {cartItems.length > 0 && (
               <TotalsColumn
-                onCheckout={() => {
-                  if (window.innerWidth >= 768) {
-                    router.push("/checkout");
-                  } else {
-                    setOpenCheckout(true);
-                  }
-                }}
-                totalPrice={totalPrice}
+                totalPrice={totalPrice()}
                 savings={savings}
-                count={cartItems.length}
+                count={totalQuantity()}
               />
             )}
           </div>
@@ -144,12 +127,7 @@ export default function CartPage() {
         <CheckoutLayer
           open={openCheckout}
           onClose={() => setOpenCheckout(false)}
-          totalPrice={totalPrice}
           fullPage={true}
-          onSubmit={(payload) => {
-            console.log("checkout", payload);
-            setOpenCheckout(false);
-          }}
         />
       )}
     </>

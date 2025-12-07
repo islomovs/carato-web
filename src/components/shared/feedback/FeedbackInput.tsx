@@ -3,22 +3,22 @@ import { Textarea } from "@/components/ui/textarea";
 
 interface FeedbackInputProps {
   label: string;
-  value: string;
   placeholder?: string;
+  value?: string;
   error?: string;
-  onChange: (value: string) => void;
   multiline?: boolean;
   rows?: number;
+  onChange?: (val: string) => void;
 }
 
 export default function FeedbackInput({
   label,
-  value,
   placeholder,
+  value,
   error,
-  onChange,
   multiline = false,
   rows = 3,
+  onChange,
 }: FeedbackInputProps) {
   return (
     <div className="flex flex-col gap-2">
@@ -32,17 +32,17 @@ export default function FeedbackInput({
       {multiline ? (
         <Textarea
           placeholder={placeholder}
-          value={value}
           rows={rows}
-          onChange={(e) => onChange(e.target.value)}
+          value={value}
           className={`border-black w-full ${error ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+          onChange={(e) => onChange && onChange(e.target.value)}
         />
       ) : (
         <Input
           placeholder={placeholder}
           value={value}
-          onChange={(e) => onChange(e.target.value)}
           className={`border-black w-full ${error ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+          onChange={(e) => onChange && onChange(e.target.value)}
         />
       )}
 

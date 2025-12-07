@@ -17,9 +17,11 @@
     "register": "Регистрация",
     "popularProducts": "Хиты продаж",
     "newArrivals": "Новинки",
+    "categoriesTitle": "Категории товаров",
     "specialOffers": "Специально для вас",
     "seeAll": "Смотреть все",
     "news": "Новости",
-    "learnMore": "Узнать подробнее"
+    "learnMore": "Узнать подробнее",
+    "loadError": "Ошибка загрузки категорий"
   }
 }

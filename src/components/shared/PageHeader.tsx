@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 interface PageHeaderProps {
   title: string;
@@ -24,6 +25,7 @@ export default function PageHeader({
   showDesktopButton = false,
   className = "",
 }: PageHeaderProps) {
+  const t = useTranslations("checkout");
   return (
     <div
       className={`sticky top-0 z-50 bg-white flex items-center 
@@ -35,11 +37,11 @@ export default function PageHeader({
         <button
           className="md:hidden w-5 h-5 flex items-center justify-center cursor-pointer absolute top-[22px] left-[22px]"
           onClick={onBack}
-          aria-label="Назад"
+          aria-label={t("back")}
         >
           <Image
             src="/icons/arrow-narrow-left.svg"
-            alt="Back"
+            alt={t("back")}
             width={20}
             height={20}
           />
@@ -49,6 +51,7 @@ export default function PageHeader({
       {/* Desktop back button (Checkout only) */}
       {showDesktopButton && (
         <Button
+          type="button"
           variant="outline"
           className="p-2 cursor-pointer hidden md:flex items-center"
           onClick={onBack}
@@ -59,7 +62,7 @@ export default function PageHeader({
             width={20}
             height={20}
           />
-          Назад
+          {t("back")}
         </Button>
       )}
 
@@ -77,9 +80,14 @@ export default function PageHeader({
           onClick={onClose}
           className={`w-5 h-5 flex items-center justify-center cursor-pointer
           ${absoluteClose ? "absolute top-[22px] right-[22px]" : ""}`}
-          aria-label="Закрыть"
+          aria-label={t("close")}
         >
-          <Image src="/icons/x-close.svg" alt="Close" width={20} height={20} />
+          <Image
+            src="/icons/x-close.svg"
+            alt={t("close")}
+            width={20}
+            height={20}
+          />
         </button>
       )}
     </div>
