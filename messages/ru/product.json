@@ -3,6 +3,7 @@
     "addToCart": "Добавить в корзину",
     "addedToWishlist": "Добавлено в избранное",
     "removedFromWishlist": "Удалено из избранного",
+    "close": "Закрыть",
     "size": "Размер: {size}",
     "defineSize": "Определить размер",
     "noSize": "Нет размера?",

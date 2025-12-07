@@ -41,7 +41,7 @@ export default function ModalMediaSwiper({
   };
 
   return (
-    <div className="w-full h-full flex flex-col justify-center md:gap-6 items-center">
+    <div className="relative w-full h-full flex flex-col justify-center md:gap-6 items-center">
       <Swiper
         modules={[Navigation, Keyboard]}
         navigation={{ prevEl: `.${prevClass}`, nextEl: `.${nextClass}` }}
@@ -67,7 +67,7 @@ export default function ModalMediaSwiper({
       </Swiper>
 
       {/* Pagination + arrows */}
-      <div className="flex items-center gap-2 justify-center z-20">
+      <div className="absolute left-auto right-auto bottom-4 flex items-center gap-2 justify-center z-20">
         <button
           className={`${prevClass} cursor-pointer hidden md:flex items-center justify-center w-14 h-14 ml-8 md:ml-[32px]`}
         >

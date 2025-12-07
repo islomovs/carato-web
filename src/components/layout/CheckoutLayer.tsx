@@ -45,7 +45,6 @@ export default function CheckoutLayer({
 
   const { totalQuantity, totalPrice, totalOldPrice } = useCartStore();
 
-  // Savings
   const savings = totalOldPrice() - totalPrice();
 
   const totalSum = totalPrice() + deliveryPrice;
@@ -81,9 +80,8 @@ export default function CheckoutLayer({
 
   const onSubmit = async (data: any) => {
     try {
-      // Формируем массив продуктов для отправки
       const productsPayload = cartItems.map((item) => {
-        const variant = item.product.variants[0]; // или нужный вариант
+        const variant = item.product.variants[0];
         return {
           product: item.product.slug,
           size: variant.size.id,
@@ -92,19 +90,18 @@ export default function CheckoutLayer({
       });
 
       const payload = {
-        ...data, // остальные поля формы
+        ...data,
         products: productsPayload,
-        totalSum: totalSum,
+        totalSum,
       };
 
       console.log("🔥 Checkout Payload:", payload);
 
-      // Создаем заказ через хук
       const response = await createOrder(payload);
 
-      // Если приходит checkoutUrl — редиректим
       if (response.checkoutUrl) {
-        window.location.href = response.checkoutUrl;
+        window.open(response.checkoutUrl, "_blank");
+        router.push("/profile");
       } else {
         console.error("No checkoutUrl in response:", response);
       }
@@ -162,18 +159,14 @@ export default function CheckoutLayer({
                   className="md:relative md:justify-start md:gap-8 md:border-0 md:top-auto md:z-auto md:bg-transparent md:px-0 md:py-0"
                 />
                 <div className="flex-1 space-y-6 px-4 pt-8 md:px-4 pb-56 md:pb-20 overflow-auto">
-                  {/* Контактная информация */}
                   <ContactInfoSection control={control} register={register} />
 
                   <hr className="border-t border-[#EEF2F6]" />
 
-                  {/* Варианты доставки */}
                   <DeliveryOptionsSection watch={watch} setValue={setValue} />
 
-                  {/* Адрес доставки */}
                   <AddressSection watch={watch} setValue={setValue} />
 
-                  {/* Дата и время доставки */}
                   <DateTimeSection
                     setValue={setValue}
                     setDeliveryPrice={setDeliveryPrice}
@@ -181,14 +174,10 @@ export default function CheckoutLayer({
 
                   <hr className="border-t border-[#EEF2F6]" />
 
-                  {/* Способ оплаты */}
                   <PaymentTypesSection control={control} name="paymentType" />
 
-                  {/* Промокод */}
                   <PromocodeField control={control} name="promocode" />
                 </div>
-
-                {/* footer summary (sticky inside sheet) */}
               </div>
               <TotalsColumn
                 totalPrice={totalPrice()}

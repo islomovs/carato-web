@@ -6,9 +6,10 @@ import { routing, Locale } from "@/i18n/routing";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { Manrope, Montserrat } from "next/font/google";
-import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Toaster } from "sonner";
+import MobileAppBarWrapper from "@/components/layout/MobileAppBarWrapper";
+import HeaderWrapper from "@/components/layout/HeaderWrapper";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -46,12 +47,13 @@ export default async function RootLayout({ children, params }: Props) {
     >
       <body className="antialiased">
         <NextIntlClientProvider locale={locale as Locale} messages={resources}>
-          <Header />
+          <HeaderWrapper />
           <main className="md:pt-[66px]">{children}</main>
           <div style={{ margin: 0, padding: 0 }}>
             <Toaster position="top-right" richColors />
           </div>
           <Footer />
+          <MobileAppBarWrapper />
         </NextIntlClientProvider>
       </body>
     </html>

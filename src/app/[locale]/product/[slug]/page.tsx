@@ -9,6 +9,8 @@ import SellerInfoButton from "@/components/shared/product/SellerInfoButton";
 import { usePathname } from "next/navigation";
 import { useProductBySlug } from "@/hooks/useProductBySlug";
 import { MediaItemT } from "@/components/shared/product/MediaItem";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ProductPage() {
   const pathname = usePathname();
@@ -75,19 +77,71 @@ export default function ProductPage() {
               slug={product ? product.slug : ""}
             />
           </div>
-          {product && <ProductInfo product={product} isLoading={loading} />}
+          {loading ? (
+            <div className="flex flex-col gap-8 w-full pb-[10px] animate-in fade-in">
+              {/* Skeleton placeholders */}
+              <Skeleton className="h-5 w-40" />
+              <Skeleton className="h-8 w-72" />
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-5 w-32" />
+                <Skeleton className="h-4 w-16" />
+              </div>
+              <div className="flex items-center gap-4">
+                <Skeleton className="h-7 w-28" />
+                <Skeleton className="h-5 w-20" />
+                <Skeleton className="h-5 w-10" />
+              </div>
+              <Skeleton className="h-14 w-full rounded-md" />
+              <div className="hidden md:flex flex-col gap-3">
+                <Skeleton className="h-[52px] w-full rounded-md" />
+                <Skeleton className="h-[52px] w-[52px] rounded-md" />
+                <Skeleton className="h-[52px] w-full rounded-md" />
+              </div>
+            </div>
+          ) : (
+            <>
+              {product && <ProductInfo product={product} isLoading={loading} />}
+            </>
+          )}
         </div>
       ) : (
         // ✅ Mobile layout
-        <div className="flex flex-col w-full overflow-hidden">
+        <div className="flex flex-col w-full overflow-hidden mb-[132px]">
           {/* Product gallery at top (scrolls naturally) */}
           <div className="w-full">
-            <ProductGallery variant="modal" media={media} />
+            <ProductGallery variant="modal" media={media} loading={loading} />
           </div>
 
           {/* Page content below gallery */}
           <div className="flex flex-col gap-8 px-4 py-8 relative bg-white">
-            {product && <ProductInfo product={product} isLoading={loading} />}
+            {loading ? (
+              <div className="flex flex-col gap-8 w-full pb-[10px] animate-in fade-in">
+                {/* Skeleton placeholders */}
+                <Skeleton className="h-5 w-40" />
+                <Skeleton className="h-8 w-72" />
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-5 w-32" />
+                  <Skeleton className="h-4 w-16" />
+                </div>
+                <div className="flex items-center gap-4">
+                  <Skeleton className="h-7 w-28" />
+                  <Skeleton className="h-5 w-20" />
+                  <Skeleton className="h-5 w-10" />
+                </div>
+                <Skeleton className="h-14 w-full rounded-md" />
+                <div className="hidden md:flex flex-col gap-3">
+                  <Skeleton className="h-[52px] w-full rounded-md" />
+                  <Skeleton className="h-[52px] w-[52px] rounded-md" />
+                  <Skeleton className="h-[52px] w-full rounded-md" />
+                </div>
+              </div>
+            ) : (
+              <>
+                {product && (
+                  <ProductInfo product={product} isLoading={loading} />
+                )}
+              </>
+            )}
             <SellerInfoButton
               imageSrc="/images/banner-placeholder.jpg"
               title="JewelStore"
@@ -110,6 +164,21 @@ export default function ProductPage() {
             products={sampleProducts}
             hideSeeAll
           /> */}
+          <div className="fixed bottom-0 left-0 right-0 px-4 py-4 flex gap-4 border-t border-[#EEF2F6] bg-white z-50">
+            <Button
+              variant="outline"
+              className="flex-1 h-[52px] uppercase font-[400] text-[14px]"
+            >
+              Быстрая покупка
+            </Button>
+
+            <Button
+              variant="default"
+              className="flex-1 h-[52px] uppercase font-[400] text-[14px] bg-black text-white py-[12px] px-4 hover:bg-white hover:text-black border border-black"
+            >
+              В корзину
+            </Button>
+          </div>
         </div>
       )}
     </div>

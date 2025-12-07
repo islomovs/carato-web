@@ -85,7 +85,7 @@ export function TotalsColumn({
           }
           type={isCheckoutPage ? "submit" : "button"}
           className="
-            uppercase w-full mt-3 md:mt-6 py-8 md:py-7
+            uppercase w-full mt-3 md:mt-6 h-[52px]
             font-medium text-sm bg-black text-white rounded-[10px] hover:bg-white hover:text-black border border-black cursor-pointer
           "
         >

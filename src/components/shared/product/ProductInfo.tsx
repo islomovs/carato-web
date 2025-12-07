@@ -7,7 +7,6 @@ import ProductSizeSelector from "./ProductSizeSelector";
 import { Button } from "../../ui/button";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import SizeModals from "../checkout/SizeModals";
 import ShareDropdown from "../auth-modal/ShareDropdown";
 import AuthModal from "../auth-modal/index";
 import { Product } from "@/services/product";
@@ -15,6 +14,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useCartStore } from "@/lib/cartStore";
 import { toast } from "sonner";
 import { getTokenPair } from "@/lib/axios/instance";
+import NotifySizeModal from "../checkout/NotifySizeModal";
+import DetermineSizeModal from "../checkout/DetermineSizeModal";
+import useLockScroll from "@/hooks/useLockScroll";
 
 interface ProductInfoProps {
   product: Product;
@@ -53,6 +55,8 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
       toast.error(t("addedToCartError"));
     }
   };
+
+  useLockScroll(openNotify || openDetermine || authOpen);
 
   if (isLoading || !product) {
     return (
@@ -176,11 +180,10 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
         <span className="font-normal text-sm">20 - 23 сентября</span>
       </div>
 
-      <SizeModals
-        openNotify={openNotify}
-        setOpenNotify={setOpenNotify}
-        openDetermine={openDetermine}
-        setOpenDetermine={setOpenDetermine}
+      <NotifySizeModal open={openNotify} onOpenChange={setOpenNotify} />
+      <DetermineSizeModal
+        open={openDetermine}
+        onOpenChange={setOpenDetermine}
       />
 
       {/* Auth modal */}

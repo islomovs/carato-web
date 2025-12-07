@@ -133,7 +133,7 @@ export default function ProductCard({
         <p className="truncate text-sm font-light text-black">{product.name}</p>
 
         {/* Price & Discounted Price */}
-        <div className="flex items-center gap-2 mb-3">
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-1 md:gap-2 mb-3">
           {/* Discounted Price */}
           {discountedPrice ? (
             <>

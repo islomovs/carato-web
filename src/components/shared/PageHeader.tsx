@@ -35,6 +35,7 @@ export default function PageHeader({
       {/* Mobile back */}
       {onBack && (
         <button
+          type="button"
           className="md:hidden w-5 h-5 flex items-center justify-center cursor-pointer absolute top-[22px] left-[22px]"
           onClick={onBack}
           aria-label={t("back")}
@@ -77,6 +78,7 @@ export default function PageHeader({
       {/* Close button */}
       {onClose && (
         <button
+          type="button"
           onClick={onClose}
           className={`w-5 h-5 flex items-center justify-center cursor-pointer
           ${absoluteClose ? "absolute top-[22px] right-[22px]" : ""}`}

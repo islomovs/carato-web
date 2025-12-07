@@ -6,6 +6,8 @@ import { QuantitySizeRow } from "../checkout/QuantitySizeRow";
 import type { CartItem } from "@/lib/cartStore";
 import { useTranslations } from "next-intl";
 import { debounce } from "@/lib/debounce";
+import CartItemPrice from "./CartItemPrice";
+import CartItemImage from "./CartItemImage";
 
 interface CartItemProps {
   item: CartItem;
@@ -43,7 +45,10 @@ export function CartItem({
   };
 
   const handleIncrement = () => {
-    if (localQty < item.product.stockQuantity) {
+    console.log("Clicked increment");
+    console.log("Current localQty:", localQty);
+    console.log("Stock quantity:", item.product.variants[0].stockQuantity);
+    if (localQty < item.product.variants[0].stockQuantity) {
       const newQty = localQty + 1;
       setLocalQty(newQty);
       setSyncing(true);
@@ -73,7 +78,7 @@ export function CartItem({
       </div>
 
       <div className="relative flex flex-col items-start md:flex-row gap-5 md:w-full">
-        <div className="flex flex-row gap-5 md:w-full">
+        <div className="flex flex-row gap-5 w-full">
           {/* Delete (top-right) */}
           <button
             onClick={removeItem}
@@ -82,28 +87,7 @@ export function CartItem({
             <Image src="/icons/trash.svg" alt="Trash" width={20} height={20} />
           </button>
           {/* Image */}
-          <div className="relative w-20 md:w-[164px] h-20 md:h-[164px] flex items-center justify-center bg-gray-50">
-            <Image
-              src={item.product.images[0].image}
-              alt={item.product.name}
-              width={164}
-              height={164}
-              className="object-cover w-full h-full"
-            />
-
-            {/* Wishlist (top-left) */}
-            <button
-              onClick={onToggleWishlist}
-              className="absolute top-0 left-0 md:hidden w-5 h-5"
-            >
-              <Image
-                src={true ? "/icons/heart-filled.svg" : "/icons/heart.svg"}
-                alt="Wishlist"
-                width={20}
-                height={20}
-              />
-            </button>
-          </div>
+          <CartItemImage item={item} onToggleWishlist={onToggleWishlist} />
 
           {/* Details */}
           <div
@@ -127,43 +111,10 @@ export function CartItem({
             >
               {t("lastOneInStock")}
             </div>
-            <div className="flex md:hidden flex-col items-start md:items-end">
-              <span className="text-base font-medium">
-                {item.product.variants[0].discountPrice
-                  ? (
-                      item.product.variants[0].discountPrice * item.quantity
-                    ).toLocaleString()
-                  : (item.product.price * item.quantity).toLocaleString()}{" "}
-                {t("uzs")}
-              </span>
-              {item.product.variants[0].discountPrice && (
-                <span className="text-xs font-medium text-[#697586] line-through">
-                  {(item.product.price * item.quantity).toLocaleString()}{" "}
-                  {t("uzs")}
-                </span>
-              )}
-            </div>
+
+            <CartItemPrice item={item} isDesktop={false} />
           </div>
-          <div className="hidden md:flex flex-col items-start md:items-start">
-            <span className="text-base font-medium">
-              {item.product.variants[0].discountPrice
-                ? (
-                    item.product.variants[0].discountPrice * item.quantity
-                  ).toLocaleString()
-                : (
-                    item.product.variants[0].price * item.quantity
-                  ).toLocaleString()}{" "}
-              {t("uzs")}
-            </span>
-            {item.product.variants[0].discountPrice && (
-              <span className="text-xs font-medium text-[#697586] line-through">
-                {(
-                  item.product.variants[0].price * item.quantity
-                ).toLocaleString()}{" "}
-                {t("uzs")}
-              </span>
-            )}
-          </div>
+          <CartItemPrice item={item} isDesktop={true} />
         </div>
       </div>
     </div>

@@ -6,6 +6,7 @@ export interface ProductVariant {
   price: number;
   discountPrice: number;
   discountPercent: number;
+  stockQuantity: number;
 }
 
 export interface Product {

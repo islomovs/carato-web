@@ -6,7 +6,7 @@ import { TextField } from "../shared/TextField";
 import FeedbackInput from "../shared/feedback/FeedbackInput";
 import PageHeader from "../shared/PageHeader";
 import useLockScroll from "@/hooks/useLockScroll";
-
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 
 type AddressValues = {
@@ -28,7 +28,8 @@ export default function AddressLayer({
   onClose,
   onSelect,
 }: AddressLayerProps) {
-  const { register, getValues, setValue } = useForm<AddressValues>({
+  const t = useTranslations("checkout");
+  const { register, getValues, setValue, watch } = useForm<AddressValues>({
     defaultValues: {
       address: "",
       apartmentNumber: "",
@@ -37,6 +38,8 @@ export default function AddressLayer({
       comment: "",
     },
   });
+
+  const commentValue = watch("comment");
 
   const handleConfirm = () => {
     onSelect(getValues());
@@ -48,7 +51,6 @@ export default function AddressLayer({
     <AnimatePresence>
       {open && (
         <>
-          {/* backdrop */}
           <motion.div
             key="backdrop"
             initial={{ opacity: 0 }}
@@ -70,7 +72,7 @@ export default function AddressLayer({
           >
             <div className="w-full md:w-[520px] md:mx-0 h-full bg-white flex flex-col">
               <PageHeader
-                title="Адрес доставки"
+                title={t("address")}
                 onBack={onClose}
                 onClose={onClose}
                 centeredTitle={true}
@@ -81,49 +83,46 @@ export default function AddressLayer({
               {/* content */}
               <div className="flex-1 overflow-auto px-4 pt-8 pb-[120px] space-y-6 md:px-10 md:py-5">
                 <TextField
-                  label="Адрес доставки"
+                  label={t("address")}
                   isRequired
-                  placeholder="Город, улица, дом"
+                  placeholder={t("addressPlaceholder")}
                   {...register("address")}
                 />
 
                 <TextField
-                  label="Квартира"
-                  placeholder="Номер квартиры"
+                  label={t("apartmentNumber")}
+                  placeholder={t("apartmentNumberPlaceholder")}
                   {...register("apartmentNumber")}
                 />
 
                 <TextField
-                  label="Подъезд"
-                  placeholder="Введите подъезд"
+                  label={t("entrance")}
+                  placeholder={t("entrancePlaceholder")}
                   {...register("entrance")}
                 />
 
                 <TextField
-                  label="Этаж"
-                  placeholder="Введите этаж"
+                  label={t("floor")}
+                  placeholder={t("floorPlaceholder")}
                   {...register("floor")}
                 />
                 <FeedbackInput
-                  label="Комментарий для курьера"
-                  placeholder="Введите комментарий"
+                  label={t("comment")}
+                  placeholder={t("commentPlaceholder")}
                   rows={4}
                   multiline
-                  value={getValues("comment")}
-                  onChange={(val: string) => {
-                    setValue("comment", val);
-                  }}
+                  value={commentValue}
+                  onChange={(val: string) => setValue("comment", val)}
                 />
               </div>
 
-              {/* bottom fixed button */}
               <div className="fixed bottom-0 left-0 right-0 px-4 py-3 md:px-10 md:pr-[54px] md:py-5 bg-white border-t border-[#EEF2F6] md:static md:flex md:justify-end">
                 <Button
                   onClick={handleConfirm}
                   type="button"
                   className="cursor-pointer w-full py-[26px] md:px-4 bg-black text-white rounded-[10px] md:rounded-md font-medium md:font-normal hover:bg-white hover:text-black border border-black md:w-auto flex items-center justify-center uppercase"
                 >
-                  Подтвердить
+                  {t("confirm")}
                 </Button>
               </div>
             </div>
