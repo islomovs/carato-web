@@ -87,111 +87,131 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
   const rating = product.averageRating || 5;
 
   return (
-    <div className="flex flex-col gap-8 w-full pb-[10px]">
-      {/* Category */}
-      <div className="flex flex-col justify-start items-start gap-2 w-full">
-        <h2 className="font-light text-base text-[#697586]">
-          {product?.category?.name}
-        </h2>
-        <h1 className="font-normal text-[28px] text-start">{product.name}</h1>
-        <div className="flex items-center">
-          <div className="flex gap-[4px]">
-            {Array.from({ length: totalStars }).map((_, index) => {
-              const filled = index < rating;
-              return (
-                <Star
-                  key={index}
-                  size={20}
-                  className={`${
-                    filled ? "fill-[#FAC515] text-[#FAC515]" : "text-[#FAC515]"
-                  }`}
-                  strokeWidth={filled ? 0 : 1.5}
-                />
-              );
-            })}
+    <>
+      <div className="flex flex-col gap-8 w-full pb-[10px]">
+        {/* Category */}
+        <div className="flex flex-col justify-start items-start gap-2 w-full">
+          <h2 className="font-light text-base text-[#697586]">
+            {product?.category?.name}
+          </h2>
+          <h1 className="font-normal text-[28px] text-start">{product.name}</h1>
+          <div className="flex items-center">
+            <div className="flex gap-[4px]">
+              {Array.from({ length: totalStars }).map((_, index) => {
+                const filled = index < rating;
+                return (
+                  <Star
+                    key={index}
+                    size={20}
+                    className={`${
+                      filled
+                        ? "fill-[#FAC515] text-[#FAC515]"
+                        : "text-[#FAC515]"
+                    }`}
+                    strokeWidth={filled ? 0 : 1.5}
+                  />
+                );
+              })}
+            </div>
+            <span className="font-light text-sm underline ml-2">
+              {Math.round(rating)} {t("reviews")}
+            </span>
           </div>
-          <span className="font-light text-sm underline ml-2">
-            {Math.round(rating)} {t("reviews")}
-          </span>
         </div>
-      </div>
 
-      {/* Pricing */}
-      <div className="flex items-center">
-        <span className="font-medium text-2xl">
-          {selectedVariant?.discountPrice ??
-            selectedVariant?.price ??
-            product.price}{" "}
-          {t("uzs")}
-        </span>
-        {selectedVariant?.discountPrice && (
-          <span className="font-medium text-base text-[#9AA4B2] line-through ml-3">
-            {selectedVariant.price} {t("uzs")}
+        {/* Pricing */}
+        <div className="flex items-center">
+          <span className="font-medium text-2xl">
+            {selectedVariant?.discountPrice ??
+              selectedVariant?.price ??
+              product.price}{" "}
+            {t("uzs")}
           </span>
-        )}
-        {selectedVariant?.discountPercent && (
-          <span className="font-normal text-xs text-[#FEFDF0] bg-[#F04438] py-1 px-2 rounded-[2px] ml-3">
-            -{selectedVariant.discountPercent}%
-          </span>
-        )}
-      </div>
+          {selectedVariant?.discountPrice && (
+            <span className="font-medium text-base text-[#9AA4B2] line-through ml-3">
+              {selectedVariant.price} {t("uzs")}
+            </span>
+          )}
+          {selectedVariant?.discountPercent && (
+            <span className="font-normal text-xs text-[#FEFDF0] bg-[#F04438] py-1 px-2 rounded-[2px] ml-3">
+              -{selectedVariant.discountPercent}%
+            </span>
+          )}
+        </div>
 
-      {/* Sizes */}
-      <ProductSizeSelector
-        variants={stableProduct.variants}
-        onOpenNotify={() => setOpenNotify(true)}
-        onOpenDetermine={() => setOpenDetermine(true)}
-        onSizeSelect={(variant) => setSelectedVariant(variant)}
-      />
+        {/* Sizes */}
+        <ProductSizeSelector
+          variants={stableProduct.variants}
+          onOpenNotify={() => setOpenNotify(true)}
+          onOpenDetermine={() => setOpenDetermine(true)}
+          onSizeSelect={(variant) => setSelectedVariant(variant)}
+        />
 
-      {/* Desktop Buttons */}
-      <div className="hidden md:flex flex-col gap-3">
-        <div className="flex gap-3 w-full">
-          <Button
-            onClick={handleAddToCart}
-            className="bg-black text-white flex-1 h-[52px] text-sm uppercase font-normal rounded-md hover:text-black border border-black hover:bg-white cursor-pointer"
-          >
-            {t("addToCart")}
-          </Button>
+        {/* Desktop Buttons */}
+        <div className="hidden md:flex flex-col gap-3">
+          <div className="flex gap-3 w-full">
+            <Button
+              onClick={handleAddToCart}
+              className="bg-black text-white flex-1 h-[52px] text-sm uppercase font-normal rounded-md hover:text-black border border-black hover:bg-white cursor-pointer"
+            >
+              {t("addToCart")}
+            </Button>
+
+            <Button
+              variant="ghost"
+              className="bg-white text-black w-[52px] h-[52px] font-normal rounded-md border border-black cursor-pointer"
+            >
+              <Image src="/icons/heart.svg" alt="" width={20} height={20} />
+            </Button>
+
+            <ShareDropdown />
+          </div>
 
           <Button
             variant="ghost"
-            className="bg-white text-black w-[52px] h-[52px] font-normal rounded-md border border-black cursor-pointer"
+            className="bg-white hover:bg-black text-black hover:text-white w-full h-[52px] font-normal rounded-md border border-black cursor-pointer uppercase"
           >
-            <Image src="/icons/heart.svg" alt="" width={20} height={20} />
+            {t("buyInOneClick")}
           </Button>
-
-          <ShareDropdown />
         </div>
 
+        {/* Delivery Block */}
+        <div className="flex justify-between items-center w-full bg-[#F8FAFC] p-4">
+          <span className="font-normal text-sm text-[#667085]">
+            {t("estimatedDeliveryDates")}
+          </span>
+          <span className="font-normal text-sm">20 - 23 сентября</span>
+        </div>
+
+        <NotifySizeModal open={openNotify} onOpenChange={setOpenNotify} />
+        <DetermineSizeModal
+          open={openDetermine}
+          onOpenChange={setOpenDetermine}
+        />
+
+        {/* Auth modal */}
+        <AuthModal
+          open={authOpen}
+          onClose={() => setAuthOpen(false)}
+          initialMode="phone"
+        />
+      </div>
+      <div className="md:hidden fixed bottom-0 left-0 right-0 px-4 py-4 flex gap-4 border-t border-[#EEF2F6] bg-white z-50">
         <Button
-          variant="ghost"
-          className="bg-white hover:bg-black text-black hover:text-white w-full h-[52px] font-normal rounded-md border border-black cursor-pointer uppercase"
+          variant="outline"
+          className="flex-1 h-[52px] uppercase font-[400] text-[14px]"
         >
-          {t("buyInOneClick")}
+          Быстрая покупка
+        </Button>
+
+        <Button
+          onClick={handleAddToCart}
+          variant="default"
+          className="flex-1 h-[52px] uppercase font-[400] text-[14px] bg-black text-white py-[12px] px-4 hover:bg-white hover:text-black border border-black"
+        >
+          В корзину
         </Button>
       </div>
-
-      {/* Delivery Block */}
-      <div className="flex justify-between items-center w-full bg-[#F8FAFC] p-4">
-        <span className="font-normal text-sm text-[#667085]">
-          {t("estimatedDeliveryDates")}
-        </span>
-        <span className="font-normal text-sm">20 - 23 сентября</span>
-      </div>
-
-      <NotifySizeModal open={openNotify} onOpenChange={setOpenNotify} />
-      <DetermineSizeModal
-        open={openDetermine}
-        onOpenChange={setOpenDetermine}
-      />
-
-      {/* Auth modal */}
-      <AuthModal
-        open={authOpen}
-        onClose={() => setAuthOpen(false)}
-        initialMode="phone"
-      />
-    </div>
+    </>
   );
 }

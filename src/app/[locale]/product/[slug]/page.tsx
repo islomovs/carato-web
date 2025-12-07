@@ -9,14 +9,12 @@ import SellerInfoButton from "@/components/shared/product/SellerInfoButton";
 import { usePathname } from "next/navigation";
 import { useProductBySlug } from "@/hooks/useProductBySlug";
 import { MediaItemT } from "@/components/shared/product/MediaItem";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ProductPage() {
   const pathname = usePathname();
   const slug = pathname.split("/").pop();
   const [isMobile, setIsMobile] = useState(false);
-
   const { product, loading, error } = useProductBySlug(slug);
 
   const media: MediaItemT[] = product
@@ -164,21 +162,6 @@ export default function ProductPage() {
             products={sampleProducts}
             hideSeeAll
           /> */}
-          <div className="fixed bottom-0 left-0 right-0 px-4 py-4 flex gap-4 border-t border-[#EEF2F6] bg-white z-50">
-            <Button
-              variant="outline"
-              className="flex-1 h-[52px] uppercase font-[400] text-[14px]"
-            >
-              Быстрая покупка
-            </Button>
-
-            <Button
-              variant="default"
-              className="flex-1 h-[52px] uppercase font-[400] text-[14px] bg-black text-white py-[12px] px-4 hover:bg-white hover:text-black border border-black"
-            >
-              В корзину
-            </Button>
-          </div>
         </div>
       )}
     </div>
