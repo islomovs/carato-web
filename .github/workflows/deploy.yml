@@ -34,7 +34,7 @@ jobs:
             git pull
 
             echo "📦 Installing dependencies..."
-            npm ci --omit=dev
+            npm install
 
             echo "🏗️  Building project..."
             npm run build
