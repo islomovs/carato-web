@@ -2,7 +2,7 @@
 // src/lib/axios/instance.ts
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from "axios";
 
-const API_BASE = "http://31.97.75.173:7777";
+const API_BASE = "https://api.carato.uz";
 
 type TokenPair = {
   token: string | null;
