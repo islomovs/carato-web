@@ -1,0 +1,36 @@
+{
+  "checkout": {
+    "title": "Buyurtma berish",
+    "contactInfo": "Aloqa ma'lumotlari",
+    "deliveryDateTime": "Yetkazib berish sanasi va vaqti",
+    "chooseDeliveryDateTime": "Yetkazib berish sanasi va vaqtini tanlang",
+    "deliveryDate": "Yetkazib berish sanasi",
+    "deliveryTime": "Yetkazib berish vaqti",
+    "freeDelivery": "BEPUL YETKAZIB BERISH",
+    "deliveryCost": "SO'M YETKAZIB BERISH NARXI",
+    "fullName": "To'liq ism",
+    "phone": "Telefon raqami",
+    "paymentMethod": "To'lov usuli",
+    "back": "Orqaga",
+    "close": "Yopish",
+    "address": "Yetkazib berish manzili",
+    "addressPlaceholder": "Shahar, ko'cha, uy",
+    "apartmentNumber": "Kvartira",
+    "apartmentNumberPlaceholder": "Kvartira raqami",
+    "entrance": "Kiruvchi eshik",
+    "entrancePlaceholder": "Kiruvchi eshikni kiriting",
+    "floor": "Qavat",
+    "floorPlaceholder": "Qavatni kiriting",
+    "comment": "Kurer uchun izoh",
+    "commentPlaceholder": "Izohni kiriting",
+    "confirm": "Tasdiqlash",
+    "errors": {
+      "fullNameRequired": "To'liq ism majburiy",
+      "phoneRequired": "Telefon raqami majburiy",
+      "phoneInvalid": "Noto'g'ri telefon raqami",
+      "deliveryDateRequired": "Yetkazib berish sanasi majburiy",
+      "deliveryTimeRequired": "Yetkazib berish vaqti majburiy",
+      "paymentRequired": "To'lov usuli majburiy"
+    }
+  }
+}

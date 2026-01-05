@@ -17,9 +17,11 @@
     "register": "Ro'yxatdan o'tish",
     "popularProducts": "Sotuvdagi mahsulotlar",
     "newArrivals": "Yangi kelganlar",
+    "categoriesTitle": "Mahsulotlar kategoriyalari",
     "specialOffers": "Maxsus takliflar",
     "seeAll": "Barchasini ko'rish",
     "news": "Yangiliklar",
-    "learnMore": "Batafsil o'rganish"
+    "learnMore": "Batafsil o'rganish",
+    "loadError": "Kategoriya yuklashda xatolik yuz berdi"
   }
 }

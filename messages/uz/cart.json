@@ -1,0 +1,19 @@
+{
+  "cart": {
+    "title": "Savat",
+    "emptyMessage": "Savatda hech qanday mahsulot yo'q",
+    "emptyDescription": "Sotib olish uchun mahsulotlarni tanlang va ular\nkeyingi xarid uchun bu yerda ko'rsatiladi",
+    "goToCatalog": "Katalogga o'tish",
+    "total": "Jami",
+    "estimatedDeliveryDates": "Taxminiy yetkazib berish sanalari",
+    "checkoutButton": "Buyurtmani rasmiylashtirish",
+    "quantity": "Miqdor",
+    "size": "O'lcham",
+    "uzs": "SO'M",
+    "yourOrder": "Sizning buyurtmangiz",
+    "items": "mahsulotlar",
+    "savings": "Tejash",
+    "toPay": "To'lash",
+    "lastOneInStock": "Oxirgi dona"
+  }
+}
