@@ -9,6 +9,7 @@
     "freeDelivery": "БЕСПЛАТНАЯ ДОСТАВКА",
     "deliveryCost": "СУМ ЗА ДОСТАВКУ",
     "fullName": "Полное имя",
+    "fullNamePlaceholder": "Введите ваше полное имя",
     "phone": "Номер телефона",
     "paymentMethod": "Способ оплаты",
     "back": "Назад",
@@ -26,11 +27,15 @@
     "confirm": "Подтвердить",
     "errors": {
       "fullNameRequired": "Полное имя обязательно",
+      "fullNameTooShort": "Полное имя слишком короткое",
       "phoneRequired": "Номер телефона обязателен",
       "phoneInvalid": "Неверный номер телефона",
       "deliveryDateRequired": "Дата доставки обязательна",
       "deliveryTimeRequired": "Время доставки обязательно",
-      "paymentRequired": "Способ оплаты обязателен"
+      "addressRequired": "Адрес обязателен",
+      "dateTimeRequired": "Пожалуйста, выберите дату и время доставки",
+      "deliveryRequired": "Пожалуйста, выберите способ доставки",
+      "paymentRequired": "Пожалуйста, выберите способ оплаты"
     }
   }
 }

@@ -21,7 +21,6 @@ export default function PaymentTypesSection({
   const { field } = useController({
     control,
     name,
-    defaultValue: "CLICK",
   });
 
   return (

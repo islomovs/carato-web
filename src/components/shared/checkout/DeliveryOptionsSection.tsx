@@ -32,7 +32,13 @@ export function DeliveryOptionsSection({
               key={opt.key}
               type="button"
               variant="default"
-              onClick={() => setValue("deliveryType", opt.key)}
+              onClick={() =>
+                setValue("deliveryType", opt.key, {
+                  shouldDirty: true,
+                  shouldTouch: true,
+                  shouldValidate: false,
+                })
+              }
               className={`w-full flex items-center justify-center px-3 py-[25px] rounded-md border border-black cursor-pointer hover:bg-black hover:text-white ${
                 isSelected ? "bg-black text-white" : "bg-white text-black"
               }`}

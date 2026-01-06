@@ -97,15 +97,15 @@ export default function PersonalInfoBlock() {
   };
 
   if (loading) return <SkeletonPersonalInfoBlock />;
-  // if (error)
-  //   return (
-  //     <div className="text-red-600">
-  //       {t("loadError")}
-  //       <button onClick={() => location.reload()} className="underline ml-2">
-  //         {t("retry")}
-  //       </button>
-  //     </div>
-  //   );
+  if (error)
+    return (
+      <div className="text-red-600">
+        {t("loadError")}
+        <button onClick={() => location.reload()} className="underline ml-2">
+          {t("retry")}
+        </button>
+      </div>
+    );
 
   return (
     <>

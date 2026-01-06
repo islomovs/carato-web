@@ -8,6 +8,7 @@ import PageHeader from "../shared/PageHeader";
 import useLockScroll from "@/hooks/useLockScroll";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
+import YandexMap from "../shared/YandexMap";
 
 type AddressValues = {
   address: string;
@@ -29,7 +30,14 @@ export default function AddressLayer({
   onSelect,
 }: AddressLayerProps) {
   const t = useTranslations("checkout");
-  const { register, getValues, setValue, watch } = useForm<AddressValues>({
+  const {
+    register,
+    getValues,
+    setValue,
+    watch,
+    formState: { errors },
+    trigger,
+  } = useForm<AddressValues>({
     defaultValues: {
       address: "",
       apartmentNumber: "",
@@ -41,7 +49,11 @@ export default function AddressLayer({
 
   const commentValue = watch("comment");
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
+    const isValid = await trigger("address");
+
+    if (!isValid) return;
+
     onSelect(getValues());
   };
 
@@ -82,11 +94,23 @@ export default function AddressLayer({
 
               {/* content */}
               <div className="flex-1 overflow-auto px-4 pt-8 pb-[120px] space-y-6 md:px-10 md:py-5">
+                <div className="w-full h-fit md:h-fit overflow-hidden mb-6">
+                  <YandexMap
+                    onLocationChange={(location) => {
+                      // When user selects a location on the map, populate the address field
+                      setValue("address", location.address);
+                    }}
+                  />
+                </div>
+
                 <TextField
                   label={t("address")}
                   isRequired
                   placeholder={t("addressPlaceholder")}
-                  {...register("address")}
+                  error={errors.address?.message}
+                  {...register("address", {
+                    required: t("errors.addressRequired"),
+                  })}
                 />
 
                 <TextField

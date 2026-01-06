@@ -8,11 +8,13 @@ import { useTranslations } from "next-intl";
 interface ContactInfoSectionProps {
   control: Control<any>;
   register: any;
+  errors: any;
 }
 
 export function ContactInfoSection({
   control,
   register,
+  errors,
 }: ContactInfoSectionProps) {
   const t = useTranslations("checkout");
 
@@ -66,10 +68,20 @@ export function ContactInfoSection({
         />
         <TextField
           label={t("fullName")}
-          placeholder="Введите ваше полное имя"
+          placeholder={t("fullNamePlaceholder")}
           type="text"
           isRequired
-          {...register("fullName")}
+          error={errors.fullName?.message}
+          {...register("fullName", {
+            required: t("errors.fullNameRequired"),
+            minLength: {
+              value: 2,
+              message: t("errors.fullNameTooShort"),
+            },
+            validate: (value: {
+              trim: () => { (): any; new (): any; length: number };
+            }) => value.trim().length > 0 || t("errors.fullNameRequired"),
+          })}
         />
       </div>
     </div>

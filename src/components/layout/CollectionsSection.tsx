@@ -67,7 +67,7 @@ export default function CollectionsSection() {
               style={{ height: "700px" }}
             >
               <Image
-                src={item.desktopImage}
+                src={item.desktopImage || "/images/collection-placeholder.webp"}
                 alt={item.title}
                 fill
                 className="object-cover"
@@ -138,7 +138,7 @@ export default function CollectionsSection() {
               style={{ width: "100%" }}
             >
               <Image
-                src={item.mobileImage}
+                src={item.mobileImage || "/images/collection-placeholder.webp"}
                 alt={item.title}
                 fill
                 className="object-cover"

@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { useCartStore } from "@/lib/cartStore";
 import { useCreateOrder } from "@/hooks/useCreateOrder";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export type PaymentOption = "click" | "payme" | "cash";
 
@@ -49,7 +50,14 @@ export default function CheckoutLayer({
 
   const totalSum = totalPrice() + deliveryPrice;
 
-  const { register, control, handleSubmit, watch, setValue } = useForm<{
+  const {
+    register,
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<{
     phone: string;
     fullName: string;
     deliveryType: string;
@@ -59,10 +67,13 @@ export default function CheckoutLayer({
     floor: string;
     comment: string;
     deliveryPreferredTime: string;
-    paymentType: "click" | "payme" | "cash";
+    paymentType: "CLICK" | "PAYME" | "CASH";
     totalSum: number;
     promocode: string;
   }>({
+    mode: "onBlur",
+    reValidateMode: "onChange",
+    shouldFocusError: false,
     defaultValues: {
       phone: "+998 ",
       fullName: "",
@@ -73,12 +84,32 @@ export default function CheckoutLayer({
       floor: "",
       comment: "",
       deliveryPreferredTime: "",
-      paymentType: "click",
+      paymentType: "CLICK",
       totalSum: 0,
     },
   });
 
   const onSubmit = async (data: any) => {
+      if (!data.deliveryType) {
+        toast.error(t("errors.deliveryRequired"));
+        return;
+      }
+
+    if (!data.address) {
+      toast.error(t("errors.addressRequired"));
+      return;
+    }
+
+    if (!data.deliveryPreferredTime) {
+      toast.error(t("errors.dateTimeRequired"));
+      return;
+    }
+
+    if (!data.paymentType) {
+      toast.error(t("errors.paymentRequired"));
+      return;
+    }
+
     try {
       const productsPayload = cartItems.map((item) => {
         const variant = item.product.variants[0];
@@ -159,7 +190,11 @@ export default function CheckoutLayer({
                   className="md:relative md:justify-start md:gap-8 md:border-0 md:top-auto md:z-auto md:bg-transparent md:px-0 md:py-0"
                 />
                 <div className="flex-1 space-y-6 px-4 pt-8 md:px-4 pb-56 md:pb-20 overflow-auto">
-                  <ContactInfoSection control={control} register={register} />
+                  <ContactInfoSection
+                    control={control}
+                    register={register}
+                    errors={errors}
+                  />
 
                   <hr className="border-t border-[#EEF2F6]" />
 
