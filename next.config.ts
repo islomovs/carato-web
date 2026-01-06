@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "http",
-        hostname: "31.97.75.173",
+        hostname: "162.19.220.41",
         port: "9000",
         pathname: "/carato/**",
       },
