@@ -97,15 +97,15 @@ export default function PersonalInfoBlock() {
   };
 
   if (loading) return <SkeletonPersonalInfoBlock />;
-  if (error)
-    return (
-      <div className="text-red-600">
-        {t("loadError")}
-        <button onClick={() => location.reload()} className="underline ml-2">
-          {t("retry")}
-        </button>
-      </div>
-    );
+  // if (error)
+  //   return (
+  //     <div className="text-red-600">
+  //       {t("loadError")}
+  //       <button onClick={() => location.reload()} className="underline ml-2">
+  //         {t("retry")}
+  //       </button>
+  //     </div>
+  //   );
 
   return (
     <>
@@ -231,16 +231,35 @@ export default function PersonalInfoBlock() {
             />
           </div>
         </div>
-        <Button
-          onClick={() => {
-            logout();
-            toast.success(t("loggedOutSuccessfully"));
-            router.push("/");
-          }}
-          className="text-black rounded-md px-7 py-6 bg-[#EEF2F6] hover:bg-[#E3E8EF] hover:text-black font-medium self-center cursor-pointer transition-all duration-300 uppercase"
-        >
-          {t("exit")}
-        </Button>
+        <div className="flex flex-col-reverse md:flex-row justify-end w-full gap-6">
+          <Button
+            onClick={() => {
+              logout();
+              toast.success(t("loggedOutSuccessfully"));
+              router.push("/");
+            }}
+            type="button"
+            className="text-black rounded-md px-7 py-6 bg-[#EEF2F6] hover:bg-[#E3E8EF] hover:text-black font-medium cursor-pointer transition-all duration-300 uppercase"
+          >
+            {t("exit")}
+          </Button>
+          <Button
+            onClick={() => {
+              const formState = form.formState;
+              console.log("Form State on Save:", formState);
+              if (Object.keys(formState.errors).length > 0) {
+                toast.error(
+                  t("errors.fillAllFields") || "Please fill out all fields"
+                );
+                return;
+              }
+              toast.success(t("changesSavedSuccessfully"));
+            }}
+            className="text-white rounded-md px-7 py-6 bg-black border border-black hover:bg-white hover:text-black font-medium cursor-pointer transition-all duration-300 uppercase"
+          >
+            {t("saveChanges")}
+          </Button>
+        </div>
       </motion.form>
 
       <AuthModal

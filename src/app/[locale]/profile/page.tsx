@@ -21,12 +21,14 @@ export default function Profile() {
 
   return (
     <>
-      <div className="flex flex-col justify-center items-center md:space-y-[52px] md:my-[52px]">
-        <h1 className="font-normal md:text-[28px]">{t("title")}</h1>
+      <div className="flex flex-col justify-center items-center md:space-y-[52px] md:my-[52px] mt-16 md:mt-0">
+        <h1 className="font-normal text-2xl my-8 md:my-0 md:text-[28px]">
+          {t("title")}
+        </h1>
 
         {/* -------- TABS -------- */}
-        <div className="sticky top-[73px] bg-white z-50 border-y border-y-[#EEF2F6] w-full">
-          <div className="flex justify-center gap-[40px] relative">
+        <div className="sticky top-16 md:top-[73px] bg-white z-30 border-y border-y-[#EEF2F6] w-full">
+          <div className="flex justify-between px-4 md:px-0 md:justify-center md:gap-[40px] relative">
             {tabs.map((tab) => {
               const isActive = tab.id === active;
 
@@ -35,7 +37,7 @@ export default function Profile() {
                   key={tab.id}
                   onClick={() => setActive(tab.id)}
                   className={cn(
-                    "relative py-[24px] text-[14px] font-normal text-[#1D1D1F] transition-colors cursor-pointer",
+                    "relative py-[24px] min-w-[99px] text-[14px] font-normal text-[#1D1D1F] transition-colors cursor-pointer",
                     isActive ? "font-medium" : "text-[#697586]"
                   )}
                 >
@@ -59,7 +61,7 @@ export default function Profile() {
         </div>
 
         {/* -------- TAB CONTENT -------- */}
-        <div className="w-full flex justify-center">
+        <div className="w-full flex justify-center px-4 py-6 md:px-0 md:py-0 mb-[52px]">
           <AnimatePresence mode="wait">
             {active === "personal" && <PersonalInfoBlock />}
 

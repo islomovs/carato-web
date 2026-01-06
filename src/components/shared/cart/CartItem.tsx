@@ -91,7 +91,7 @@ export function CartItem({
 
           {/* Details */}
           <div
-            className={`flex-1 flex flex-col justify-between gap-4 ${item.product.stockQuantity === 1 ? "md:justify-between" : "md:gap-6"}`}
+            className={`flex-1 flex flex-col justify-between gap-4 md:gap-6 ${item.product.stockQuantity === 1 ? "md:justify-between" : "md:justify-normal"}`}
           >
             <div className="flex flex-col md:gap-2">
               <p className="text-base font-medium mr-7 md:mr-0">

@@ -24,6 +24,8 @@
       "streetRequired": "Ko'cha majburiy"
     },
     "exit": "Akkauntdan chiqish",
+    "saveChanges": "O'zgarishlarni saqlash",
+    "changesSavedSuccessfully": "O'zgarishlar muvaffaqiyatli saqlandi",
     "emptyMessage": "Sizda hozircha buyurtmalar yo'q",
     "emptyDescription": "Sotib olish uchun mahsulotlarni tanlang va ular\nbu yerda ko'rsatiladi",
     "orderDate": "Buyurtma sanasi",

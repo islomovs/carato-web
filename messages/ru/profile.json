@@ -24,6 +24,8 @@
       "streetRequired": "Улица обязательна"
     },
     "exit": "Выйти из аккаунта",
+    "saveChanges": "Сохранить изменения",
+    "changesSavedSuccessfully": "Изменения успешно сохранены",
     "emptyMessage": "У вас пока нет заказов",
     "emptyDescription": "Выберите товары для покупки и они\nотобразятся здесь",
     "orderDate": "ДАТА ЗАКАЗА",
