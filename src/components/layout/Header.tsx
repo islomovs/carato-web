@@ -39,7 +39,7 @@ export default function Header() {
         onClose={() => setAuthOpen(false)}
         initialMode="phone"
       />
-      <div className="container flex items-center justify-between py-2">
+      <div className="container relative flex items-center justify-between py-4 md:py-2">
         {/* Left side: mobile menu button */}
         <div className="flex items-center gap-2 md:hidden">
           <button
@@ -66,14 +66,13 @@ export default function Header() {
         {/* Main logo */}
         <Link
           href="/"
-          className="text-lg md:text-xl font-semibold flex items-center"
-          style={{ paddingTop: 8, paddingBottom: 8 }}
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex h-[48px] items-center"
         >
           <Image
             src="/images/logo.png"
             alt="Carato"
-            width={120}
-            height={40}
+            width={172}
+            height={48}
             className="object-contain"
           />
         </Link>

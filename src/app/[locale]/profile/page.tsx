@@ -22,12 +22,12 @@ export default function Profile() {
   return (
     <>
       <div className="flex flex-col justify-center items-center md:space-y-[52px] md:my-[52px] mt-16 md:mt-0">
-        <h1 className="font-normal text-2xl my-8 md:my-0 md:text-[28px]">
+        <h1 className="font-normal text-2xl my-8 md:my-[52px] md:text-[28px]">
           {t("title")}
         </h1>
 
         {/* -------- TABS -------- */}
-        <div className="sticky top-16 md:top-[73px] bg-white z-30 border-y border-y-[#EEF2F6] w-full">
+        <div className="sticky top-16 md:top-16 bg-white z-30 border-y border-y-[#EEF2F6] w-full">
           <div className="flex justify-between px-4 md:px-0 md:justify-center md:gap-[40px] relative">
             {tabs.map((tab) => {
               const isActive = tab.id === active;
