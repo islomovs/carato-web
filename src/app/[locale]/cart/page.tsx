@@ -11,6 +11,7 @@ import PageHeader from "@/components/shared/PageHeader";
 import { useCartStore } from "@/lib/cartStore";
 import { useTranslations } from "next-intl";
 import { CartSkeleton } from "@/components/shared/cart/CartSkeleton";
+import { CartItem as CartItemType } from "@/lib/cartStore";
 
 export default function CartPage() {
   const router = useRouter();
@@ -18,7 +19,6 @@ export default function CartPage() {
   const t = useTranslations("cart");
 
   const {
-    cartItems,
     fetchCart,
     updateQuantity,
     removeItem,
@@ -48,9 +48,137 @@ export default function CartPage() {
   const savings = totalOldPrice() - totalPrice();
 
   const isDesktop = typeof window !== "undefined" && window.innerWidth >= 1024;
-  const isEmpty = cartItems.length === 0;
+  const testCartItems: CartItemType[] = [
+    {
+      product: {
+        id: 1,
+        slug: "test-product-1",
+        name: "Test Product 1",
+        stockQuantity: 10,
+        price: 100000,
+        discountPrice: 90000,
+        discountPercent: 10,
+        images: [{ image: "/images/p-1.jpg" }],
+        variants: [
+          {
+            size: { id: 1, name: "M" },
+            price: 100000,
+            discountPrice: 90000,
+            discountPercent: 10,
+            stockQuantity: 10,
+          },
+        ],
+      },
+      quantity: 2,
+    },
+    {
+      product: {
+        id: 2,
+        slug: "test-product-2",
+        name: "Test Product 2",
+        stockQuantity: 1,
+        price: 200000,
+        images: [{ image: "/images/p-2.jpg" }],
+        variants: [
+          {
+            size: { id: 2, name: "L" },
+            price: 200000,
+            discountPrice: 0,
+            discountPercent: 0,
+            stockQuantity: 5,
+          },
+        ],
+      },
+      quantity: 1,
+    },
+    {
+      product: {
+        id: 3,
+        slug: "test-product-3",
+        name: "Test Product 3",
+        stockQuantity: 8,
+        price: 150000,
+        discountPrice: 120000,
+        discountPercent: 20,
+        images: [{ image: "/images/p-3.jpg" }],
+        variants: [
+          {
+            size: { id: 3, name: "S" },
+            price: 150000,
+            discountPrice: 120000,
+            discountPercent: 20,
+            stockQuantity: 8,
+          },
+        ],
+      },
+      quantity: 3,
+    },
+    {
+      product: {
+        id: 4,
+        slug: "test-product-4",
+        name: "Test Product 4",
+        stockQuantity: 12,
+        price: 50000,
+        images: [{ image: "/images/p-4.jpg" }],
+        variants: [
+          {
+            size: { id: 4, name: "XL" },
+            price: 50000,
+            discountPrice: 0,
+            discountPercent: 0,
+            stockQuantity: 12,
+          },
+        ],
+      },
+      quantity: 4,
+    },
+    {
+      product: {
+        id: 5,
+        slug: "test-product-5",
+        name: "Test Product 5",
+        stockQuantity: 7,
+        price: 300000,
+        discountPrice: 270000,
+        discountPercent: 10,
+        images: [{ image: "/images/p-5.jpg" }],
+        variants: [
+          {
+            size: { id: 5, name: "M" },
+            price: 300000,
+            discountPrice: 270000,
+            discountPercent: 10,
+            stockQuantity: 7,
+          },
+        ],
+      },
+      quantity: 1,
+    },
+    {
+      product: {
+        id: 6,
+        slug: "test-product-6",
+        name: "Test Product 6",
+        stockQuantity: 3,
+        price: 400000,
+        images: [{ image: "/images/p-6.jpg" }],
+        variants: [
+          {
+            size: { id: 6, name: "L" },
+            price: 400000,
+            discountPrice: 0,
+            discountPercent: 0,
+            stockQuantity: 3,
+          },
+        ],
+      },
+      quantity: 2,
+    },
+  ];
+  const isEmpty = testCartItems.length === 0;
 
-  console.log("Cart items:", cartItems);
+  console.log("Cart items:", testCartItems);
 
   return (
     <>
@@ -59,7 +187,7 @@ export default function CartPage() {
       >
         <div className="flex flex-col">
           <PageHeader
-            title={`Корзина ${cartItems.length ? `(${cartItems.length})` : ""}`}
+            title={`${t("title")} ${testCartItems.length ? `(${testCartItems.length})` : ""}`}
             onClose={() => router.back()}
             absoluteClose
             className="md:hidden md:px-10 md:pt-10 md:pb-5"
@@ -72,7 +200,7 @@ export default function CartPage() {
               {/* Desktop title */}
               <h1 className="hidden md:block text-[28px] font-normal mt-[52px] mb-8">
                 {t("title")}{" "}
-                {cartItems.length > 0 ? `(${cartItems.length})` : ""}
+                {testCartItems.length > 0 ? `(${testCartItems.length})` : ""}
               </h1>
 
               {loading && <CartSkeleton rows={3} />}
@@ -82,10 +210,10 @@ export default function CartPage() {
               </div>
 
               <div
-                className={`flex flex-col gap-8 ${isEmpty ? "mt-0" : "mt-8"} md:mt-0`}
+                className={`flex flex-col gap-8 ${isEmpty ? "mt-0" : "mt-8 mb-12"} md:mt-0 md:mb-0`}
               >
                 {/* Cart items */}
-                {cartItems.map((item) => (
+                {testCartItems.map((item) => (
                   <CartItem
                     key={`${item.product.id}-${item.product.variants[0]?.size.id}`}
                     item={item}
@@ -104,7 +232,7 @@ export default function CartPage() {
               </div>
             </div>
 
-            {cartItems.length > 0 && (
+            {testCartItems.length > 0 && (
               <TotalsColumn
                 totalPrice={totalPrice()}
                 savings={savings}

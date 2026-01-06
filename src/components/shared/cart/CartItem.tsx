@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { QuantitySizeRow } from "../checkout/QuantitySizeRow";
+import { QuantityRow } from "../checkout/QuantityRow";
 import type { CartItem } from "@/lib/cartStore";
 import { useTranslations } from "next-intl";
 import { debounce } from "@/lib/debounce";
@@ -74,7 +74,7 @@ export function CartItem({
     <div className="flex flex-col gap-[10px]">
       <div className="flex items-center gap-2 text-sm border-b border-black/20 py-2">
         <span className="font-light">{t("estimatedDeliveryDates")}</span>
-        <span className="font-medium">23 - 26</span>
+        <span className="font-medium">23 - 26 сентября</span>
       </div>
 
       <div className="relative flex flex-col items-start md:flex-row gap-5 md:w-full">
@@ -91,12 +91,20 @@ export function CartItem({
 
           {/* Details */}
           <div
-            className={`flex-1 flex flex-col gap-4 ${item.product.stockQuantity === 1 ? "md:justify-between" : "md:gap-6"}`}
+            className={`flex-1 flex flex-col justify-between gap-4 ${item.product.stockQuantity === 1 ? "md:justify-between" : "md:gap-6"}`}
           >
-            <p className="text-base font-medium mr-7 md:mr-0">
-              {item.product.name}
+            <div className="flex flex-col md:gap-2">
+              <p className="text-base font-medium mr-7 md:mr-0">
+                {item.product.name}
+              </p>
+              <p className="hidden md:block text-xs text-[#697586] font-normal">
+                Размер: {item.product.variants[0].size.name}
+              </p>
+            </div>
+            <p className="block md:hidden text-xs text-[#697586] font-normal">
+              Размер: {item.product.variants[0].size.name}
             </p>
-            <QuantitySizeRow
+            <QuantityRow
               isSyncing={syncing}
               quantity={localQty}
               stockQuantity={item.product.stockQuantity}
@@ -107,7 +115,7 @@ export function CartItem({
               onToggleWishlist={onToggleWishlist}
             />
             <div
-              className={`${item.product.stockQuantity === 1 ? "block" : "hidden"} py-0.5 md:py-1 px-2 bg-[#F79009] text-xs rounded-xs text-white w-fit`}
+              className={`${item.product.stockQuantity === 1 ? "block" : "hidden"} py-0.5 md:py-1 px-2 bg-[#E3E8EF] md:bg-[#F79009] text-xs rounded-xs text-black md:text-white w-fit`}
             >
               {t("lastOneInStock")}
             </div>
