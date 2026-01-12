@@ -11,6 +11,7 @@ import "swiper/css/navigation";
 import { Product } from "@/services/product";
 import useLockScroll from "@/hooks/useLockScroll";
 import ProductsBlockModal from "../shared/product/ProductsBlockModal";
+import { WishlistItem } from "@/services/wishlist";
 
 interface ProductsBlockProps {
   title: string;
@@ -26,8 +27,8 @@ export default function ProductsBlock({
   hideSeeAll = false,
 }: ProductsBlockProps) {
   const t = useTranslations("home");
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const handleOpen = (product: Product) => setSelectedProduct(product);
+  const [selectedProduct, setSelectedProduct] = useState<Product | WishlistItem | null>(null);
+  const handleOpen = (product: Product | WishlistItem) => setSelectedProduct(product);
   const handleClose = () => setSelectedProduct(null);
 
   useLockScroll(selectedProduct ? true : false);
@@ -78,7 +79,7 @@ export default function ProductsBlock({
           </Button>
         )}
       </div>
-      {selectedProduct && (
+      {selectedProduct && 'slug' in selectedProduct && (
         <ProductsBlockModal
           slug={selectedProduct.slug}
           onClose={handleClose}

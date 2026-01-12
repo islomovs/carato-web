@@ -65,7 +65,6 @@ export function CartItem({
     }
   };
 
-  // Keep localQty in sync if item.quantity changes from outside (e.g., fetchCart)
   useEffect(() => {
     setLocalQty(item.quantity);
   }, [item.quantity]);
@@ -113,6 +112,7 @@ export function CartItem({
               onDecrement={handleDecrement}
               onRemove={removeItem}
               onToggleWishlist={onToggleWishlist}
+              item={item}
             />
             <div
               className={`${item.product.stockQuantity === 1 ? "block" : "hidden"} py-0.5 md:py-1 px-2 bg-[#E3E8EF] md:bg-[#F79009] text-xs rounded-xs text-black md:text-white w-fit`}

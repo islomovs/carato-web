@@ -6,17 +6,27 @@ import { Product } from "@/services/product";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
 import ProductsBlockModal from "../product/ProductsBlockModal";
+import { WishlistItem } from "@/services/wishlist";
+import useLockScroll from "@/hooks/useLockScroll";
+import { isWishlistItem } from "../product/ProductCard";
 
 interface ProductGridProps {
-  products: Product[];
+  products: Product[] | WishlistItem[];
   loading?: boolean;
 }
 
 export default function ProductGrid({ products, loading }: ProductGridProps) {
   const skeletons = Array.from({ length: 8 });
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const handleOpen = (product: Product) => setSelectedProduct(product);
+  const [selectedProduct, setSelectedProduct] = useState<
+    Product | WishlistItem | null
+  >(null);
+  const handleOpen = (product: Product | WishlistItem) => {
+    setSelectedProduct(product);
+  };
   const handleClose = () => setSelectedProduct(null);
+
+  console.log("Products in Grid:", selectedProduct ? true : false);
+  useLockScroll(selectedProduct ? true : false);
 
   return (
     <>
@@ -31,25 +41,36 @@ export default function ProductGrid({ products, loading }: ProductGridProps) {
           ))
         ) : (
           <AnimatePresence mode="popLayout">
-            {products.map((p) => (
-              <motion.div
-                key={p.id}
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.18 }}
-              >
-                <ProductCard product={p} onOpen={handleOpen} />
-              </motion.div>
-            ))}
+            {products.map((p) => {
+              const productData: Product = isWishlistItem(p)
+                ? (p as Product)
+                : p;
+              return (
+                <motion.div
+                  key={productData.slug}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.18 }}
+                >
+                  <ProductCard product={p} onOpen={handleOpen} />
+                </motion.div>
+              );
+            })}
           </AnimatePresence>
         )}
       </div>
       {selectedProduct && (
         <ProductsBlockModal
-          slug={selectedProduct.slug}
+          slug={
+            isWishlistItem(selectedProduct)
+              ? selectedProduct.slug
+              : selectedProduct.slug
+          }
           onClose={handleClose}
-          selectedProduct={selectedProduct}
+          selectedProduct={
+            isWishlistItem(selectedProduct) ? selectedProduct : selectedProduct
+          }
         />
       )}
     </>

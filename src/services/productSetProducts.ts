@@ -20,6 +20,8 @@ export async function getProductsBySet(
       { params: { page, size }, headers: { "Accept-Language": locale } }
     );
 
+    console.log("Products by set response:", response.data);
+
     return response.data.content;
   } catch (error: any) {
     console.error("🔥 API ERROR:", {

@@ -1,4 +1,3 @@
-// src/services/order.ts
 import api from "@/lib/axios/instance";
 
 export type OrderProductPayload = {

@@ -4,28 +4,45 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Product } from "@/services/product";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { WishlistItem } from "@/services/wishlist";
+import { useWishlistStore } from "@/lib/wishlistStore";
+
+export function isWishlistItem(
+  item: Product | WishlistItem
+): item is WishlistItem {
+  return "product" in item;
+}
 
 export default function ProductCard({
   product,
   onOpen,
 }: {
-  product: Product;
-  onOpen: (product: Product) => void;
+  product: Product | WishlistItem;
+  onOpen: (product: Product | WishlistItem) => void;
 }) {
+  const productData: Product = isWishlistItem(product)
+    ? (product as Product)
+    : product;
+
   const t = useTranslations("product");
   const [hovered, setHovered] = useState(false);
-  const [wishlisted, setWishlisted] = useState(false);
+  const locale = useLocale();
+
+  const { add, remove, isInWishlist } = useWishlistStore();
+
+  const inWishlist = isInWishlist(productData.slug);
 
   const router = useRouter();
 
-  const handleOpen = (product: Product) => onOpen(product);
+  const handleOpen = (productData: Product | WishlistItem) =>
+    onOpen(productData);
 
-  const discountedPrice = product.discountPercent
-    ? Math.round(product.price * (1 - product.discountPercent / 100))
+  const discountedPrice = productData.discountPercent
+    ? Math.round(productData.price * (1 - productData.discountPercent / 100))
     : null;
 
   return (
@@ -33,22 +50,22 @@ export default function ProductCard({
       className="w-full cursor-pointer group overflow-hidden"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      onClick={() => router.push(`/product/${product.slug}`)}
+      onClick={() => router.push(`/product/${productData.slug}`)}
     >
       {/* Image section */}
       <div className="relative w-full aspect-[166/196] md:aspect-[329/364] overflow-hidden rounded-md">
         {/* Discount Badge */}
-        {product.discountPercent && (
+        {productData.discountPercent && (
           <div className="absolute top-2 left-2 bg-[#F04438] rounded-[2px] py-[3px] px-2 z-10">
             <p className="text-[12px] font-normal text-white uppercase">
-              СКИДКА -{product.discountPercent}%
+              СКИДКА -{productData.discountPercent}%
             </p>
           </div>
         )}
 
         {/* Wishlist (hover) */}
         <AnimatePresence>
-          {hovered && (
+          {(hovered || inWishlist) && (
             <motion.button
               key="wishlist"
               initial={{ opacity: 0 }}
@@ -57,16 +74,20 @@ export default function ProductCard({
               transition={{ duration: 0.2 }}
               onClick={(e) => {
                 e.stopPropagation();
-                setWishlisted((prev) => !prev);
-                toast.success(
-                  !wishlisted ? t("addedToWishlist") : t("removedFromWishlist")
-                );
+
+                if (inWishlist) {
+                  remove(productData.slug);
+                  toast.success(t("removedFromWishlist"));
+                } else {
+                  add(productData.slug, locale);
+                  toast.success(t("addedToWishlist"));
+                }
               }}
               className="absolute top-2 right-2 w-9 h-9 rounded-full flex items-center justify-center z-10 cursor-pointer"
             >
               <Image
                 src={
-                  wishlisted ? "/icons/heart-filled.svg" : "/icons/heart.svg"
+                  inWishlist ? "/icons/heart-filled.svg" : "/icons/heart.svg"
                 }
                 alt="Wishlist"
                 width={20}
@@ -78,8 +99,10 @@ export default function ProductCard({
 
         {/* Image */}
         <Image
-          src={product.images[0]?.image || "/images/product-placeholder.png"}
-          alt={product.name || "Product Image"}
+          src={
+            productData.images?.[0]?.image || "/images/product-placeholder.png"
+          }
+          alt={productData.name}
           fill
           className="object-cover w-full h-full pointer-events-none transition-transform duration-300 group-hover:scale-105"
         />
@@ -127,10 +150,12 @@ export default function ProductCard({
       {/* Info */}
       <div className="flex flex-col items-start gap-1 pt-2">
         <p className="text-sm font-light text-[#9AA4B2]">
-          {product.category.name}
+          {productData.category?.name}
         </p>
 
-        <p className="truncate text-sm font-light text-black">{product.name}</p>
+        <p className="truncate text-sm font-light text-black">
+          {productData.name}
+        </p>
 
         {/* Price & Discounted Price */}
         <div className="flex flex-col md:flex-row items-start md:items-center gap-1 md:gap-2 mb-3">
@@ -143,12 +168,12 @@ export default function ProductCard({
 
               {/* Old Price */}
               <p className="text-sm line-through text-[#9AA4B2]">
-                {product.price.toLocaleString()} {t("uzs")}
+                {productData?.price?.toLocaleString()} {t("uzs")}
               </p>
             </>
           ) : (
             <p className="text-lg font-medium text-black">
-              {product.price.toLocaleString()} {t("uzs")}
+              {productData?.price?.toLocaleString()} {t("uzs")}
             </p>
           )}
         </div>

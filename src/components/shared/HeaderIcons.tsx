@@ -1,7 +1,10 @@
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { LanguageSwitcher } from "../shared/LanguageSwitcher";
 import { getTokenPair } from "@/lib/axios/instance";
+import IconButton from "./IconButton";
+
+import { useCartStore } from "@/lib/cartStore";
+import { useWishlistStore } from "@/lib/wishlistStore";
 
 type HeaderIconsProps = {
   setAuthOpen: (val: boolean) => void;
@@ -13,46 +16,40 @@ export default function HeaderIcons({
   setSearchOpen,
 }: HeaderIconsProps) {
   const router = useRouter();
-
-  const icons = [
-    {
-      icon: "/icons/search.svg",
-      action: () => setSearchOpen?.(true),
-    },
-    {
-      icon: "/icons/shopping-bag.svg",
-      action: () => router.push("/cart"),
-    },
-    {
-      icon: "/icons/heart.svg",
-      action: () => router.push("/wishlist"),
-    },
-    {
-      icon: "/icons/user.svg",
-      action: () => {
-        if (isAuthenticated) {
-          router.push("/profile");
-        } else {
-          setAuthOpen(true);
-        }
-      },
-    },
-  ];
-
   const isAuthenticated = Boolean(getTokenPair().token);
+
+  const cartCount = useCartStore((s) => s.totalQuantity());
+  const wishlistCount = useWishlistStore((s) => s.totalCount());
 
   return (
     <div className="hidden md:flex items-center gap-2">
-      {icons.map((item, idx) => (
-        <button
-          key={idx}
-          aria-label={`icon-${idx}`}
-          className="w-9 h-9 flex items-center justify-center rounded-md hover:bg-[#EEF2F6] transition-colors cursor-pointer"
-          onClick={item.action}
-        >
-          <Image src={item.icon} alt={`icon-${idx}`} width={16} height={16} />
-        </button>
-      ))}
+      {/* Search */}
+      <IconButton
+        icon="/icons/search.svg"
+        onClick={() => setSearchOpen?.(true)}
+      />
+
+      {/* Cart */}
+      <IconButton
+        icon="/icons/shopping-bag.svg"
+        badge={cartCount}
+        onClick={() => router.push("/cart")}
+      />
+
+      {/* Wishlist */}
+      <IconButton
+        icon="/icons/heart.svg"
+        badge={wishlistCount}
+        onClick={() => router.push("/wishlist")}
+      />
+
+      {/* Profile */}
+      <IconButton
+        icon="/icons/user.svg"
+        onClick={() =>
+          isAuthenticated ? router.push("/profile") : setAuthOpen(true)
+        }
+      />
 
       <LanguageSwitcher />
     </div>

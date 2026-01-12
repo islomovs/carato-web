@@ -24,7 +24,7 @@ interface CartStore {
   loading: boolean;
   error: string | null;
 
-  fetchCart: () => Promise<void>;
+  fetchCart: (locale: string) => Promise<void>;
   addToCart: (
     slug: string,
     sizeId: number,
@@ -63,10 +63,12 @@ export const useCartStore = create<CartStore>((set, get) => {
     error: null,
 
     /** GET CART */
-    fetchCart: async () => {
+    fetchCart: async (locale: string) => {
       set({ loading: true, error: null });
       try {
-        const res = await api.get("/api/v1/basket/all");
+        const res = await api.get("/api/v1/basket/all", {
+          headers: { "Accept-Language": locale },
+        });
         set({ cartItems: res.data, loading: false });
       } catch (err: any) {
         set({

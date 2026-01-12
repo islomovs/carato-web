@@ -12,6 +12,8 @@ import AuthModal from "../shared/auth-modal/index";
 import DesktopNav from "../shared/DesktopNav";
 import MobileMenu from "../shared/MobileMenu";
 import HeaderIcons from "../shared/HeaderIcons";
+import { getTokenPair } from "@/lib/axios/instance";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
   const t = useTranslations("home.header");
@@ -20,6 +22,8 @@ export default function Header() {
   const [langModalOpen, setLangModalOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState("uz");
   const [authOpen, setAuthOpen] = useState(false);
+  const isAuthenticated = Boolean(getTokenPair().token);
+  const router = useRouter();
 
   useEffect(() => {
     if (menuOpen || isCatalogOpen) {
@@ -92,6 +96,9 @@ export default function Header() {
             <Link
               href="/auth"
               className="w-9 h-9 flex items-center justify-center rounded-md hover:bg-[#EEF2F6] transition-colors cursor-pointer"
+              onClick={() =>
+                isAuthenticated ? router.push("/profile") : setAuthOpen(true)
+              }
             >
               <Image src="/icons/user.svg" alt="user" width={20} height={20} />
             </Link>

@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { fetchAllProducts, INITIAL_FILTERS } from "@/services/product";
+import { useLocale } from "use-intl";
 
 export function useProducts(initialPageSize = 20, initialFilters?: any) {
   const [filters, setFilters] = useState(initialFilters || INITIAL_FILTERS);
   const [page, setPage] = useState(1);
   const [size] = useState(initialPageSize);
+  const locale = useLocale();
 
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -24,19 +26,22 @@ export function useProducts(initialPageSize = 20, initialFilters?: any) {
     setError(null);
 
     try {
-      const response = await fetchAllProducts({
-        page,
-        size,
-        search: filters.search || undefined,
-        priceFrom: filters.priceFrom || undefined,
-        priceTo: filters.priceTo || undefined,
-        weightFrom: filters.weightFrom || undefined,
-        weightTo: filters.weightTo || undefined,
-        categorySlug: filters.categorySlug || undefined,
-        subcategorySlug: filters.subcategorySlug || undefined,
-        metals: filters.metals.length ? filters.metals : undefined,
-        sizes: filters.sizes.length ? filters.sizes : undefined,
-      });
+      const response = await fetchAllProducts(
+        {
+          page,
+          size,
+          search: filters.search || undefined,
+          priceFrom: filters.priceFrom || undefined,
+          priceTo: filters.priceTo || undefined,
+          weightFrom: filters.weightFrom || undefined,
+          weightTo: filters.weightTo || undefined,
+          categorySlug: filters.categorySlug || undefined,
+          subcategorySlug: filters.subcategorySlug || undefined,
+          metals: filters.metals.length ? filters.metals : undefined,
+          sizes: filters.sizes.length ? filters.sizes : undefined,
+        },
+        locale
+      );
 
       setData(response);
     } catch (e: any) {

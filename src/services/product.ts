@@ -77,8 +77,9 @@ export const INITIAL_FILTERS = {
   sizes: [] as number[],
 };
 
-export async function fetchAllProducts(params: ProductsFilterParams) {
+export async function fetchAllProducts(params: ProductsFilterParams, locale: string) {
   const response = await api.get("/api/v1/products/all", {
+    headers: { "Accept-Language": locale },
     params: {
       page: params.page,
       size: params.size,

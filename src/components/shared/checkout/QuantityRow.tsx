@@ -1,6 +1,8 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Spinner } from "../../ui/spinner";
+import { CartItem } from "@/lib/cartStore";
+import { useWishlistStore } from "@/lib/wishlistStore";
 
 type QuantityRowProps = {
   isSyncing: boolean;
@@ -11,6 +13,7 @@ type QuantityRowProps = {
   onDecrement: () => void;
   onRemove: () => void;
   onToggleWishlist: () => void;
+  item: CartItem;
 };
 
 export function QuantityRow({
@@ -21,8 +24,12 @@ export function QuantityRow({
   onDecrement,
   onRemove,
   onToggleWishlist,
+  item,
 }: QuantityRowProps) {
   const t = useTranslations("cart");
+  const { items: wishlist } = useWishlistStore();
+
+  const inWishlist = wishlist.some((w) => w.slug === item.product.slug);
 
   return (
     <div className="flex items-end gap-4">
@@ -67,7 +74,12 @@ export function QuantityRow({
         onClick={onToggleWishlist}
         className="hidden md:flex items-center justify-center w-11 h-11 bg-[#EEF2F6] hover:bg-[#D1D5DB] transition duration-300 rounded-sm cursor-pointer"
       >
-        <Image src="/icons/heart.svg" alt="Wishlist" width={20} height={20} />
+        <Image
+          src={inWishlist ? "/icons/heart-filled.svg" : "/icons/heart.svg"}
+          alt="Wishlist"
+          width={20}
+          height={20}
+        />
       </button>
     </div>
   );

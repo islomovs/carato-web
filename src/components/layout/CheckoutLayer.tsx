@@ -14,7 +14,7 @@ import PageHeader from "../shared/PageHeader";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/lib/cartStore";
 import { useCreateOrder } from "@/hooks/useCreateOrder";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 export type PaymentOption = "click" | "payme" | "cash";
@@ -34,13 +34,6 @@ export default function CheckoutLayer({
   const { createOrder } = useCreateOrder();
 
   const cartItems = useCartStore((state) => state.cartItems);
-  const fetchCart = useCartStore((state) => state.fetchCart);
-
-  useEffect(() => {
-    if (open) {
-      fetchCart();
-    }
-  }, [open, fetchCart]);
 
   const [deliveryPrice, setDeliveryPrice] = useState(0);
 
@@ -90,10 +83,10 @@ export default function CheckoutLayer({
   });
 
   const onSubmit = async (data: any) => {
-      if (!data.deliveryType) {
-        toast.error(t("errors.deliveryRequired"));
-        return;
-      }
+    if (!data.deliveryType) {
+      toast.error(t("errors.deliveryRequired"));
+      return;
+    }
 
     if (!data.address) {
       toast.error(t("errors.addressRequired"));

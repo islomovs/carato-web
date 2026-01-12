@@ -17,9 +17,12 @@ import { getTokenPair } from "@/lib/axios/instance";
 import NotifySizeModal from "../checkout/NotifySizeModal";
 import DetermineSizeModal from "../checkout/DetermineSizeModal";
 import useLockScroll from "@/hooks/useLockScroll";
+import { useWishlistStore } from "@/lib/wishlistStore";
+import { WishlistItem } from "@/services/wishlist";
+import { useLocale } from "next-intl";
 
 interface ProductInfoProps {
-  product: Product;
+  product: Product | WishlistItem;
   isLoading?: boolean;
 }
 
@@ -27,6 +30,7 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
   const t = useTranslations("product");
 
   const stableProduct = useMemo(() => product as Product, [product]);
+  const locale = useLocale();
 
   const [openNotify, setOpenNotify] = useState(false);
   const [openDetermine, setOpenDetermine] = useState(false);
@@ -58,6 +62,12 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
 
   useLockScroll(openNotify || openDetermine || authOpen);
 
+  const { items: wishlist, add, remove } = useWishlistStore();
+
+  const selectedVariantId = selectedVariant?.size?.id;
+
+  const inWishlist = wishlist.some((w) => w.slug === product.slug);
+
   if (isLoading || !product) {
     return (
       <div className="flex flex-col gap-8 w-full pb-[10px] animate-in fade-in">
@@ -84,7 +94,7 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
   }
 
   const totalStars = 5;
-  const rating = product.averageRating || 5;
+  const rating = (stableProduct as any)?.averageRating || 5;
 
   return (
     <>
@@ -160,8 +170,23 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
             <Button
               variant="ghost"
               className="bg-white text-black w-[52px] h-[52px] font-normal rounded-md border border-black cursor-pointer"
+              onClick={() => {
+                if (!selectedVariantId) return toast.error(t("selectSize"));
+                if (inWishlist) remove(product.slug);
+                else add(product.slug, locale);
+                toast.success(
+                  inWishlist ? t("removedFromWishlist") : t("addedToWishlist")
+                );
+              }}
             >
-              <Image src="/icons/heart.svg" alt="" width={20} height={20} />
+              <Image
+                src={
+                  inWishlist ? "/icons/heart-filled.svg" : "/icons/heart.svg"
+                }
+                alt="Wishlist"
+                width={20}
+                height={20}
+              />
             </Button>
 
             <ShareDropdown />

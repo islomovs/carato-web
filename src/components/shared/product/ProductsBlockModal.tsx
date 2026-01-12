@@ -7,6 +7,8 @@ import ProductInfo from "../product/ProductInfo";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useLocale } from "next-intl";
+import { WishlistItem } from "@/services/wishlist";
+import { isWishlistItem } from "./ProductCard";
 
 export default function ProductsBlockModal({
   slug,
@@ -15,9 +17,22 @@ export default function ProductsBlockModal({
 }: {
   slug: string;
   onClose: () => void;
-  selectedProduct: Product;
+  selectedProduct: Product | WishlistItem;
 }) {
-  const [product, setProduct] = useState<Product | undefined>(undefined);
+  const [product, setProduct] = useState<Product | WishlistItem | undefined>(
+    undefined
+  );
+  const productData: Product | undefined = product
+    ? isWishlistItem(product)
+      ? (product as Product)
+      : product
+    : undefined;
+
+  const selectedProductData: Product | undefined = selectedProduct
+    ? isWishlistItem(selectedProduct)
+      ? (selectedProduct as Product)
+      : selectedProduct
+    : undefined;
   const [loading, setLoading] = useState(false);
   const locale = useLocale();
 
@@ -32,7 +47,7 @@ export default function ProductsBlockModal({
 
   const handleClose = () => onClose();
 
-  const finalProduct = product || selectedProduct;
+  const finalProduct = productData || selectedProductData;
 
   return (
     <Dialog open={!!slug} onOpenChange={(open) => !open && onClose()}>
@@ -70,18 +85,24 @@ export default function ProductsBlockModal({
                   <div className="flex-[0.41] w-full flex items-center justify-center bg-gray-50">
                     <ProductGallery
                       variant="modal"
-                      media={selectedProduct?.images.map((img, index) => ({
-                        id: index,
-                        type: "image",
-                        src: img?.image,
-                      }))}
+                      media={
+                        selectedProductData?.images.map((img, index) => ({
+                          id: index,
+                          type: img?.image?.endsWith(".mp4")
+                            ? "video"
+                            : "image",
+                          src: img?.image,
+                        })) ?? []
+                      }
                     />
                   </div>
                   <div className="w-full p-4">
-                    <ProductInfo
-                      product={finalProduct}
-                      isLoading={loading || !finalProduct?.variants}
-                    />
+                    {finalProduct && (
+                      <ProductInfo
+                        product={finalProduct}
+                        isLoading={loading || !finalProduct?.variants}
+                      />
+                    )}
                   </div>
                 </div>
               </motion.div>
@@ -131,19 +152,25 @@ export default function ProductsBlockModal({
                   <div className="flex-[0.48] flex items-center justify-center overflow-hidden">
                     <ProductGallery
                       variant="modal"
-                      media={selectedProduct?.images.map((img, index) => ({
-                        id: index,
-                        type: img?.image?.endsWith(".mp4") ? "video" : "image", // detect video or image
-                        src: img?.image,
-                      }))}
+                      media={
+                        selectedProductData?.images.map((img, index) => ({
+                          id: index,
+                          type: img?.image?.endsWith(".mp4")
+                            ? "video"
+                            : "image", // detect video or image
+                          src: img?.image,
+                        })) ?? []
+                      }
                     />
                   </div>
 
                   <div className="flex-[0.52] overflow-y-auto pr-2">
-                    <ProductInfo
-                      product={finalProduct}
-                      isLoading={loading || !finalProduct?.variants}
-                    />
+                    {finalProduct && (
+                      <ProductInfo
+                        product={finalProduct}
+                        isLoading={loading || !finalProduct?.variants}
+                      />
+                    )}
                   </div>
                 </div>
               </motion.div>
