@@ -11,21 +11,25 @@ import { useFeedback } from "@/hooks/useFeedback";
 import { Skeleton } from "@/components/ui/skeleton"; // shadcn skeleton import
 import AuthModal from "../auth-modal";
 import { getTokenPair } from "@/lib/axios/instance";
+import { useAuthModalStore } from "@/lib/authModalStore";
 
 export default function FeedbackSection({
   overallRating,
   totalReviews,
   slug,
+  loading,
 }: {
   overallRating: number;
   totalReviews: number;
   slug: string;
+  loading: boolean;
 }) {
   const t = useTranslations("product");
   const [openFeedback, setOpenFeedback] = useState(false);
-  const [authOpen, setAuthOpen] = useState(false);
   const [page, setPage] = useState(1);
   const pageSize = 10;
+
+  const { openAuth } = useAuthModalStore();
 
   const {
     feedback,
@@ -63,6 +67,45 @@ export default function FeedbackSection({
   if (!slug) return null;
 
   const isAuthenticated = Boolean(getTokenPair().token);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col gap-8">
+        {/* Summary skeleton */}
+        <div className="flex flex-col md:flex-row gap-4 justify-between items-center w-full">
+          <div className="w-full flex flex-row justify-between md:flex-col md:gap-1">
+            <div className="flex items-center gap-2">
+              <Skeleton className="w-12 h-8" />
+              <div className="flex gap-1 md:gap-[10px]">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Skeleton key={i} className="w-6 h-6 rounded-full" />
+                ))}
+              </div>
+            </div>
+            <Skeleton className="w-40 h-4 mt-2" />
+          </div>
+
+          <Skeleton className="w-full md:w-40 h-10 rounded-md" />
+        </div>
+
+        {/* Feedback list skeleton */}
+        <div className="flex flex-col">
+          {Array.from({ length: 2 }).map((_, idx) => (
+            <div
+              key={idx}
+              className="border-t border-[#EEF2F6] py-3 md:py-4 flex flex-col gap-2"
+            >
+              <Skeleton className="w-24 h-4" />
+              <Skeleton className="w-40 h-3" />
+              <Skeleton className="w-full h-4" />
+              <Skeleton className="w-full h-4" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
 
   return (
     <div className="flex flex-col gap-8">
@@ -103,7 +146,7 @@ export default function FeedbackSection({
           variant="outline"
           onClick={() => {
             if (!isAuthenticated) {
-              setAuthOpen(true);
+              openAuth();
               return;
             }
             setOpenFeedback(true);
@@ -239,8 +282,6 @@ export default function FeedbackSection({
         </div>
       )}
       <AuthModal
-        open={authOpen}
-        onClose={() => setAuthOpen(false)}
         initialMode="phone"
       />
     </div>

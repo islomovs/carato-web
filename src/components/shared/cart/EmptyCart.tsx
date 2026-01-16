@@ -1,9 +1,11 @@
 import Image from "next/image";
 import { Button } from "../../ui/button";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 
 export function EmptyCart() {
   const t = useTranslations("cart");
+  const router = useRouter();
 
   return (
     <div className="flex flex-col items-center justify-center text-center min-h-[calc(100vh-65px)] md:min-h-[calc(100vh-430px)]">
@@ -27,7 +29,8 @@ export function EmptyCart() {
       </p>
       <Button
         variant="default"
-        className="mt-9 uppercase text-sm font-normal py-2 px-3 rounded-md"
+        className="mt-9 uppercase text-sm font-normal py-2 px-3 rounded-md cursor-pointer hover:bg-white border border-black hover:text-black bg-black text-white"
+        onClick={() => router.push("/products")}
       >
         {t("goToCatalog")}
       </Button>

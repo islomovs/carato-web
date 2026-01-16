@@ -47,49 +47,51 @@ export default function FullscreenViewer({
   }, []);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white md:p-6">
-      <div className="relative w-full max-w-[1200px] h-full md:max-h-[90vh] flex flex-col items-center justify-center">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-white">
+      <div className="relative w-full h-full flex flex-col items-center pt-[50px] md:pt-[80px]">
         <SwiperNavigation prevClass={prevClass} nextClass={nextClass} />
 
-        <Swiper
-          modules={[Navigation, Keyboard]}
-          navigation={{ prevEl: `.${prevClass}`, nextEl: `.${nextClass}` }}
-          slidesPerView={1}
-          initialSlide={startIndex}
-          keyboard={{ enabled: true }}
-          loop={media.length > 1}
-          onSwiper={(swiper) => (swiperRef.current = swiper)}
-          onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
-          className="w-full flex-1"
-        >
-          {loading ? (
-            <Skeleton className="w-full h-full rounded-lg" />
-          ) : (
-            media.map((item) => (
-              <SwiperSlide key={item.id}>
-                <div className="relative w-full h-full flex items-center justify-center">
-                  {item.type === "image" ? (
-                    <Image
-                      src={item.src}
-                      alt={item.alt || ""}
-                      fill
-                      className="object-contain"
-                    />
-                  ) : (
-                    <video
-                      src={item.src}
-                      controls
-                      className="w-full h-full object-contain"
-                    />
-                  )}
-                </div>
-              </SwiperSlide>
-            ))
-          )}
-        </Swiper>
+        <div className="relative h-full md:aspect-square w-full max-w-[90vh] max-h-[calc(100vh-120px)] md:max-h-[calc(100vh-160px)]">
+          <Swiper
+            modules={[Navigation, Keyboard]}
+            navigation={{ prevEl: `.${prevClass}`, nextEl: `.${nextClass}` }}
+            slidesPerView={1}
+            initialSlide={startIndex}
+            keyboard={{ enabled: true }}
+            loop={media.length > 1}
+            onSwiper={(swiper) => (swiperRef.current = swiper)}
+            onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
+            className="w-full h-full"
+          >
+            {loading ? (
+              <Skeleton className="w-full h-full rounded-lg" />
+            ) : (
+              media.map((item) => (
+                <SwiperSlide key={item.id}>
+                  <div className="w-full h-full flex items-center justify-center">
+                    {item.type === "image" ? (
+                      <Image
+                        src={item.src}
+                        alt={item.alt || ""}
+                        fill
+                        className="object-contain"
+                      />
+                    ) : (
+                      <video
+                        src={item.src}
+                        controls
+                        className="w-full h-full object-contain"
+                      />
+                    )}
+                  </div>
+                </SwiperSlide>
+              ))
+            )}
+          </Swiper>
+        </div>
 
         {/* Pagination */}
-        <div className="flex justify-center items-center gap-1 mt-3 mb-4">
+        <div className="flex justify-center items-center gap-1 my-8">
           {media.map((_, index) => (
             <motion.span
               key={index}
@@ -109,7 +111,7 @@ export default function FullscreenViewer({
           ))}
         </div>
         {/* Close button */}
-        <div className="absolute right-2 top-[14px] md:right-[32px] md:top-[32px] z-50">
+        <div className="absolute right-2 top-[14px] md:right-8 md:top-8 z-50">
           <Button
             variant="ghost"
             className="w-[52px] h-[52px] rounded-none bg-white cursor-pointer"

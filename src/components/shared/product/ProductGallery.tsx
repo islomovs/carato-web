@@ -5,6 +5,7 @@ import MediaItem, { MediaItemT } from "./MediaItem";
 import FullscreenViewer from "./FullscreenViewer";
 import ModalMediaSwiper from "./ModalMediaSwiper";
 import { Skeleton } from "@/components/ui/skeleton";
+import useLockScroll from "@/hooks/useLockScroll";
 
 type Props = {
   media: MediaItemT[];
@@ -23,6 +24,8 @@ export default function ProductGallery({
   const [isFullscreenOpen, setIsFullscreenOpen] = useState(
     variant === "fullscreen"
   );
+
+  useLockScroll(isFullscreenOpen);
 
   // Render variants
   if (variant === "page") {

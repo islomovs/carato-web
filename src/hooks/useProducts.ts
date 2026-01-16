@@ -4,8 +4,16 @@ import { useEffect, useState } from "react";
 import { fetchAllProducts, INITIAL_FILTERS } from "@/services/product";
 import { useLocale } from "use-intl";
 
-export function useProducts(initialPageSize = 20, initialFilters?: any) {
-  const [filters, setFilters] = useState(initialFilters || INITIAL_FILTERS);
+export function useProducts(
+  initialPageSize = 20,
+  initialFilters?: any,
+  allowSearchOnly = false
+) {
+  const [filters, setFilters] = useState({
+    ...INITIAL_FILTERS,
+    ...initialFilters,
+  });
+
   const [page, setPage] = useState(1);
   const [size] = useState(initialPageSize);
   const locale = useLocale();
@@ -15,10 +23,11 @@ export function useProducts(initialPageSize = 20, initialFilters?: any) {
   const [error, setError] = useState<string | null>(null);
 
   const loadProducts = async () => {
-    if (loading) return;
-
+    if (allowSearchOnly && !filters.search?.trim()) {
+      return;
+    }
     // Prevent request if no category or subcategory is selected
-    if (!filters.categorySlug && !filters.subcategorySlug) {
+    if (!allowSearchOnly && !filters.categorySlug && !filters.subcategorySlug) {
       return;
     }
 
@@ -51,16 +60,18 @@ export function useProducts(initialPageSize = 20, initialFilters?: any) {
     }
   };
 
-  // Reload when filters or page changes
+  const filtersKey = JSON.stringify(filters);
+
   useEffect(() => {
     loadProducts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, filters]);
+  }, [page, filtersKey]);
 
   const updateFilters = (newFilters: Partial<typeof INITIAL_FILTERS>) => {
-    setFilters((prev: any) => ({ ...prev, ...newFilters }));
-    setPage(1); // reset to page 1 when filters update
-    console.log("Updated filters:", { ...filters, ...newFilters });
+    setFilters((prev: any) => {
+      const next = { ...prev, ...newFilters };
+      return JSON.stringify(prev) === JSON.stringify(next) ? prev : next;
+    });
+    setPage(1);
   };
 
   return {

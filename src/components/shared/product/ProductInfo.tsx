@@ -20,6 +20,7 @@ import useLockScroll from "@/hooks/useLockScroll";
 import { useWishlistStore } from "@/lib/wishlistStore";
 import { WishlistItem } from "@/services/wishlist";
 import { useLocale } from "next-intl";
+import { useAuthModalStore } from "@/lib/authModalStore";
 
 interface ProductInfoProps {
   product: Product | WishlistItem;
@@ -34,8 +35,7 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
 
   const [openNotify, setOpenNotify] = useState(false);
   const [openDetermine, setOpenDetermine] = useState(false);
-  const [authOpen, setAuthOpen] = useState(false);
-
+  const { openAuth } = useAuthModalStore();
   const [selectedVariant, setSelectedVariant] = useState<any>(null);
   const addToCart = useCartStore((state) => state.addToCart);
 
@@ -43,7 +43,7 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
 
   const handleAddToCart = async () => {
     if (!isAuthenticated) {
-      setAuthOpen(true);
+      openAuth();
       return;
     }
 
@@ -60,13 +60,11 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
     }
   };
 
-  useLockScroll(openNotify || openDetermine || authOpen);
+  useLockScroll(openNotify || openDetermine);
 
-  const { items: wishlist, add, remove } = useWishlistStore();
+  const { add, remove, isInWishlist } = useWishlistStore();
 
-  const selectedVariantId = selectedVariant?.size?.id;
-
-  const inWishlist = wishlist.some((w) => w.slug === product.slug);
+  const inWishlist = isInWishlist(product.slug);
 
   if (isLoading || !product) {
     return (
@@ -170,13 +168,19 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
             <Button
               variant="ghost"
               className="bg-white text-black w-[52px] h-[52px] font-normal rounded-md border border-black cursor-pointer"
-              onClick={() => {
-                if (!selectedVariantId) return toast.error(t("selectSize"));
-                if (inWishlist) remove(product.slug);
-                else add(product.slug, locale);
-                toast.success(
-                  inWishlist ? t("removedFromWishlist") : t("addedToWishlist")
-                );
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!isAuthenticated) {
+                  openAuth();
+                  return;
+                }
+                if (inWishlist) {
+                  remove(product.slug);
+                  toast.success(t("removedFromWishlist"));
+                } else {
+                  add(product.slug, locale);
+                  toast.success(t("addedToWishlist"));
+                }
               }}
             >
               <Image
@@ -215,11 +219,7 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
         />
 
         {/* Auth modal */}
-        <AuthModal
-          open={authOpen}
-          onClose={() => setAuthOpen(false)}
-          initialMode="phone"
-        />
+        <AuthModal initialMode="phone" />
       </div>
       <div className="md:hidden fixed bottom-0 left-0 right-0 px-4 py-4 flex gap-4 border-t border-[#EEF2F6] bg-white z-50">
         <Button

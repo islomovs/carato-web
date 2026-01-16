@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { useUserInfo } from "@/hooks/useUserInfo";
 import { UserInfo } from "@/services/user";
 import SkeletonPersonalInfoBlock from "./SkeletonPersonalInfoBlock";
+import { useAuthModalStore } from "@/lib/authModalStore";
 
 function normalizePhone(phone: string) {
   return phone.replace(/\D/g, "");
@@ -22,8 +23,7 @@ function normalizePhone(phone: string) {
 
 export default function PersonalInfoBlock() {
   const t = useTranslations("profile");
-  const [authOpen, setAuthOpen] = useState(false);
-
+  const { openAuth } = useAuthModalStore();
   const { userInfo, loading, error } = useUserInfo();
   const form = useForm<UserInfo>({ defaultValues: {} });
   const { control, register, watch, handleSubmit, reset } = form;
@@ -83,7 +83,7 @@ export default function PersonalInfoBlock() {
     try {
       // call API
       await startSendCode(watchedPhone);
-      setAuthOpen(true);
+      openAuth();
     } catch (err: any) {
       // handle API error - show message
       console.error("sendCode error", err);
@@ -262,12 +262,7 @@ export default function PersonalInfoBlock() {
         </div>
       </motion.form>
 
-      <AuthModal
-        open={authOpen}
-        onClose={() => setAuthOpen(false)}
-        initialMode="otp"
-        initialPhone={watchedPhone}
-      />
+      <AuthModal initialMode="otp" initialPhone={watchedPhone} />
     </>
   );
 }

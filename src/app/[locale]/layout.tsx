@@ -11,6 +11,7 @@ import { Toaster } from "sonner";
 import MobileAppBarWrapper from "@/components/layout/MobileAppBarWrapper";
 import HeaderWrapper from "@/components/layout/HeaderWrapper";
 import { WishlistCartBootstrap } from "@/components/layout/HeaderWrapper";
+import GlobalAuthModal from "@/components/shared/auth-modal/GlobalAuthModal";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -57,6 +58,7 @@ export default async function RootLayout({ children, params }: Props) {
           </div>
           <Footer />
           <MobileAppBarWrapper />
+          <GlobalAuthModal />
         </NextIntlClientProvider>
       </body>
     </html>

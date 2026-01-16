@@ -26,8 +26,19 @@ export interface Product {
   discountPrice?: number | null;
   discountPercent?: number;
   subcategory?: { id: number; name: string; slug: string };
-  stockQuantity: 0;
-  metalPrice: 0;
+  stockQuantity: number;
+  metalPrice: number;
+  seller: Seller;
+}
+
+export interface Seller {
+  id: number;
+  name: string;
+  slug: string;
+  ordersQuantity: number;
+  reviewsQuantity: number;
+  averageReviewRating: number;
+  image: string;
 }
 
 export async function getProductBySlug(
@@ -77,7 +88,10 @@ export const INITIAL_FILTERS = {
   sizes: [] as number[],
 };
 
-export async function fetchAllProducts(params: ProductsFilterParams, locale: string) {
+export async function fetchAllProducts(
+  params: ProductsFilterParams,
+  locale: string
+) {
   const response = await api.get("/api/v1/products/all", {
     headers: { "Accept-Language": locale },
     params: {

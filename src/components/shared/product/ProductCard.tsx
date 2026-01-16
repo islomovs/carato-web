@@ -10,6 +10,8 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { WishlistItem } from "@/services/wishlist";
 import { useWishlistStore } from "@/lib/wishlistStore";
+import { getTokenPair } from "@/lib/axios/instance";
+import { useAuthModalStore } from "@/lib/authModalStore";
 
 export function isWishlistItem(
   item: Product | WishlistItem
@@ -31,8 +33,10 @@ export default function ProductCard({
   const t = useTranslations("product");
   const [hovered, setHovered] = useState(false);
   const locale = useLocale();
+  const isAuthenticated = Boolean(getTokenPair().token);
 
   const { add, remove, isInWishlist } = useWishlistStore();
+  const { openAuth } = useAuthModalStore();
 
   const inWishlist = isInWishlist(productData.slug);
 
@@ -74,7 +78,10 @@ export default function ProductCard({
               transition={{ duration: 0.2 }}
               onClick={(e) => {
                 e.stopPropagation();
-
+                if (!isAuthenticated) {
+                  openAuth();
+                  return;
+                }
                 if (inWishlist) {
                   remove(productData.slug);
                   toast.success(t("removedFromWishlist"));
@@ -102,7 +109,7 @@ export default function ProductCard({
           src={
             productData.images?.[0]?.image || "/images/product-placeholder.png"
           }
-          alt={productData.name}
+          alt={productData.name || "Product Image"}
           fill
           className="object-cover w-full h-full pointer-events-none transition-transform duration-300 group-hover:scale-105"
         />

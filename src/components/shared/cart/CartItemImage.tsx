@@ -16,7 +16,9 @@ export default function CartItemImage({
   return (
     <div className="relative w-20 md:w-[164px] h-20 md:h-[164px] flex items-center justify-center bg-gray-50">
       <Image
-        src={item.product.images[0].image}
+        src={
+          item.product.images?.[0]?.image || "/images/product-placeholder.png"
+        }
         alt={item.product.name}
         width={164}
         height={164}

@@ -28,6 +28,12 @@ export default function ProductPage() {
       })
     : [];
 
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth < 768);
     onResize();
@@ -39,6 +45,21 @@ export default function ProductPage() {
     return (
       <div className="flex items-center justify-center h-[80vh]">
         <p>Ошибка загрузки продукта. Пожалуйста, попробуйте позже.</p>
+      </div>
+    );
+  }
+
+  if (!mounted || loading) {
+    return (
+      <div className="px-4 md:px-8 my-[52px]">
+        <div className="grid md:grid-cols-[1fr_40%] gap-[52px]">
+          <ProductGallery variant="page" media={[]} loading />
+          <div className="flex flex-col gap-8">
+            <Skeleton className="h-5 w-40" />
+            <Skeleton className="h-8 w-72" />
+            <Skeleton className="h-14 w-full" />
+          </div>
+        </div>
       </div>
     );
   }
@@ -58,21 +79,18 @@ export default function ProductPage() {
           overflow-hidden"
         >
           <div className="flex flex-col gap-8">
-            <ProductGallery variant="page" media={media} />
-            <SellerInfoButton
-              imageSrc="/images/banner-placeholder.jpg"
-              title={product ? product.category.name : "JewelStore"}
-              rating={product ? Math.round(product.averageRating) : 5}
-              sellerUrl="/seller/jewelstore"
-            />
+            <ProductGallery variant="page" media={media} loading={loading} />
+            <SellerInfoButton seller={product ? product.seller : null} />
             <ProductAccordion
               description={product ? product.description : ""}
               chracteristics={product ? product.characteristics : ""}
+              loading={loading}
             />
             <FeedbackSection
               overallRating={product ? Math.round(product.averageRating) : 5}
               totalReviews={product ? product.reviewsQuantity : 10}
               slug={product ? product.slug : ""}
+              loading={loading}
             />
           </div>
           {loading ? (
@@ -140,20 +158,17 @@ export default function ProductPage() {
                 )}
               </>
             )}
-            <SellerInfoButton
-              imageSrc="/images/banner-placeholder.jpg"
-              title="JewelStore"
-              rating={product ? Math.round(product.averageRating) : 5}
-              sellerUrl="/seller/jewelstore"
-            />
+            <SellerInfoButton seller={product ? product.seller : null} />
             <ProductAccordion
               description={product ? product.description : " "}
               chracteristics={product ? product.characteristics : ""}
+              loading={loading}
             />
             <FeedbackSection
               overallRating={product ? Math.round(product.averageRating) : 5}
               totalReviews={product ? product.reviewsQuantity : 10}
               slug={product ? product.slug : ""}
+              loading={loading}
             />
           </div>
 

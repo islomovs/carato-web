@@ -5,28 +5,27 @@ import IconButton from "./IconButton";
 
 import { useCartStore } from "@/lib/cartStore";
 import { useWishlistStore } from "@/lib/wishlistStore";
+import { useAuthModalStore } from "@/lib/authModalStore";
 
 type HeaderIconsProps = {
-  setAuthOpen: (val: boolean) => void;
-  setSearchOpen?: (val: boolean) => void;
+  setSearchOpen: (val: boolean) => void;
 };
 
-export default function HeaderIcons({
-  setAuthOpen,
-  setSearchOpen,
-}: HeaderIconsProps) {
+export default function HeaderIcons({ setSearchOpen }: HeaderIconsProps) {
   const router = useRouter();
   const isAuthenticated = Boolean(getTokenPair().token);
 
   const cartCount = useCartStore((s) => s.totalQuantity());
   const wishlistCount = useWishlistStore((s) => s.totalCount());
 
+  const { openAuth } = useAuthModalStore();
+
   return (
     <div className="hidden md:flex items-center gap-2">
       {/* Search */}
       <IconButton
         icon="/icons/search.svg"
-        onClick={() => setSearchOpen?.(true)}
+        onClick={() => setSearchOpen(true)}
       />
 
       {/* Cart */}
@@ -40,15 +39,15 @@ export default function HeaderIcons({
       <IconButton
         icon="/icons/heart.svg"
         badge={wishlistCount}
-        onClick={() => router.push("/wishlist")}
+        onClick={() =>
+          isAuthenticated ? router.push("/wishlist") : openAuth()
+        }
       />
 
       {/* Profile */}
       <IconButton
         icon="/icons/user.svg"
-        onClick={() =>
-          isAuthenticated ? router.push("/profile") : setAuthOpen(true)
-        }
+        onClick={() => (isAuthenticated ? router.push("/profile") : openAuth())}
       />
 
       <LanguageSwitcher />

@@ -1,23 +1,28 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AuthPhoneStep from "./AuthPhoneStep";
 import AuthOtpStep from "./AuthOtpStep";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
+import { useAuthModalStore } from "@/lib/authModalStore";
+
 type Props = {
-  open: boolean;
-  onClose: () => void;
   initialMode: "phone" | "otp";
   initialPhone?: string;
 };
-export default function AuthModal({
-  open,
-  onClose,
-  initialMode,
-  initialPhone,
-}: Props) {
+export default function AuthModal({ initialMode, initialPhone }: Props) {
   const [mode, setMode] = useState<"phone" | "otp">(initialMode);
   const [phoneValue, setPhoneValue] = useState<string>("");
+
+  const { open, closeAuth } = useAuthModalStore();
+
+  useEffect(() => {
+    if (open) {
+      setMode(initialMode);
+      setPhoneValue(initialPhone ?? "");
+    }
+  }, [open, initialMode, initialPhone]);
+
   return (
     <AnimatePresence>
       {open && (
@@ -32,7 +37,7 @@ export default function AuthModal({
           {/* Backdrop */}{" "}
           <motion.div
             className="absolute inset-0 bg-black/40"
-            onClick={onClose}
+            onClick={closeAuth}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -52,7 +57,7 @@ export default function AuthModal({
             {/* Close button */}{" "}
             <button
               className="absolute top-4 right-4 w-[20px] h-[20px] flex items-center justify-center cursor-pointer"
-              onClick={onClose}
+              onClick={closeAuth}
               aria-label="close"
             >
               {" "}
@@ -96,7 +101,7 @@ export default function AuthModal({
                     {" "}
                     <AuthOtpStep
                       phone={phoneValue}
-                      onVerified={() => onClose()}
+                      onVerified={() => closeAuth()}
                       onBack={() => setMode("phone")}
                       initialPhone={initialPhone}
                     />{" "}
