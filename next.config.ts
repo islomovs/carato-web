@@ -10,6 +10,11 @@ const nextConfig: NextConfig = {
         port: "9000",
         pathname: "/carato/**",
       },
+      {
+        protocol: "https",
+        hostname: "minio.carato.uz",
+        pathname: "/carato/**",
+      },
     ],
   },
 };
