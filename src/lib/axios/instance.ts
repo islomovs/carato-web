@@ -2,7 +2,7 @@
 // src/lib/axios/instance.ts
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from "axios";
 
-const API_BASE = "https://api.carato.uz";
+const API_BASE = "http://95.182.118.244:7777/";
 
 type TokenPair = {
   token: string | null;
@@ -80,7 +80,7 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 // Response interceptor: handle 401 -> refresh -> retry
@@ -149,7 +149,7 @@ api.interceptors.response.use(
 
     // other errors
     return Promise.reject(error);
-  }
+  },
 );
 
 export { api, getTokenPair, setTokenPair, clearTokenPair };
