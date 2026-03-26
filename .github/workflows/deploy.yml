@@ -38,12 +38,12 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
             echo "📦 Installing dependencies..."
-            npm install --force
+            sudo npm install --force
 
             echo "🏗️  Building project..."
             sudo npm run build
 
             echo "🚀 Restarting PM2 process..."
-            pm2 restart "carato-web" || pm2 start npm --name "carato-web" -- start
+            sudo pm2 restart "carato-web" || pm2 start npm --name "carato-web" -- start
 
             echo "✅ Deployment completed successfully!"
