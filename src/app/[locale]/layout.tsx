@@ -28,6 +28,9 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   title: "Carato - Ваш ювелирный помощник",
   description: "Магазин ювелирных изделий, где стиль встречается с качеством.",
+  verification: {
+    google: "LFq4zYUs20To60_Qlh_Ith1KyHq2eWMiJPPhSL8irwU",
+  },
 };
 
 type Props = {
