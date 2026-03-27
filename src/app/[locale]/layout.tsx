@@ -28,9 +28,6 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   title: "Carato - Ваш ювелирный помощник",
   description: "Магазин ювелирных изделий, где стиль встречается с качеством.",
-  other: {
-    "google-site-verification": "LFq4zYUs20To60_Qlh_Ith1KyHq2eWMiJPPhSL8irwU",
-  },
 };
 
 type Props = {
@@ -51,6 +48,12 @@ export default async function RootLayout({ children, params }: Props) {
       lang={locale}
       className={`${manrope.variable} ${montserrat.variable}`}
     >
+      <head>
+        <meta
+          name="google-site-verification"
+          content="LFq4zYUs20To60_Qlh_Ith1KyHq2eWMiJPPhSL8irwU"
+        />
+      </head>
       <body className="antialiased">
         <NextIntlClientProvider locale={locale as Locale} messages={resources}>
           <WishlistCartBootstrap />
