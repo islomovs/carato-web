@@ -44,6 +44,7 @@ jobs:
             sudo npm run build
 
             echo "🚀 Restarting PM2 process..."
-            sudo pm2 restart "carato-web" || pm2 start npm --name "carato-web" -- start
+            pm2 delete carato-web || true
+            pm2 start npm --name "carato-web" -- start
 
             echo "✅ Deployment completed successfully!"
