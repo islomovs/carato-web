@@ -40,9 +40,11 @@ export default function HeaderWrapper() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  const HIDDEN_PATHS = [`/${locale}/product`, `/${locale}/cart`];
+  const HIDDEN_PATHS = [`/${locale}/cart`];
   const shouldHide =
-    isMobile && HIDDEN_PATHS.some((p) => pathname.startsWith(p));
+    isMobile &&
+    (pathname.startsWith(`/${locale}/product/`) ||
+      HIDDEN_PATHS.includes(pathname));
 
   if (shouldHide) return null;
 

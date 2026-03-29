@@ -20,12 +20,12 @@ export interface ProductSetPage {
   totalPages: number;
 }
 
-export async function getProductsBySet(
+export async function getProductsBySetPaginated(
   slug: string,
   page: number,
   size: number,
   locale: string,
-): Promise<Product[]> {
+): Promise<ProductSetPage> {
   const response = await api.get<ProductSetPage>(
     `/api/v1/product-sets/${slug}/products`,
     {
@@ -33,5 +33,5 @@ export async function getProductsBySet(
       params: { page, size },
     },
   );
-  return response.data.content;
+  return response.data;
 }

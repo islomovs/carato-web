@@ -8,6 +8,10 @@ export default function FilterListMobile({
   setTempSelected,
   setTempPrice,
   price,
+  priceRange,
+  weightRange,
+  priceRangeKey,
+  weightKey
 }: {
   mockFilters: any[];
   selected: Record<string, string[]>;
@@ -15,8 +19,18 @@ export default function FilterListMobile({
   setTempSelected: (val: Record<string, string[]>) => void;
   setTempPrice: (val: [number, number]) => void;
   price: [number, number];
+  priceRange: [number, number];
+  weightRange: [number, number];
+  priceRangeKey: string;
+  weightKey: string;
 }) {
-  const appliedCount = (title: string) => selected[title]?.length ?? 0;
+const appliedCount = (title: string) => {
+  if (title === priceRangeKey)
+    return priceRange[0] > 0 || priceRange[1] < 50000000 ? 1 : 0;
+  if (title === weightKey)
+    return weightRange[0] > 0.5 || weightRange[1] < 100 ? 1 : 0;
+  return selected[title]?.length ?? 0;
+};
 
   return (
     <div className="overflow-y-auto h-full">

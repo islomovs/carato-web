@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 export function getPageWindow(
   totalPages: number,
   current: number,
-  maxVisible = 5
+  maxVisible = 5,
 ) {
   if (totalPages <= maxVisible) {
     return {
@@ -33,4 +33,21 @@ export function getPageWindow(
   const rightEllipsis = end < totalPages - 1;
 
   return { pages, leftEllipsis, rightEllipsis, start, end };
+}
+
+// lib/formatDate.ts
+export function formatNewsDate(dateString: string, locale: string): string {
+  const localeMap = {
+    ru: "ru-RU",
+    uz: "uz-Latn-UZ",
+    en: "en-US",
+  } as const;
+
+  return new Intl.DateTimeFormat(
+    localeMap[locale as keyof typeof localeMap] || "ru-RU",
+    {
+      day: "numeric",
+      month: "long",
+    },
+  ).format(new Date(dateString));
 }

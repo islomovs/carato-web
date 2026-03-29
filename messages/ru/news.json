@@ -1,5 +1,7 @@
 {
   "news": {
-    "failedToLoadNews": "Не удалось загрузить новости"
+    "failedToLoadNews": "Не удалось загрузить новости",
+  "authorPrefix": "Статью написал",
+  "latestNews": "Последние новости"
   }
 }

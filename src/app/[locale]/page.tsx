@@ -24,22 +24,31 @@ export default async function Home() {
   ]);
 
   return (
-    <div className="w-full h-full text-center pt-[66px] md:pt-0">
+    <div className="w-full h-full text-center md:pt-0">
       <BannerCarousel />
       <StoriesSection />
 
       {firstSet && (
-        <ProductsBlock title={firstSet.name} products={firstProducts} />
+        <ProductsBlock
+          slug={firstSet.slug}
+          title={firstSet.name}
+          products={firstProducts}
+        />
       )}
       <CollectionsSection />
 
       {secondSet && (
-        <ProductsBlock title={secondSet.name} products={secondProducts} />
+        <ProductsBlock
+          slug={secondSet.slug}
+          title={secondSet.name}
+          products={secondProducts}
+        />
       )}
       <CategoriesBlock />
 
       {thirdSet && (
         <ProductsBlock
+          slug={thirdSet.slug}
           title={thirdSet.name}
           products={thirdProducts}
           layout="grid"

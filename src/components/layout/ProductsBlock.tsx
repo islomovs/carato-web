@@ -12,9 +12,12 @@ import { Product } from "@/services/product";
 import useLockScroll from "@/hooks/useLockScroll";
 import ProductsBlockModal from "../shared/product/ProductsBlockModal";
 import { WishlistItem } from "@/services/wishlist";
+import { useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
 
 interface ProductsBlockProps {
   title: string;
+  slug: string;
   products: Product[];
   layout?: "carousel" | "grid";
   hideSeeAll?: boolean;
@@ -22,14 +25,20 @@ interface ProductsBlockProps {
 
 export default function ProductsBlock({
   title,
+  slug,
   products,
   layout = "carousel",
   hideSeeAll = false,
 }: ProductsBlockProps) {
   const t = useTranslations("home");
-  const [selectedProduct, setSelectedProduct] = useState<Product | WishlistItem | null>(null);
-  const handleOpen = (product: Product | WishlistItem) => setSelectedProduct(product);
+  const [selectedProduct, setSelectedProduct] = useState<
+    Product | WishlistItem | null
+  >(null);
+  const handleOpen = (product: Product | WishlistItem) =>
+    setSelectedProduct(product);
   const handleClose = () => setSelectedProduct(null);
+  const router = useRouter();
+  const locale = useLocale();
 
   useLockScroll(selectedProduct ? true : false);
 
@@ -73,13 +82,14 @@ export default function ProductsBlock({
         {!hideSeeAll && (
           <Button
             variant="outline"
+            onClick={() => router.push(`/${locale}/sets/${slug}`)}
             className="mt-6 md:mt-20 w-full md:w-[280px] h-[36px] md:h-[52px] text-sm uppercase font-normal rounded-md bg-white text-black border border-black hover:bg-black hover:!text-white transition-colors duration-200 cursor-pointer md:self-center"
           >
             {t("seeAll")}
           </Button>
         )}
       </div>
-      {selectedProduct && 'slug' in selectedProduct && (
+      {selectedProduct && "slug" in selectedProduct && (
         <ProductsBlockModal
           slug={selectedProduct.slug}
           onClose={handleClose}

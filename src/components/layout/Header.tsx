@@ -33,27 +33,27 @@ export default function Header() {
   useEffect(() => {
     const shouldLock = menuOpen || isCatalogOpen || searchOpen;
 
-    if (!shouldLock) return;
+    if (shouldLock) {
+      const scrollY = window.scrollY;
 
-    const scrollY = window.scrollY;
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = "100%";
 
-    document.body.style.position = "fixed";
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.width = "100%";
-
-    return () => {
-      document.body.style.position = "";
-      document.body.style.top = "";
-      document.body.style.width = "";
-      window.scrollTo(0, scrollY);
-    };
+      return () => {
+        document.body.style.position = "";
+        document.body.style.top = "";
+        document.body.style.width = "";
+        window.scrollTo(0, scrollY);
+      };
+    }
   }, [menuOpen, isCatalogOpen, searchOpen]);
 
   const HEADER_HEIGHT_PX = 64;
   const APPBAR_HEIGHT_PX = 64;
 
   return (
-    <header className="fixed top-0 left-0 w-full flex justify-center border-b border-[#EEF2F6] bg-white px-2 md:px-8 z-50">
+    <header className="fixed top-0 left-0 w-full flex justify-center border-b border-[#EEF2F6] bg-white px-2 md:px-8 z-[99999]">
       <AuthModal initialMode="phone" />
       <div className="container relative flex items-center justify-between py-[14px] md:py-2">
         {/* Left side: mobile menu button */}

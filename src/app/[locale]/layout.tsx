@@ -58,7 +58,7 @@ export default async function RootLayout({ children, params }: Props) {
         <NextIntlClientProvider locale={locale as Locale} messages={resources}>
           <WishlistCartBootstrap />
           <HeaderWrapper />
-          <main className="md:pt-[66px]">{children}</main>
+          <main className="pt-[64px] md:pt-[66px]">{children}</main>
           <div style={{ margin: 0, padding: 0 }}>
             <Toaster position="top-right" richColors />
           </div>

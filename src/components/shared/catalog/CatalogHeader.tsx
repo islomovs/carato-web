@@ -10,7 +10,7 @@ export default function CatalogHeader({
   title?: string | null;
 }) {
   return (
-    <header className="w-full">
+    <div className="w-full">
       <div
         ref={refTitle}
         className="flex items-center justify-center my-[52px]"
@@ -23,6 +23,6 @@ export default function CatalogHeader({
           <Skeleton className="h-[34px] w-[240px] rounded-md" />
         )}
       </div>
-    </header>
+    </div>
   );
 }

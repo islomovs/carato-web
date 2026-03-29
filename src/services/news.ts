@@ -9,6 +9,8 @@ export interface NewsItem {
   date: string;
   mobileImage: string;
   desktopImage: string;
+  subtitle?: string;
+  author?: string;
 }
 
 export async function getNews(locale: string, page = 1, size = 6) {

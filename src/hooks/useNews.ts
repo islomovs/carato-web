@@ -1,47 +1,59 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useEffect, useState } from "react";
 import { getNews, NewsItem, getNewsBySlug } from "@/services/news";
 import { useTranslations, useLocale } from "next-intl";
 
-export function useNews(page = 1, size = 6) {
+export function useNews({
+  slug,
+}: {
+  page?: number;
+  size?: number;
+  slug?: string;
+}) {
   const t = useTranslations("news");
-  const [news, setNews] = useState<NewsItem[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const locale = useLocale();
 
-  const fetchNews = async () => {
-    setLoading(true);
-    setError(null);
+  const [news, setNews] = useState<NewsItem[]>([]);
+  const [singleNews, setSingleNews] = useState<NewsItem | null>(null);
+  const [newsLoading, setNewsLoading] = useState(true);
+  const [singleLoading, setSingleLoading] = useState(false);
+
+  const loading = newsLoading || singleLoading;
+
+  const fetchAllNews = async () => {
     try {
-      const data = await getNews(locale, page, size);
+      setNewsLoading(true);
+      const data = await getNews(locale, 1, 100);
       setNews(data);
     } catch (err) {
       setError(t("failedToLoadNews"));
-      console.error(err);
     } finally {
-      setLoading(false);
+      setNewsLoading(false);
+    }
+  };
+
+  const fetchSingleNews = async (slug: string) => {
+    try {
+      setSingleLoading(true);
+      const data = await getNewsBySlug(slug, locale);
+      setSingleNews(data);
+    } catch (err) {
+      setError(t("failedToLoadNews"));
+    } finally {
+      setSingleLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchNews();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, size]);
-
-  const getBySlug = async (slug: string) => {
-    try {
-      setLoading(true);
-      const data = await getNewsBySlug(slug, locale);
-      setNews([data]);
-    } catch (err) {
-      setError(t("failedToLoadNews"));
-      console.error(err);
-    } finally {
-      setLoading(false);
+    fetchAllNews(); // always fetch all news
+    if (slug) {
+      fetchSingleNews(slug);
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slug]);
 
-  return { news, loading, error, fetchNews, getBySlug };
+  return { news, singleNews, loading, error };
 }

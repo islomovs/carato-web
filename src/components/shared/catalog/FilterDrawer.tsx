@@ -360,6 +360,10 @@ export default function FilterDrawer({
                     setSelected={setTempSelected}
                     price={tempPrice ?? priceRange}
                     setPrice={setTempPrice}
+                    isSingleSelect={mobileActiveFilter === t("sort")}
+                    filterType={
+                      filterTypeMap[mobileActiveFilter ?? ""] ?? "other"
+                    }
                   />
                 ) : (
                   <FilterListMobile
@@ -369,6 +373,10 @@ export default function FilterDrawer({
                     setTempSelected={setTempSelected}
                     setTempPrice={setTempPrice}
                     price={priceRange}
+                    priceRange={priceRange}
+                    weightRange={weightRange}
+                    priceRangeKey={t("priceRange")}
+                    weightKey={t("weight")}
                   />
                 )}
               </div>
