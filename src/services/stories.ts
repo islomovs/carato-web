@@ -41,3 +41,4 @@ export async function getStories(locale: string): Promise<Story[]> {
   if (Array.isArray(data?.data)) return data.data;
   return [];
 }
+
