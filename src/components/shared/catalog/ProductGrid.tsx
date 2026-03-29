@@ -25,7 +25,6 @@ export default function ProductGrid({ products, loading }: ProductGridProps) {
   };
   const handleClose = () => setSelectedProduct(null);
 
-  console.log("Products in Grid:", selectedProduct ? true : false);
   useLockScroll(selectedProduct ? true : false);
 
   return (

@@ -54,6 +54,8 @@ export default function FilterBar({
 }: Props) {
   const t = useTranslations("filters");
   const [filterOpen, setFilterOpen] = useState(false);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 50000000]);
+  const [weightRange, setWeightRange] = useState<[number, number]>([0.5, 100]);
 
   const hasFilters = Object.values(selectedFilters).some(
     (arr) => arr.length > 0,
@@ -61,10 +63,11 @@ export default function FilterBar({
 
   const buildApiFilters = (
     uiFilters: Record<string, string[]>,
+    currentPriceRange: [number, number] = priceRange,
+    currentWeightRange: [number, number] = weightRange,
   ): Partial<typeof INITIAL_FILTERS> => {
     const api: Partial<typeof INITIAL_FILTERS> = {};
 
-    // Sort
     const sortOptions = uiFilters[t("sort")];
     if (sortOptions?.length) {
       const entry = Object.entries(SORT_VALUE_MAP).find(
@@ -73,7 +76,6 @@ export default function FilterBar({
       if (entry) api.sortType = entry[1];
     }
 
-    // Metals — match by name, send id
     const metalOptions = uiFilters[t("metals")];
     if (metalOptions?.length) {
       const ids = metalOptions
@@ -82,7 +84,6 @@ export default function FilterBar({
       if (ids.length) api.metals = ids;
     }
 
-    // Sizes — match by name, send id
     const sizeOptions = uiFilters[t("sizes")];
     if (sizeOptions?.length) {
       const ids = sizeOptions
@@ -91,21 +92,10 @@ export default function FilterBar({
       if (ids.length) api.sizes = ids;
     }
 
-    // Price
-    const priceOptions = uiFilters[t("priceRange")];
-    if (priceOptions?.length) {
-      const [from, to] = priceOptions[0].split("-").map(Number);
-      if (!isNaN(from)) api.priceFrom = from;
-      if (!isNaN(to)) api.priceTo = to;
-    }
-
-    // Weight
-    const weightOptions = uiFilters[t("weight")];
-    if (weightOptions?.length) {
-      const [from, to] = weightOptions[0].split("-").map(Number);
-      if (!isNaN(from)) api.weightFrom = from;
-      if (!isNaN(to)) api.weightTo = to;
-    }
+    if (currentPriceRange[0] > 0) api.priceFrom = currentPriceRange[0];
+    if (currentPriceRange[1] < 50000000) api.priceTo = currentPriceRange[1];
+    if (currentWeightRange[0] > 0.5) api.weightFrom = currentWeightRange[0];
+    if (currentWeightRange[1] < 100) api.weightTo = currentWeightRange[1];
 
     if (uiFilters[t("categories")]?.length)
       api.categorySlug = uiFilters[t("categories")][0];
@@ -120,12 +110,33 @@ export default function FilterBar({
     updated[title] = updated[title]?.filter((o) => o !== option);
     if (!updated[title]?.length) delete updated[title];
     setSelectedFilters(updated);
-    onUpdateFilters(buildApiFilters(updated));
+
+    if (title === t("weight")) {
+      const reset: [number, number] = [0.5, 100];
+      setWeightRange(reset);
+      const base = buildApiFilters(updated, priceRange, reset);
+      onUpdateFilters({ ...base, weightFrom: null, weightTo: null });
+      return;
+    }
+
+    if (title === t("priceRange")) {
+      const reset: [number, number] = [0, 50000000];
+      setPriceRange(reset);
+      const base = buildApiFilters(updated, reset, weightRange);
+      onUpdateFilters({ ...base, priceFrom: null, priceTo: null });
+      return;
+    }
+
+    onUpdateFilters(buildApiFilters(updated, priceRange, weightRange));
   };
 
   const handleClearAll = () => {
+    const resetPrice: [number, number] = [0, 50000000];
+    const resetWeight: [number, number] = [0.5, 100];
     setSelectedFilters({});
-    onUpdateFilters({});
+    setPriceRange(resetPrice);
+    setWeightRange(resetWeight);
+    onUpdateFilters(buildApiFilters({}, resetPrice, resetWeight));
   };
 
   return (
@@ -142,6 +153,10 @@ export default function FilterBar({
         previewTotal={previewTotal}
         previewLoading={previewLoading}
         onPreviewFilters={onPreviewFilters}
+        priceRange={priceRange}
+        setPriceRange={setPriceRange}
+        weightRange={weightRange}
+        setWeightRange={setWeightRange}
       />
 
       <div

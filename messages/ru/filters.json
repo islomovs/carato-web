@@ -14,6 +14,13 @@
     "sizes": "Размеры",
     "categories": "Категории",
     "subcategories": "Подкатегории",
-    "apply": "Применить"
+    "apply": "Применить",
+    "clearAll": "ОЧИСТИТЬ ВСЁ",
+    "resetAll": "Сбросить всё",
+    "clearAllSuccess": "Все фильтры сброшены",
+    "gr": "гр",
+    "showProducts": "ПОКАЗАТЬ {total} ТОВАРОВ",
+    "noResults": "НЕТ РЕЗУЛЬТАТОВ",
+    "loading": "Загрузка..."
   }
 }

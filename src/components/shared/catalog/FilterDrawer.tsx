@@ -26,6 +26,10 @@ interface FilterDrawerProps {
   previewTotal: number | null;
   previewLoading: boolean;
   onPreviewFilters: (filters: Partial<typeof INITIAL_FILTERS>) => void;
+  priceRange: [number, number];
+  setPriceRange: (v: [number, number]) => void;
+  weightRange: [number, number];
+  setWeightRange: (v: [number, number]) => void;
 }
 
 type FilterOption = {
@@ -45,6 +49,10 @@ export default function FilterDrawer({
   previewTotal,
   previewLoading,
   onPreviewFilters,
+  priceRange,
+  setPriceRange,
+  weightRange,
+  setWeightRange,
 }: FilterDrawerProps) {
   const t = useTranslations("filters");
 
@@ -79,9 +87,6 @@ export default function FilterDrawer({
   // Expanded accordion for desktop
   const [expanded, setExpanded] = useState<string | null>(null);
 
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 500000]);
-  const [weightRange, setWeightRange] = useState<[number, number]>([0.5, 100]);
-
   // isMobile determined at runtime (client)
   const [isMobile, setIsMobile] = useState<boolean>(false);
 
@@ -89,6 +94,16 @@ export default function FilterDrawer({
   const [mobileActiveFilter, setMobileActiveFilter] = useState<string | null>(
     null,
   );
+
+  useEffect(() => {
+    if (!open) return;
+    const snapshot = buildPreviewFilters();
+    const timer = setTimeout(() => {
+      onPreviewFilters(snapshot);
+    }, 400);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, priceRange, weightRange, sortBy, JSON.stringify(selected)]);
 
   useEffect(() => {
     const onResize = () => {
@@ -116,72 +131,29 @@ export default function FilterDrawer({
     });
   };
 
-  // Price: when changed, reflect into `selected` as "Цена": ["min-max"] OR remove if default
-  useEffect(() => {
-    // if price in default state remove "Цена" from selected
-    setSelected((prev) => {
-      const priceApplied = priceRange[0] > 0 || priceRange[1] < 500000;
-      if (!priceApplied) {
-        if (!prev[t("priceRange")]) return prev;
-        const copy = { ...prev };
-        delete copy[t("priceRange")];
-        return copy;
-      } else {
-        const copy = {
-          ...prev,
-          [t("priceRange")]: [`${priceRange[0]}-${priceRange[1]}`],
-        };
-        return copy;
-      }
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [priceRange]);
-
-  // Weight: when changed, reflect into `selected` as "Вес": ["min-max"] OR remove if default
-  useEffect(() => {
-    setSelected((prev) => {
-      const weightApplied = weightRange[0] > 0.5 || weightRange[1] < 100;
-      if (!weightApplied) {
-        if (!prev[t("weight")]) return prev;
-        const copy = { ...prev };
-        delete copy[t("weight")];
-        return copy;
-      } else {
-        const copy = {
-          ...prev,
-          [t("weight")]: [`${weightRange[0]}-${weightRange[1]}`],
-        };
-        return copy;
-      }
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [weightRange]);
-
   const appliedCount = (title: string) => {
-    if (title === t("priceRange") && selected[t("priceRange")]) {
-      return 1; // only count once from selected
-    }
-    if (title === t("weight") && selected[t("weight")]) {
-      return 1;
-    }
+    if (title === t("priceRange"))
+      return priceRange[0] > 0 || priceRange[1] < 50000000 ? 1 : 0;
+    if (title === t("weight"))
+      return weightRange[0] > 0.5 || weightRange[1] < 100 ? 1 : 0;
+    if (title === t("sort")) return selected[t("sort")]?.length ? 1 : 0;
     return selected[title]?.length || 0;
   };
 
   const hasFilters =
     Object.values(selected).some((a) => a && a.length > 0) ||
     priceRange[0] > 0 ||
-    priceRange[1] < 500000 ||
+    priceRange[1] < 50000000 ||
     weightRange[0] > 0.5 ||
     weightRange[1] < 100;
 
   const clearAll = () => {
     setSelected({});
-    setPriceRange([0, 500000]);
+    setPriceRange([0, 50000000]);
     setWeightRange([0.5, 100]);
     setSortBy(null);
     onUpdateFilters({});
-
-    toast.success("Все фильтры сброшены");
+    toast.success(t("filtersCleared"));
   };
 
   useEffect(() => {
@@ -204,7 +176,7 @@ export default function FilterDrawer({
     const apiFilters: Partial<typeof INITIAL_FILTERS> = {};
 
     if (priceRange[0] > 0) apiFilters.priceFrom = priceRange[0];
-    if (priceRange[1] < 500000) apiFilters.priceTo = priceRange[1];
+    if (priceRange[1] < 50000000) apiFilters.priceTo = priceRange[1];
     if (weightRange[0] > 0.5) apiFilters.weightFrom = weightRange[0];
     if (weightRange[1] < 100) apiFilters.weightTo = weightRange[1];
     if (sortBy) apiFilters.sortType = sortBy;
@@ -223,6 +195,24 @@ export default function FilterDrawer({
       if (ids.length) apiFilters.sizes = ids;
     }
 
+    // Write range chips into selected at apply time — not reactively
+    setSelected((prev) => {
+      const copy = { ...prev };
+      const priceApplied = priceRange[0] > 0 || priceRange[1] < 50000000;
+      if (priceApplied) {
+        copy[t("priceRange")] = [`${priceRange[0]}-${priceRange[1]}`];
+      } else {
+        delete copy[t("priceRange")];
+      }
+      const weightApplied = weightRange[0] > 0.5 || weightRange[1] < 100;
+      if (weightApplied) {
+        copy[t("weight")] = [`${weightRange[0]}-${weightRange[1]}`];
+      } else {
+        delete copy[t("weight")];
+      }
+      return copy;
+    });
+
     onUpdateFilters(apiFilters);
     onClose();
   };
@@ -231,7 +221,7 @@ export default function FilterDrawer({
   const buildPreviewFilters = (): Partial<typeof INITIAL_FILTERS> => {
     const f: Partial<typeof INITIAL_FILTERS> = {};
     if (priceRange[0] > 0) f.priceFrom = priceRange[0];
-    if (priceRange[1] < 500000) f.priceTo = priceRange[1];
+    if (priceRange[1] > 0) f.priceTo = priceRange[1];
     if (weightRange[0] > 0.5) f.weightFrom = weightRange[0];
     if (weightRange[1] < 100) f.weightTo = weightRange[1];
     if (sortBy) f.sortType = sortBy;
@@ -249,13 +239,6 @@ export default function FilterDrawer({
     }
     return f;
   };
-
-  // Call preview whenever any filter state changes:
-  useEffect(() => {
-    if (!open) return;
-    onPreviewFilters(buildPreviewFilters());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, priceRange, weightRange, sortBy, JSON.stringify(selected)]);
 
   return (
     <AnimatePresence>

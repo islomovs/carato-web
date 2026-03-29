@@ -25,29 +25,8 @@ export function useProducts(
   const [previewTotal, setPreviewTotal] = useState<number | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
 
-  const previewFilters = async (
-    newFilters: Partial<typeof INITIAL_FILTERS>,
-  ) => {
-    setPreviewLoading(true);
-    try {
-      const response = await fetchAllProducts(
-        {
-          page: 1,
-          size: 1, // we only need totalElements, not actual products
-          ...filters,
-          ...newFilters,
-        },
-        locale,
-      );
-      setPreviewTotal(response?.products?.totalElements ?? null);
-    } catch {
-      setPreviewTotal(null);
-    } finally {
-      setPreviewLoading(false);
-    }
-  };
-
   const loadProducts = async () => {
+    console.log("🟢 loadProducts called with filters:", filters);
     if (allowSearchOnly && !filters.search?.trim()) {
       return;
     }
@@ -65,14 +44,15 @@ export function useProducts(
           page,
           size,
           search: filters.search || undefined,
-          priceFrom: filters.priceFrom || undefined,
-          priceTo: filters.priceTo || undefined,
-          weightFrom: filters.weightFrom || undefined,
-          weightTo: filters.weightTo || undefined,
+          priceFrom: filters.priceFrom != null ? filters.priceFrom : undefined,
+          priceTo: filters.priceTo != null ? filters.priceTo : undefined,
+          weightFrom:
+            filters.weightFrom != null ? filters.weightFrom : undefined,
+          weightTo: filters.weightTo != null ? filters.weightTo : undefined,
           categorySlug: filters.categorySlug || undefined,
           subcategorySlug: filters.subcategorySlug || undefined,
-          metals: filters.metals.length ? filters.metals : undefined,
-          sizes: filters.sizes.length ? filters.sizes : undefined,
+          metals: filters.metals?.length ? filters.metals : undefined,
+          sizes: filters.sizes?.length ? filters.sizes : undefined,
           sortType: filters.sortType || undefined,
         },
         locale,
@@ -86,6 +66,42 @@ export function useProducts(
     }
   };
 
+  // useProducts.ts — separate preview from main filters completely
+  const previewFilters = async (
+    newFilters: Partial<typeof INITIAL_FILTERS>,
+  ) => {
+    setPreviewLoading(true);
+    try {
+      const merged = {
+        ...INITIAL_FILTERS,
+        categorySlug: filters.categorySlug,
+        subcategorySlug: filters.subcategorySlug,
+        ...newFilters,
+      };
+      const response = await fetchAllProducts(
+        {
+          page: 1,
+          size: 1,
+          categorySlug: merged.categorySlug || undefined,
+          subcategorySlug: merged.subcategorySlug || undefined,
+          priceFrom: merged.priceFrom != null ? merged.priceFrom : undefined,
+          priceTo: merged.priceTo != null ? merged.priceTo : undefined,
+          weightFrom: merged.weightFrom != null ? merged.weightFrom : undefined,
+          weightTo: merged.weightTo != null ? merged.weightTo : undefined,
+          metals: merged.metals?.length ? merged.metals : undefined,
+          sizes: merged.sizes?.length ? merged.sizes : undefined,
+          sortType: merged.sortType || undefined,
+        },
+        locale,
+      );
+      setPreviewTotal(response?.products?.totalElements ?? null);
+    } catch {
+      setPreviewTotal(null);
+    } finally {
+      setPreviewLoading(false);
+    }
+  };
+
   const filtersKey = JSON.stringify(filters);
 
   useEffect(() => {
@@ -95,8 +111,22 @@ export function useProducts(
 
   const updateFilters = (newFilters: Partial<typeof INITIAL_FILTERS>) => {
     setFilters((prev: any) => {
-      const next = { ...prev, ...newFilters };
-      return JSON.stringify(prev) === JSON.stringify(next) ? prev : next;
+      const next = {
+        ...INITIAL_FILTERS,
+        categorySlug: prev.categorySlug,
+        subcategorySlug: prev.subcategorySlug,
+        ...newFilters,
+      };
+      const equal = JSON.stringify(prev) === JSON.stringify(next);
+      console.log(
+        "🔵 updateFilters equal?",
+        equal,
+        "prev.weightTo:",
+        prev.weightTo,
+        "next.weightTo:",
+        next.weightTo,
+      );
+      return equal ? prev : next;
     });
     setPage(1);
   };

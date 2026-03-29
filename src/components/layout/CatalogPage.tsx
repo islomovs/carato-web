@@ -66,17 +66,7 @@ export default function CatalogPage({ slug }: CatalogPageProps) {
 
   const [selectedFilters, setSelectedFilters] = useState<
     Record<string, string[]>
-  >({
-    Категория: resolved?.label ? [resolved.label] : [],
-  });
-
-  useEffect(() => {
-    if (resolved?.label) {
-      setSelectedFilters({
-        Категория: [resolved.label],
-      });
-    }
-  }, [resolved?.label]);
+  >({});
 
   return (
     <div className="w-full">

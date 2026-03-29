@@ -94,6 +94,11 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
   const totalStars = 5;
   const rating = (stableProduct as any)?.averageRating || 5;
 
+  console.log(
+    "ProductInfo render with product:",
+    selectedVariant?.price ?? product.price,
+  );
+
   return (
     <>
       <div className="flex flex-col gap-8 w-full pb-[10px]">
@@ -130,17 +135,14 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
         {/* Pricing */}
         <div className="flex items-center">
           <span className="font-medium text-2xl">
-            {selectedVariant?.discountPrice ??
-              selectedVariant?.price ??
-              product.price}{" "}
-            {t("uzs")}
+            {selectedVariant?.price ?? product.price} {t("uzs")}
           </span>
-          {selectedVariant?.discountPrice && (
+          {(selectedVariant?.discountPrice ?? 0) > 0 && (
             <span className="font-medium text-base text-[#9AA4B2] line-through ml-3">
               {selectedVariant.price} {t("uzs")}
             </span>
           )}
-          {selectedVariant?.discountPercent && (
+          {(selectedVariant?.discountPercent ?? 0) > 0 && (
             <span className="font-normal text-xs text-[#FEFDF0] bg-[#F04438] py-1 px-2 rounded-[2px] ml-3">
               -{selectedVariant.discountPercent}%
             </span>

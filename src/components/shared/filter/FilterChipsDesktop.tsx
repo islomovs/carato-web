@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 export default function FilterChipsDesktop({
   hasFilters,
@@ -12,6 +13,8 @@ export default function FilterChipsDesktop({
   handleRemove: (title: string, option: string) => void;
   handleClearAll: () => void;
 }) {
+  const t = useTranslations("filters");
+
   return (
     <div className="md:px-8 py-3 border-t border-[#EEF2F6] bg-white">
       {/* Mobile horizontal scroll / Desktop wraps */}
@@ -40,7 +43,7 @@ export default function FilterChipsDesktop({
                   />
                 </span>
               </button>
-            ))
+            )),
           )}
 
           {/* “Очистить всё” — visible only on desktop */}
@@ -50,7 +53,7 @@ export default function FilterChipsDesktop({
               onClick={handleClearAll}
               className="hidden md:inline-block px-[14px] py-[8px] text-[12px] font-[400] uppercase text-[#4B5565] cursor-pointer flex-shrink-0"
             >
-              ОЧИСТИТЬ ВСЁ
+              {t("clearAll")}
             </Button>
           )}
         </div>
