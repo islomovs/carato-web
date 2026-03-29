@@ -12,6 +12,7 @@ const NAMESPACES = [
   "checkout",
   "news",
   "wishlist",
+  "filters",
 ];
 
 export default getRequestConfig(async ({ requestLocale }) => {

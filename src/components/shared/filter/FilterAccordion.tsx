@@ -15,6 +15,8 @@ interface Props {
   weightRange: [number, number];
   setWeightRange: (val: [number, number]) => void;
   appliedCount: (title: string) => number;
+  isSingleSelect?: boolean;
+  filterType?: "price" | "weight" | "sort" | "metal" | "other";
 }
 
 export default function FilterAccordion({
@@ -28,7 +30,11 @@ export default function FilterAccordion({
   weightRange,
   setWeightRange,
   appliedCount,
+  isSingleSelect = false,
+  filterType = "other",
 }: Props) {
+  const isRange = filterType === "price" || filterType === "weight";
+
   return (
     <div className="mb-0">
       <button
@@ -61,13 +67,13 @@ export default function FilterAccordion({
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            {filter.title === "Цена" || filter.title === "Вес" ? (
+            {isRange ? (
               <FilterPriceRange
-                price={filter.title === "Цена" ? priceRange : weightRange}
+                price={filterType === "price" ? priceRange : weightRange}
                 setPrice={
-                  filter.title === "Цена" ? setPriceRange : setWeightRange
+                  filterType === "price" ? setPriceRange : setWeightRange
                 }
-                filterType={filter.title}
+                filterType={filterType}
               />
             ) : (
               <FilterOptionsList
@@ -75,6 +81,7 @@ export default function FilterAccordion({
                 options={filter.options}
                 isOptionActive={isOptionActive}
                 toggleOption={toggleOption}
+                isSingleSelect={isSingleSelect}
               />
             )}
           </motion.div>

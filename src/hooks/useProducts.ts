@@ -7,7 +7,7 @@ import { useLocale } from "use-intl";
 export function useProducts(
   initialPageSize = 20,
   initialFilters?: any,
-  allowSearchOnly = false
+  allowSearchOnly = false,
 ) {
   const [filters, setFilters] = useState({
     ...INITIAL_FILTERS,
@@ -21,6 +21,31 @@ export function useProducts(
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [previewTotal, setPreviewTotal] = useState<number | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
+
+  const previewFilters = async (
+    newFilters: Partial<typeof INITIAL_FILTERS>,
+  ) => {
+    setPreviewLoading(true);
+    try {
+      const response = await fetchAllProducts(
+        {
+          page: 1,
+          size: 1, // we only need totalElements, not actual products
+          ...filters,
+          ...newFilters,
+        },
+        locale,
+      );
+      setPreviewTotal(response?.products?.totalElements ?? null);
+    } catch {
+      setPreviewTotal(null);
+    } finally {
+      setPreviewLoading(false);
+    }
+  };
 
   const loadProducts = async () => {
     if (allowSearchOnly && !filters.search?.trim()) {
@@ -48,8 +73,9 @@ export function useProducts(
           subcategorySlug: filters.subcategorySlug || undefined,
           metals: filters.metals.length ? filters.metals : undefined,
           sizes: filters.sizes.length ? filters.sizes : undefined,
+          sortType: filters.sortType || undefined,
         },
-        locale
+        locale,
       );
 
       setData(response);
@@ -64,6 +90,7 @@ export function useProducts(
 
   useEffect(() => {
     loadProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, filtersKey]);
 
   const updateFilters = (newFilters: Partial<typeof INITIAL_FILTERS>) => {
@@ -79,7 +106,8 @@ export function useProducts(
     products: data?.products?.content ?? [],
     totalPages: data?.products?.totalPages ?? 1,
     totalElements: data?.products?.totalElements ?? 0,
-
+    metals: data?.filters?.metals ?? [],
+    sizes: data?.filters?.sizes ?? [],
     loading,
     error,
 
@@ -90,5 +118,9 @@ export function useProducts(
     updateFilters,
 
     reload: loadProducts,
+
+    previewTotal,
+    previewLoading,
+    previewFilters,
   };
 }

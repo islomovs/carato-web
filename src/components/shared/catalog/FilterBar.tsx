@@ -1,21 +1,44 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import React, { RefObject, useState } from "react";
+import { RefObject, useState } from "react";
 import FilterDrawer from "./FilterDrawer";
 import FilterChipsDesktop from "../filter/FilterChipsDesktop";
-import { INITIAL_FILTERS } from "@/services/product";
+import { INITIAL_FILTERS, SortOption } from "@/services/product";
+import { useTranslations } from "next-intl";
+import { Dispatch, SetStateAction } from "react";
+
+export interface Metal {
+  id: number;
+  name: string;
+  fineness: number;
+}
+export interface Size {
+  id: number;
+  name: string;
+}
 
 interface Props {
   refBar: RefObject<HTMLDivElement | null>;
   total: number;
   selectedFilters: Record<string, string[]>;
-  setSelectedFilters: React.Dispatch<
-    React.SetStateAction<Record<string, string[]>>
-  >;
+  setSelectedFilters: Dispatch<SetStateAction<Record<string, string[]>>>;
   onUpdateFilters: (filters: Partial<typeof INITIAL_FILTERS>) => void;
+  metals: Metal[];
+  sizes: Size[];
+  previewTotal: number | null;
+  previewLoading: boolean;
+  onPreviewFilters: (filters: Partial<typeof INITIAL_FILTERS>) => void;
 }
+
+const SORT_VALUE_MAP: Record<string, SortOption> = {
+  sortNewest: "CREATED_DESC",
+  sortBestRated: "BEST_RATING_DESC",
+  sortCheapest: "PRICE_ASC",
+  sortMostExpensive: "PRICE_DESC",
+};
 
 export default function FilterBar({
   refBar,
@@ -23,42 +46,86 @@ export default function FilterBar({
   selectedFilters,
   setSelectedFilters,
   onUpdateFilters,
+  sizes,
+  metals,
+  previewTotal,
+  previewLoading,
+  onPreviewFilters,
 }: Props) {
+  const t = useTranslations("filters");
   const [filterOpen, setFilterOpen] = useState(false);
 
   const hasFilters = Object.values(selectedFilters).some(
-    (arr) => arr.length > 0
+    (arr) => arr.length > 0,
   );
 
-  const mapUIToAPI = (uiFilters: Record<string, string[]>) => ({
-    categorySlug: uiFilters["Категория"]?.[0] || "",
-    subcategorySlug: uiFilters["Подкатегория"]?.[0] || "",
-    // add other filters here if needed
-  });
+  const buildApiFilters = (
+    uiFilters: Record<string, string[]>,
+  ): Partial<typeof INITIAL_FILTERS> => {
+    const api: Partial<typeof INITIAL_FILTERS> = {};
+
+    // Sort
+    const sortOptions = uiFilters[t("sort")];
+    if (sortOptions?.length) {
+      const entry = Object.entries(SORT_VALUE_MAP).find(
+        ([key]) => t(key as any) === sortOptions[0],
+      );
+      if (entry) api.sortType = entry[1];
+    }
+
+    // Metals — match by name, send id
+    const metalOptions = uiFilters[t("metals")];
+    if (metalOptions?.length) {
+      const ids = metalOptions
+        .map((name) => metals.find((m) => m.name === name)?.id)
+        .filter(Boolean) as number[];
+      if (ids.length) api.metals = ids;
+    }
+
+    // Sizes — match by name, send id
+    const sizeOptions = uiFilters[t("sizes")];
+    if (sizeOptions?.length) {
+      const ids = sizeOptions
+        .map((name) => sizes.find((s) => s.name === name)?.id)
+        .filter(Boolean) as number[];
+      if (ids.length) api.sizes = ids;
+    }
+
+    // Price
+    const priceOptions = uiFilters[t("priceRange")];
+    if (priceOptions?.length) {
+      const [from, to] = priceOptions[0].split("-").map(Number);
+      if (!isNaN(from)) api.priceFrom = from;
+      if (!isNaN(to)) api.priceTo = to;
+    }
+
+    // Weight
+    const weightOptions = uiFilters[t("weight")];
+    if (weightOptions?.length) {
+      const [from, to] = weightOptions[0].split("-").map(Number);
+      if (!isNaN(from)) api.weightFrom = from;
+      if (!isNaN(to)) api.weightTo = to;
+    }
+
+    if (uiFilters[t("categories")]?.length)
+      api.categorySlug = uiFilters[t("categories")][0];
+    if (uiFilters[t("subcategories")]?.length)
+      api.subcategorySlug = uiFilters[t("subcategories")][0];
+
+    return api;
+  };
 
   const handleRemove = (title: string, option: string) => {
-    const updatedSelectedFilters = { ...selectedFilters };
-    updatedSelectedFilters[title] = updatedSelectedFilters[title]?.filter(
-      (o) => o !== option
-    );
-    if (!updatedSelectedFilters[title]?.length)
-      delete updatedSelectedFilters[title];
-
-    setSelectedFilters(updatedSelectedFilters);
-
-    // Send full mapped filters for API
-    const mappedFilters = mapUIToAPI(updatedSelectedFilters);
-    console.log("Sending filters to API:", mappedFilters);
-    onUpdateFilters(mappedFilters);
+    const updated = { ...selectedFilters };
+    updated[title] = updated[title]?.filter((o) => o !== option);
+    if (!updated[title]?.length) delete updated[title];
+    setSelectedFilters(updated);
+    onUpdateFilters(buildApiFilters(updated));
   };
 
   const handleClearAll = () => {
-    const cleared: Record<string, string[]> = {};
-    setSelectedFilters(cleared);
-    console.log("Clearing all filters");
-    const mappedFilters = mapUIToAPI(cleared);
-    console.log("Sending filters to API:", mappedFilters);
-    onUpdateFilters(mappedFilters);
+    setSelectedFilters({});
+    onUpdateFilters({});
   };
 
   return (
@@ -70,6 +137,11 @@ export default function FilterBar({
         selected={selectedFilters}
         setSelected={setSelectedFilters}
         onUpdateFilters={onUpdateFilters}
+        metals={metals}
+        sizes={sizes}
+        previewTotal={previewTotal}
+        previewLoading={previewLoading}
+        onPreviewFilters={onPreviewFilters}
       />
 
       <div
@@ -88,10 +160,12 @@ export default function FilterBar({
               width={20}
               height={20}
             />
-            <span className="text-[12px] font-normal uppercase">ФИЛЬТРЫ</span>
+            <span className="text-[12px] font-normal uppercase">
+              {t("filters")}
+            </span>
           </Button>
           <div className="text-[14px] font-[300]">
-            {total.toLocaleString("ru-RU")} ИЗДЕЛИЙ
+            {total.toLocaleString("ru-RU")} {t("items")}
           </div>
         </div>
 

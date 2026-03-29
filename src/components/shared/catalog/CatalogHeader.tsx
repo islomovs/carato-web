@@ -1,10 +1,13 @@
 "use client";
 import { RefObject } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function CatalogHeader({
   refTitle,
+  title,
 }: {
   refTitle: RefObject<HTMLDivElement | null>;
+  title?: string | null;
 }) {
   return (
     <header className="w-full">
@@ -12,9 +15,13 @@ export default function CatalogHeader({
         ref={refTitle}
         className="flex items-center justify-center my-[52px]"
       >
-        <h1 className="text-[28px] leading-[34px] text-center font-[400]">
-          Каталог товаров
-        </h1>
+        {title ? (
+          <h1 className="text-[28px] leading-[34px] text-center font-[400]">
+            {title}
+          </h1>
+        ) : (
+          <Skeleton className="h-[34px] w-[240px] rounded-md" />
+        )}
       </div>
     </header>
   );

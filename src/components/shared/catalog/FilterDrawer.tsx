@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -11,7 +10,9 @@ import FilterOptionsMobile from "../filter/FilterOptionsMobile";
 import FilterChipsMobile from "../filter/FilterChipsMobile";
 import { Button } from "../../ui/button";
 import { toast } from "sonner";
-import { INITIAL_FILTERS } from "@/services/product";
+import { INITIAL_FILTERS, SortOption } from "@/services/product";
+import { useTranslations } from "next-intl";
+import { Metal, Size } from "./FilterBar";
 
 interface FilterDrawerProps {
   open: boolean;
@@ -20,35 +21,17 @@ interface FilterDrawerProps {
   selected: Record<string, string[]>;
   setSelected: React.Dispatch<React.SetStateAction<Record<string, string[]>>>;
   onUpdateFilters: (filters: Partial<typeof INITIAL_FILTERS>) => void;
+  metals: Metal[];
+  sizes: Size[];
+  previewTotal: number | null;
+  previewLoading: boolean;
+  onPreviewFilters: (filters: Partial<typeof INITIAL_FILTERS>) => void;
 }
 
 type FilterOption = {
   title: string;
   options: string[];
 };
-
-const mockFilters: FilterOption[] = [
-  {
-    title: "Сортировка",
-    options: ["Новинки", "Лучшее по оценке", "Дешевле", "Дороже"],
-  },
-  {
-    title: "Металл",
-    options: [],
-  },
-  {
-    title: "Цена",
-    options: [],
-  },
-  {
-    title: "Вес",
-    options: [],
-  },
-];
-
-// Load metals from backend
-
-// Map UI filter values to API params
 
 export default function FilterDrawer({
   open,
@@ -57,33 +40,41 @@ export default function FilterDrawer({
   selected,
   setSelected,
   onUpdateFilters,
+  metals,
+  sizes,
+  previewTotal,
+  previewLoading,
+  onPreviewFilters,
 }: FilterDrawerProps) {
-  const metalsList = [
-    { id: 1, name: "Золото 585", fineness: "585" },
-    { id: 2, name: "Золото 750", fineness: "750" },
-    { id: 3, name: "Серебро 925", fineness: "925" },
-    { id: 4, name: "Платина 950", fineness: "950" },
+  const t = useTranslations("filters");
+
+  // Replace SORT_OPTIONS (labels now use translation keys):
+  const SORT_OPTIONS: { labelKey: string; value: SortOption }[] = [
+    { labelKey: "sortNewest", value: "CREATED_DESC" },
+    { labelKey: "sortBestRated", value: "BEST_RATING_DESC" },
+    { labelKey: "sortCheapest", value: "PRICE_ASC" },
+    { labelKey: "sortMostExpensive", value: "PRICE_DESC" },
   ];
 
-  const FILTER_MAP = {
-    Материал: {
-      apiKey: "metals",
-      mapValue: (option: string) => {
-        console.log("🔹 Mapping metal option:", option);
-        const metal = metalsList.find((m) => m.fineness === option);
-        if (!metal) console.warn("⚠️ Metal not found for option:", option);
-        return metal ? metal.id : null;
-      },
-    },
-    Категория: {
-      apiKey: "categorySlug",
-      mapValue: (option: string) => option.toLowerCase().replace(/\s+/g, "-"),
-    },
-    Цена: {
-      apiKey: "price",
-      mapValue: null,
-    },
+  // Replace mockFilters (titles now translatable strings):
+  const mockFilters: FilterOption[] = [
+    { title: t("sort"), options: SORT_OPTIONS.map((o) => t(o.labelKey)) },
+    { title: t("metals"), options: metals.map((m) => m.name) },
+    { title: t("priceRange"), options: [] },
+    { title: t("weight"), options: [] },
+    { title: t("sizes"), options: sizes.map((s) => s.name) },
+    { title: t("categories"), options: [] },
+    { title: t("subcategories"), options: [] },
+  ];
+
+  const filterTypeMap: Record<string, "price" | "weight" | "sort" | "metal"> = {
+    [t("priceRange")]: "price",
+    [t("weight")]: "weight",
+    [t("sort")]: "sort",
+    [t("metals")]: "metal",
   };
+
+  const [sortBy, setSortBy] = useState<SortOption | null>(null);
 
   // Expanded accordion for desktop
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -96,7 +87,7 @@ export default function FilterDrawer({
 
   // Mobile: which filter is drilled-in (null -> main list)
   const [mobileActiveFilter, setMobileActiveFilter] = useState<string | null>(
-    null
+    null,
   );
 
   useEffect(() => {
@@ -131,12 +122,15 @@ export default function FilterDrawer({
     setSelected((prev) => {
       const priceApplied = priceRange[0] > 0 || priceRange[1] < 500000;
       if (!priceApplied) {
-        if (!prev["Цена"]) return prev;
+        if (!prev[t("priceRange")]) return prev;
         const copy = { ...prev };
-        delete copy["Цена"];
+        delete copy[t("priceRange")];
         return copy;
       } else {
-        const copy = { ...prev, Цена: [`${priceRange[0]}-${priceRange[1]}`] };
+        const copy = {
+          ...prev,
+          [t("priceRange")]: [`${priceRange[0]}-${priceRange[1]}`],
+        };
         return copy;
       }
     });
@@ -148,12 +142,15 @@ export default function FilterDrawer({
     setSelected((prev) => {
       const weightApplied = weightRange[0] > 0.5 || weightRange[1] < 100;
       if (!weightApplied) {
-        if (!prev["Вес"]) return prev;
+        if (!prev[t("weight")]) return prev;
         const copy = { ...prev };
-        delete copy["Вес"];
+        delete copy[t("weight")];
         return copy;
       } else {
-        const copy = { ...prev, Вес: [`${weightRange[0]}-${weightRange[1]}`] };
+        const copy = {
+          ...prev,
+          [t("weight")]: [`${weightRange[0]}-${weightRange[1]}`],
+        };
         return copy;
       }
     });
@@ -161,10 +158,10 @@ export default function FilterDrawer({
   }, [weightRange]);
 
   const appliedCount = (title: string) => {
-    if (title === "Цена" && selected["Цена"]) {
+    if (title === t("priceRange") && selected[t("priceRange")]) {
       return 1; // only count once from selected
     }
-    if (title === "Вес" && selected["Вес"]) {
+    if (title === t("weight") && selected[t("weight")]) {
       return 1;
     }
     return selected[title]?.length || 0;
@@ -177,14 +174,11 @@ export default function FilterDrawer({
     weightRange[0] > 0.5 ||
     weightRange[1] < 100;
 
-  const [loading, setLoading] = useState(false);
-
   const clearAll = () => {
     setSelected({});
     setPriceRange([0, 500000]);
     setWeightRange([0.5, 100]);
-
-    setLoading(true);
+    setSortBy(null);
     onUpdateFilters({});
 
     toast.success("Все фильтры сброшены");
@@ -202,45 +196,66 @@ export default function FilterDrawer({
   }, [open]);
 
   const [tempSelected, setTempSelected] = useState<Record<string, string[]>>(
-    {}
+    {},
   );
   const [tempPrice, setTempPrice] = useState<[number, number] | null>(null);
 
   const applyFilters = () => {
-    const apiFilters: any = {};
+    const apiFilters: Partial<typeof INITIAL_FILTERS> = {};
 
-    apiFilters.priceFrom = priceRange[0] > 0 ? priceRange[0] : null;
-    apiFilters.priceTo = priceRange[1] < 500000 ? priceRange[1] : null;
+    if (priceRange[0] > 0) apiFilters.priceFrom = priceRange[0];
+    if (priceRange[1] < 500000) apiFilters.priceTo = priceRange[1];
+    if (weightRange[0] > 0.5) apiFilters.weightFrom = weightRange[0];
+    if (weightRange[1] < 100) apiFilters.weightTo = weightRange[1];
+    if (sortBy) apiFilters.sortType = sortBy;
 
-    apiFilters.weightFrom = weightRange[0] > 0.5 ? weightRange[0] : null;
-    apiFilters.weightTo = weightRange[1] < 100 ? weightRange[1] : null;
-
-    if (selected["Материал"]) {
-      const ids = selected["Материал"]
-        .map((name) => FILTER_MAP["Материал"].mapValue(name))
-        .filter(Boolean);
-
-      apiFilters.metals = ids;
+    if (selected[t("metals")]?.length) {
+      const ids = selected[t("metals")]
+        .map((name) => metals.find((m) => m.name === name)?.id)
+        .filter(Boolean) as number[];
+      if (ids.length) apiFilters.metals = ids;
     }
 
-    if (selected["Категория"]) {
-      apiFilters.categorySlug = selected["Категория"].map((name) =>
-        name.toLowerCase().replace(/\s+/g, "-")
-      );
+    if (selected[t("sizes")]?.length) {
+      const ids = selected[t("sizes")]
+        .map((name) => sizes.find((s) => s.name === name)?.id)
+        .filter(Boolean) as number[];
+      if (ids.length) apiFilters.sizes = ids;
     }
 
-    // <-- DEBUG: log payload
-    console.log("🔥 API Filters Payload before sending:", apiFilters);
-
-    sessionStorage.setItem("productFilters", JSON.stringify(apiFilters));
-
-    if (typeof (window as any).updateFilters === "function") {
-      (window as any).updateFilters(apiFilters);
-      console.log("🔥 updateFilters called with:", apiFilters);
-    }
-
+    onUpdateFilters(apiFilters);
     onClose();
   };
+
+  // Helper to build preview payload — same logic as applyFilters but doesn't close:
+  const buildPreviewFilters = (): Partial<typeof INITIAL_FILTERS> => {
+    const f: Partial<typeof INITIAL_FILTERS> = {};
+    if (priceRange[0] > 0) f.priceFrom = priceRange[0];
+    if (priceRange[1] < 500000) f.priceTo = priceRange[1];
+    if (weightRange[0] > 0.5) f.weightFrom = weightRange[0];
+    if (weightRange[1] < 100) f.weightTo = weightRange[1];
+    if (sortBy) f.sortType = sortBy;
+    if (selected[t("metals")]?.length) {
+      const ids = selected[t("metals")]
+        .map((name) => metals.find((m) => m.name === name)?.id)
+        .filter(Boolean) as number[];
+      if (ids.length) f.metals = ids;
+    }
+    if (selected[t("sizes")]?.length) {
+      const ids = selected[t("sizes")]
+        .map((name) => sizes.find((s) => s.name === name)?.id)
+        .filter(Boolean) as number[];
+      if (ids.length) f.sizes = ids;
+    }
+    return f;
+  };
+
+  // Call preview whenever any filter state changes:
+  useEffect(() => {
+    if (!open) return;
+    onPreviewFilters(buildPreviewFilters());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, priceRange, weightRange, sortBy, JSON.stringify(selected)]);
 
   return (
     <AnimatePresence>
@@ -276,15 +291,50 @@ export default function FilterDrawer({
                   <FilterAccordion
                     key={filter.title}
                     filter={filter}
+                    filterType={filterTypeMap[filter.title] ?? "other"}
                     expanded={expanded}
                     setExpanded={setExpanded}
-                    isOptionActive={isOptionActive}
-                    toggleOption={toggleOption}
+                    isSingleSelect={filter.title === t("sort")}
                     priceRange={priceRange}
                     setPriceRange={setPriceRange}
                     weightRange={weightRange}
                     setWeightRange={setWeightRange}
-                    appliedCount={appliedCount}
+                    isOptionActive={(title, option) => {
+                      if (title === t("sort")) {
+                        return selected[t("sort")]?.[0] === option;
+                      }
+                      return isOptionActive(title, option);
+                    }}
+                    toggleOption={(title, option) => {
+                      if (title === t("sort")) {
+                        const match = SORT_OPTIONS.find(
+                          (o) => t(o.labelKey) === option,
+                        );
+                        if (!match) return;
+
+                        const newSortBy =
+                          sortBy === match.value ? null : match.value;
+                        setSortBy(newSortBy);
+
+                        // Write into selected so chips appear
+                        setSelected((prev) => {
+                          const copy = { ...prev };
+                          if (newSortBy) {
+                            copy[t("sort")] = [option]; // store the translated label as the chip
+                          } else {
+                            delete copy[t("sort")];
+                          }
+                          return copy;
+                        });
+                        return;
+                      }
+                      toggleOption(title, option);
+                    }}
+                    appliedCount={(title) => {
+                      if (title === t("sort"))
+                        return selected[t("sort")]?.length ? 1 : 0;
+                      return appliedCount(title);
+                    }}
                   />
                 ))}
               </div>
@@ -292,10 +342,10 @@ export default function FilterDrawer({
               {/* Footer: Clear + Show results */}
               <FilterFooter
                 hasFilters={hasFilters}
-                total={total}
+                total={previewTotal ?? total}
                 onClear={clearAll}
                 onApply={applyFilters}
-                loading={loading}
+                loading={previewLoading}
               />
             </motion.div>
           ) : (
@@ -355,7 +405,7 @@ export default function FilterDrawer({
                     disabled={
                       !(
                         (tempSelected[mobileActiveFilter]?.length ?? 0) > 0 ||
-                        (mobileActiveFilter === "Цена" &&
+                        (mobileActiveFilter === t("priceRange") &&
                           tempPrice &&
                           (tempPrice[0] > 0 || tempPrice[1] < 500000))
                       )
@@ -363,7 +413,7 @@ export default function FilterDrawer({
                     className="w-full py-7 text-sm font-normal uppercase"
                     onClick={() => {
                       setSelected(tempSelected);
-                      if (mobileActiveFilter === "Цена" && tempPrice)
+                      if (mobileActiveFilter === t("priceRange") && tempPrice)
                         setPriceRange(tempPrice);
                       setMobileActiveFilter(null);
                       setTempSelected({});
@@ -371,20 +421,20 @@ export default function FilterDrawer({
                     }}
                   >
                     {(tempSelected[mobileActiveFilter]?.length ?? 0) > 0 ||
-                    (mobileActiveFilter === "Цена" &&
+                    (mobileActiveFilter === t("priceRange") &&
                       tempPrice &&
                       (tempPrice[0] > 0 || tempPrice[1] < 500000))
-                      ? `Применить (${tempSelected[mobileActiveFilter]?.length ?? 0})`
-                      : "Применить"}
+                      ? `${t("apply")} (${tempSelected[mobileActiveFilter]?.length ?? 0})`
+                      : `${t("apply")}`}
                   </Button>
                 </div>
               ) : (
                 <FilterFooter
                   hasFilters={hasFilters}
-                  total={total}
+                  total={previewTotal ?? total}
                   onClear={clearAll}
                   onApply={applyFilters}
-                  loading={loading}
+                  loading={previewLoading}
                 />
               )}
             </motion.div>

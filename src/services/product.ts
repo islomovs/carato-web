@@ -43,7 +43,7 @@ export interface Seller {
 
 export async function getProductBySlug(
   slug: string,
-  locale: string
+  locale: string,
 ): Promise<Product> {
   try {
     const response = await api.get<Product>(`/api/v1/products/${slug}`, {
@@ -62,6 +62,12 @@ export async function getProductBySlug(
   }
 }
 
+export type SortOption =
+  | "PRICE_ASC"
+  | "PRICE_DESC"
+  | "CREATED_DESC"
+  | "BEST_RATING_DESC";
+
 export interface ProductsFilterParams {
   page: number;
   size: number;
@@ -74,6 +80,7 @@ export interface ProductsFilterParams {
   subcategorySlug?: string;
   metals?: number[];
   sizes?: number[];
+  sortType?: SortOption;
 }
 
 export const INITIAL_FILTERS = {
@@ -86,11 +93,12 @@ export const INITIAL_FILTERS = {
   subcategorySlug: "",
   metals: [] as number[],
   sizes: [] as number[],
+  sortType: null as SortOption | null,
 };
 
 export async function fetchAllProducts(
   params: ProductsFilterParams,
-  locale: string
+  locale: string,
 ) {
   const response = await api.get("/api/v1/products/all", {
     headers: { "Accept-Language": locale },
@@ -106,6 +114,7 @@ export async function fetchAllProducts(
       subcategorySlug: params.subcategorySlug || undefined,
       metals: params.metals?.length ? params.metals : undefined,
       sizes: params.sizes?.length ? params.sizes : undefined,
+      sortType: params.sortType || undefined,
     },
   });
 

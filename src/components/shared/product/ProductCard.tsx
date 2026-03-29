@@ -14,7 +14,7 @@ import { getTokenPair } from "@/lib/axios/instance";
 import { useAuthModalStore } from "@/lib/authModalStore";
 
 export function isWishlistItem(
-  item: Product | WishlistItem
+  item: Product | WishlistItem,
 ): item is WishlistItem {
   return "product" in item;
 }
@@ -111,6 +111,7 @@ export default function ProductCard({
           }
           alt={productData.name || "Product Image"}
           fill
+          sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
           className="object-cover w-full h-full pointer-events-none transition-transform duration-300 group-hover:scale-105"
         />
 

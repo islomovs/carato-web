@@ -1,0 +1,19 @@
+{
+  "filters": {
+    "filters": "Filtrlar",
+    "items": "mahsulotlar",
+    "sortBy": "Saralash",
+    "sortNewest": "Yangi",
+    "sortBestRated": "Eng yaxshi baholangan",
+    "sortCheapest": "Eng arzon",
+    "sortMostExpensive": "Eng qimmat",
+    "sort": "Saralash",
+    "metals": "Metallar",
+    "priceRange": "Narx oralig'i",
+    "weight": "Vazn",
+    "sizes": "O'lchamlar",
+    "categories": "Kategoriyalar",
+    "subcategories": "Subkategoriyalar",
+    "apply": "Qo'llash"
+  }
+}

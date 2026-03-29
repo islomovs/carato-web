@@ -35,6 +35,11 @@ export default function CatalogPage({ slug }: CatalogPageProps) {
     totalElements,
     loading,
     updateFilters,
+    metals,
+    sizes,
+    previewTotal,
+    previewLoading,
+    previewFilters,
   } = useProducts(PAGE_SIZE, INITIAL_FILTERS);
 
   useEffect(() => {
@@ -75,7 +80,7 @@ export default function CatalogPage({ slug }: CatalogPageProps) {
 
   return (
     <div className="w-full">
-      <CatalogHeader refTitle={refTitle} />
+      <CatalogHeader refTitle={refTitle} title={resolved?.label} />
       {catLoading || !resolved ? (
         <div className="w-full h-[48px] bg-gray-100 rounded-md animate-pulse mb-4" />
       ) : (
@@ -85,9 +90,13 @@ export default function CatalogPage({ slug }: CatalogPageProps) {
           selectedFilters={selectedFilters}
           setSelectedFilters={setSelectedFilters}
           onUpdateFilters={updateFilters}
+          metals={metals}
+          sizes={sizes}
+          previewTotal={previewTotal}
+          previewLoading={previewLoading}
+          onPreviewFilters={previewFilters}
         />
       )}
-
       <div className="w-full p-4 md:px-8 md:pt-8 items-center mb-40">
         {/* Mobile view — Load More */}
         <div className="md:hidden">

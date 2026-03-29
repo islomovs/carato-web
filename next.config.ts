@@ -5,12 +5,6 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "http",
-        hostname: "162.19.220.41",
-        port: "9000",
-        pathname: "/carato/**",
-      },
-      {
         protocol: "https",
         hostname: "minio.carato.uz",
         pathname: "/carato/**",

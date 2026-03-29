@@ -1,0 +1,19 @@
+{
+  "filters": {
+    "filters": "Фильтры",
+    "items": "товаров",
+    "sortBy": "Сортировать по",
+    "sortNewest": "Новинки",
+    "sortBestRated": "Лучшие оценки",
+    "sortCheapest": "Самые дешевые",
+    "sortMostExpensive": "Самые дорогие",
+    "sort": "Сортировка",
+    "metals": "Металлы",
+    "priceRange": "Ценовой диапазон",
+    "weight": "Вес",
+    "sizes": "Размеры",
+    "categories": "Категории",
+    "subcategories": "Подкатегории",
+    "apply": "Применить"
+  }
+}
