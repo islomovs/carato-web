@@ -28,7 +28,7 @@ export default function CategoriesBlock() {
         {categories.slice(0, 6).map((category) => (
           <div
             key={category.id}
-            onClick={() => router.push("/products?category=" + category.slug)}
+            onClick={() => router.push(`/products/${category.slug}`)}
             className="relative w-full h-[320px] overflow-hidden group"
           >
             <Image
