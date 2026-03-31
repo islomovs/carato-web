@@ -109,7 +109,7 @@ export default function SellerLayer({
                 variant="mobile"
               />
               <div style={{ marginTop: 24 }}>
-                <SellerCatalog sellerId={seller.id} active={open} />
+                <SellerCatalog sellerSlug={seller.slug} active={open} />
               </div>
             </div>
           </motion.div>
@@ -131,7 +131,7 @@ export default function SellerLayer({
             />
           </div>
           <div style={{ marginTop: 24 }}>
-            <SellerCatalog sellerId={seller.id} active={open} />
+            <SellerCatalog sellerSlug={seller.slug} active={open} />
           </div>
         </div>
       )}

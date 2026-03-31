@@ -82,7 +82,7 @@ export interface ProductsFilterParams {
   metals?: number[];
   sizes?: number[];
   sortType?: SortOption;
-  seller?: number; 
+  seller?: string; 
 }
 
 export const INITIAL_FILTERS = {
@@ -96,7 +96,7 @@ export const INITIAL_FILTERS = {
   metals: [] as number[],
   sizes: [] as number[],
   sortType: null as SortOption | null,
-  seller: null as number | null,
+  seller: null as string | null,
 };
 
 export async function fetchAllProducts(
