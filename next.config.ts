@@ -11,6 +11,9 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  experimental: {
+    turbopackUseSystemTlsCerts: true,
+  },
 };
 
 const withNextIntl = createNextIntlPlugin();
