@@ -155,3 +155,7 @@
 .mobile-scroll::-webkit-scrollbar {
   display: none;
 }
+
+[data-slot="dialog-overlay"] {
+  background-color: #00000040 !important;
+}

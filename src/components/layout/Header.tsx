@@ -53,7 +53,7 @@ export default function Header() {
   const APPBAR_HEIGHT_PX = 64;
 
   return (
-    <header className="fixed top-0 left-0 w-full flex justify-center border-b border-[#EEF2F6] bg-white px-2 md:px-8 z-[99999]">
+    <header className="fixed top-0 left-0 w-full flex justify-center border-b border-[#EEF2F6] bg-white px-2 md:px-8 z-50">
       <AuthModal initialMode="phone" />
       <div className="container relative flex items-center justify-between py-[14px] md:py-2">
         {/* Left side: mobile menu button */}

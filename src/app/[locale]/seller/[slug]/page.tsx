@@ -1,3 +1,5 @@
-export default function SellerPage() {
-  return <div>Seller Page</div>;
-}
+// import SellerLayer from "@/components/layout/SellerLayer";
+
+// export default function SellerPage() {
+//   return <SellerLayer />;
+// }

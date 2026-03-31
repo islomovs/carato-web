@@ -39,6 +39,7 @@ export interface Seller {
   reviewsQuantity: number;
   averageReviewRating: number;
   image: string;
+  createdTime?: string;
 }
 
 export async function getProductBySlug(
@@ -81,6 +82,7 @@ export interface ProductsFilterParams {
   metals?: number[];
   sizes?: number[];
   sortType?: SortOption;
+  seller?: number; 
 }
 
 export const INITIAL_FILTERS = {
@@ -94,6 +96,7 @@ export const INITIAL_FILTERS = {
   metals: [] as number[],
   sizes: [] as number[],
   sortType: null as SortOption | null,
+  seller: null as number | null,
 };
 
 export async function fetchAllProducts(
@@ -115,6 +118,7 @@ export async function fetchAllProducts(
       metals: params.metals?.length ? params.metals : undefined,
       sizes: params.sizes?.length ? params.sizes : undefined,
       sortBy: params.sortType || undefined,
+      seller: params.seller != null ? params.seller : undefined,
     },
   });
 

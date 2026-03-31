@@ -1,0 +1,15 @@
+{
+  "seller": {
+    "shopTitle": "Магазин продавца",
+    "sellerDetails": "Подробнее о продавце",
+    "aboutSeller": "О магазине продавца",
+    "share": "Поделиться",
+    "understood": "Понятно",
+    "withUs": "С нами с",
+    "totalOrders": "Заказов за все время",
+    "averageRating": "Средняя оценка",
+    "reviewsCount": "Количество отзывов",
+    "reviews": "{count} отзыва",
+    "loadMore": "Показать ещё ({count})"
+  }
+}

@@ -2,23 +2,22 @@
 
 import { Star, ChevronRight } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { Button } from "../../ui/button";
 import { useTranslations } from "next-intl";
 import { Seller } from "@/services/product";
 
 interface Props {
   seller: Seller | null;
+  onClick: () => void;
 }
 
-export default function SellerInfoButton({ seller }: Props) {
+export default function SellerInfoButton({ seller, onClick }: Props) {
   const t = useTranslations("product");
-  const router = useRouter();
 
   return (
     <Button
       variant="link"
-      onClick={() => seller && router.push(`/seller/${seller.slug}`)}
+      onClick={onClick}
       className="flex items-center gap-3 w-full !p-0 rounded-md cursor-pointer hover:underline-none "
     >
       <div className="w-12 h-12 flex-shrink-0">

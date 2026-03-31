@@ -31,7 +31,7 @@ export function useProducts(
       return;
     }
     // Prevent request if no category or subcategory is selected
-    if (!allowSearchOnly && !filters.categorySlug && !filters.subcategorySlug) {
+    if (!allowSearchOnly && !filters.categorySlug && !filters.subcategorySlug && !filters.seller) {
       return;
     }
 
@@ -54,6 +54,7 @@ export function useProducts(
           metals: filters.metals?.length ? filters.metals : undefined,
           sizes: filters.sizes?.length ? filters.sizes : undefined,
           sortType: filters.sortType || undefined,
+          seller: filters.seller != null ? filters.seller : undefined,
         },
         locale,
       );
@@ -76,6 +77,7 @@ export function useProducts(
         ...INITIAL_FILTERS,
         categorySlug: filters.categorySlug,
         subcategorySlug: filters.subcategorySlug,
+        seller: filters.seller,
         ...newFilters,
       };
       const response = await fetchAllProducts(
@@ -91,6 +93,7 @@ export function useProducts(
           metals: merged.metals?.length ? merged.metals : undefined,
           sizes: merged.sizes?.length ? merged.sizes : undefined,
           sortType: merged.sortType || undefined,
+          seller: merged.seller != null ? merged.seller : undefined,
         },
         locale,
       );
@@ -115,6 +118,7 @@ export function useProducts(
         ...INITIAL_FILTERS,
         categorySlug: prev.categorySlug,
         subcategorySlug: prev.subcategorySlug,
+        seller: prev.seller,
         ...newFilters,
       };
       const equal = JSON.stringify(prev) === JSON.stringify(next);

@@ -10,12 +10,14 @@ import { usePathname } from "next/navigation";
 import { useProductBySlug } from "@/hooks/useProductBySlug";
 import { MediaItemT } from "@/components/shared/product/MediaItem";
 import { Skeleton } from "@/components/ui/skeleton";
+import SellerLayer from "@/components/shared/seller/SellerLayer";
 
 export default function ProductPage() {
   const pathname = usePathname();
   const slug = pathname.split("/").pop();
   const [isMobile, setIsMobile] = useState(false);
   const { product, loading, error } = useProductBySlug(slug);
+  const [sellerOpen, setSellerOpen] = useState(false);
 
   const media: MediaItemT[] = product
     ? product.images.map((img, idx) => {
@@ -68,8 +70,9 @@ export default function ProductPage() {
     <div className="flex flex-col">
       {/* Desktop layout */}
       {!isMobile ? (
-        <div
-          className="grid
+        <>
+          <div
+            className="grid
           grid-cols-1
           md:grid-cols-[1fr_minmax(300px,40%)]
           lg:grid-cols-[minmax(0,1fr)_minmax(0,37%)]
@@ -77,49 +80,55 @@ export default function ProductPage() {
           px-4 md:px-8
           my-[52px]
           overflow-hidden"
-        >
-          <div className="flex flex-col gap-8">
-            <ProductGallery variant="page" media={media} loading={loading} />
-            <SellerInfoButton seller={product ? product.seller : null} />
-            <ProductAccordion
-              description={product ? product.description : ""}
-              chracteristics={product ? product.characteristics : ""}
-              loading={loading}
-            />
-            <FeedbackSection
-              overallRating={product ? Math.round(product.averageRating) : 5}
-              totalReviews={product ? product.reviewsQuantity : 10}
-              slug={product ? product.slug : ""}
-              loading={loading}
-            />
-          </div>
-          {loading ? (
-            <div className="flex flex-col gap-8 w-full pb-[10px] animate-in fade-in">
-              {/* Skeleton placeholders */}
-              <Skeleton className="h-5 w-40" />
-              <Skeleton className="h-8 w-72" />
-              <div className="flex items-center gap-2">
-                <Skeleton className="h-5 w-32" />
-                <Skeleton className="h-4 w-16" />
-              </div>
-              <div className="flex items-center gap-4">
-                <Skeleton className="h-7 w-28" />
-                <Skeleton className="h-5 w-20" />
-                <Skeleton className="h-5 w-10" />
-              </div>
-              <Skeleton className="h-14 w-full rounded-md" />
-              <div className="hidden md:flex flex-col gap-3">
-                <Skeleton className="h-[52px] w-full rounded-md" />
-                <Skeleton className="h-[52px] w-[52px] rounded-md" />
-                <Skeleton className="h-[52px] w-full rounded-md" />
-              </div>
+          >
+            <div className="flex flex-col gap-8">
+              <ProductGallery variant="page" media={media} loading={loading} />
+              <SellerInfoButton
+                seller={product ? product.seller : null}
+                onClick={() => product?.seller && setSellerOpen(true)}
+              />
+              <ProductAccordion
+                description={product ? product.description : ""}
+                chracteristics={product ? product.characteristics : ""}
+                loading={loading}
+              />
+              <FeedbackSection
+                overallRating={product ? Math.round(product.averageRating) : 5}
+                totalReviews={product ? product.reviewsQuantity : 10}
+                slug={product ? product.slug : ""}
+                loading={loading}
+              />
             </div>
-          ) : (
-            <>
-              {product && <ProductInfo product={product} isLoading={loading} />}
-            </>
-          )}
-        </div>
+            {loading ? (
+              <div className="flex flex-col gap-8 w-full pb-[10px] animate-in fade-in">
+                {/* Skeleton placeholders */}
+                <Skeleton className="h-5 w-40" />
+                <Skeleton className="h-8 w-72" />
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-5 w-32" />
+                  <Skeleton className="h-4 w-16" />
+                </div>
+                <div className="flex items-center gap-4">
+                  <Skeleton className="h-7 w-28" />
+                  <Skeleton className="h-5 w-20" />
+                  <Skeleton className="h-5 w-10" />
+                </div>
+                <Skeleton className="h-14 w-full rounded-md" />
+                <div className="hidden md:flex flex-col gap-3">
+                  <Skeleton className="h-[52px] w-full rounded-md" />
+                  <Skeleton className="h-[52px] w-[52px] rounded-md" />
+                  <Skeleton className="h-[52px] w-full rounded-md" />
+                </div>
+              </div>
+            ) : (
+              <>
+                {product && (
+                  <ProductInfo product={product} isLoading={loading} />
+                )}
+              </>
+            )}
+          </div>
+        </>
       ) : (
         // ✅ Mobile layout
         <div className="flex flex-col w-full overflow-hidden mb-[132px]">
@@ -158,7 +167,10 @@ export default function ProductPage() {
                 )}
               </>
             )}
-            <SellerInfoButton seller={product ? product.seller : null} />
+            <SellerInfoButton
+              seller={product ? product.seller : null}
+              onClick={() => product?.seller && setSellerOpen(true)}
+            />
             <ProductAccordion
               description={product ? product.description : " "}
               chracteristics={product ? product.characteristics : ""}
@@ -178,6 +190,13 @@ export default function ProductPage() {
             hideSeeAll
           /> */}
         </div>
+      )}
+      {product?.seller && (
+        <SellerLayer
+          seller={product.seller}
+          open={sellerOpen}
+          onClose={() => setSellerOpen(false)}
+        />
       )}
     </div>
   );

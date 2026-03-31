@@ -119,7 +119,7 @@ if (loading) {
           </h1>
 
           <p className="mt-[16px] text-[32px] leading-[44px] font-light">
-            {item.description}
+            {item.subtitle}
           </p>
 
           <p className="mt-[48px] text-[18px] leading-[26px] font-light text-gray-500">
