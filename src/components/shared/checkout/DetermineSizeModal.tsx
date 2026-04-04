@@ -59,7 +59,7 @@ export default function DetermineSizeModal({
       <DialogContent
         className="w-full md:max-w-[520px] md:!rounded-2xl flex flex-col md:gap-10
   overflow-y-auto md:max-h-[90vh] md:!p-10 !p-0 rounded-none max-w-none
-  !h-[100dvh] md:!h-auto !max-h-none !gap-0 !overflow-hidden"
+  !h-[100dvh] md:!h-auto !max-h-none !gap-0 !overflow-hidden z-[80]"
       >
         <div className="md:hidden relative h-[64px] border-b border-[#EEF2F6] flex items-center justify-center"></div>
         <DialogHeader className="my-8 md:mt-0 md:mb-10">

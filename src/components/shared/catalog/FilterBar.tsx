@@ -31,6 +31,7 @@ interface Props {
   previewTotal: number | null;
   previewLoading: boolean;
   onPreviewFilters: (filters: Partial<typeof INITIAL_FILTERS>) => void;
+  stickyTop?: string;
 }
 
 const SORT_VALUE_MAP: Record<string, SortOption> = {
@@ -51,6 +52,7 @@ export default function FilterBar({
   previewTotal,
   previewLoading,
   onPreviewFilters,
+  stickyTop = "top-16",
 }: Props) {
   const t = useTranslations("filters");
   const [filterOpen, setFilterOpen] = useState(false);
@@ -161,7 +163,7 @@ export default function FilterBar({
 
       <div
         ref={refBar}
-        className="sticky top-16 z-40 border-t border-[#EEF2F6] bg-white"
+        className={`sticky ${stickyTop} z-10 border-t border-[#EEF2F6] bg-white`}
       >
         <div className="w-full flex items-center justify-between px-4 md:px-8 py-[22px]">
           <Button

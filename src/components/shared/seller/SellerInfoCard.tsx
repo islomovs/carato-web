@@ -41,7 +41,6 @@ export default function SellerInfoCard({
       <span
         style={{ fontWeight: 300, fontSize: 14, lineHeight: "20px", color: "#4B5565" }}
       >
-        {seller.reviewsQuantity}{" "}
         {t("reviews", { count: seller.reviewsQuantity ?? 0 })}
       </span>
     </div>

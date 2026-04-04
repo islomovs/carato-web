@@ -64,6 +64,7 @@ export default function SellerCatalog({
         previewTotal={previewTotal}
         previewLoading={previewLoading}
         onPreviewFilters={previewFilters}
+        stickyTop="top-0"
       />
 
       <div className="w-full p-4 md:px-8 md:pt-8 mb-40">

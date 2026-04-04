@@ -61,7 +61,7 @@ export default function SellerDetailDialog({
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent
-        className="p-10 max-w-[520px] w-full rounded-lg"
+        className="p-10 max-w-[520px] w-full rounded-lg z-[80]"
         style={{ background: "white" }}
       >
         <DialogHeader>

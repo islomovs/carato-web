@@ -49,8 +49,8 @@ export default function Header() {
     }
   }, [menuOpen, isCatalogOpen, searchOpen]);
 
-  const HEADER_HEIGHT_PX = 64;
-  const APPBAR_HEIGHT_PX = 64;
+  const HEADER_HEIGHT_PX = 65;
+  const APPBAR_HEIGHT_PX = 52;
 
   return (
     <header className="fixed top-0 left-0 w-full flex justify-center border-b border-[#EEF2F6] bg-white px-2 md:px-8 z-50">

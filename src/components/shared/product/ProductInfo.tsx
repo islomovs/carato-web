@@ -224,19 +224,19 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
         <AuthModal initialMode="phone" />
       </div>
       <div className="md:hidden fixed bottom-0 left-0 right-0 px-4 py-4 flex gap-4 border-t border-[#EEF2F6] bg-white z-50">
-        <Button
+        {/* <Button
           variant="outline"
           className="flex-1 h-[52px] uppercase font-[400] text-[14px]"
         >
           Быстрая покупка
-        </Button>
+        </Button> */}
 
         <Button
           onClick={handleAddToCart}
           variant="default"
           className="flex-1 h-[52px] uppercase font-[400] text-[14px] bg-black text-white py-[12px] px-4 hover:bg-white hover:text-black border border-black"
         >
-          В корзину
+          {t("addToCart")}
         </Button>
       </div>
     </>

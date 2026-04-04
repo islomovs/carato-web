@@ -9,7 +9,7 @@
     "totalOrders": "Заказов за все время",
     "averageRating": "Средняя оценка",
     "reviewsCount": "Количество отзывов",
-    "reviews": "{count} отзыва",
+    "reviews": "{count} отзывов",
     "loadMore": "Показать ещё ({count})"
   }
 }

@@ -11,6 +11,9 @@ import { useProductBySlug } from "@/hooks/useProductBySlug";
 import { MediaItemT } from "@/components/shared/product/MediaItem";
 import { Skeleton } from "@/components/ui/skeleton";
 import SellerLayer from "@/components/shared/seller/SellerLayer";
+import { useLocale } from "next-intl";
+import { useRouter } from "next/navigation";
+import useLockScroll from "@/hooks/useLockScroll";
 
 export default function ProductPage() {
   const pathname = usePathname();
@@ -18,6 +21,8 @@ export default function ProductPage() {
   const [isMobile, setIsMobile] = useState(false);
   const { product, loading, error } = useProductBySlug(slug);
   const [sellerOpen, setSellerOpen] = useState(false);
+  const router = useRouter();
+  const locale = useLocale();
 
   const media: MediaItemT[] = product
     ? product.images.map((img, idx) => {
@@ -31,6 +36,7 @@ export default function ProductPage() {
     : [];
 
   const [mounted, setMounted] = useState(false);
+  useLockScroll(sellerOpen);
 
   useEffect(() => {
     setMounted(true);
@@ -78,14 +84,25 @@ export default function ProductPage() {
           lg:grid-cols-[minmax(0,1fr)_minmax(0,37%)]
           gap-[52px]
           px-4 md:px-8
-          my-[52px]
-          overflow-hidden"
+          my-[52px]"
           >
             <div className="flex flex-col gap-8">
               <ProductGallery variant="page" media={media} loading={loading} />
               <SellerInfoButton
                 seller={product ? product.seller : null}
-                onClick={() => product?.seller && setSellerOpen(true)}
+                onClick={() => {
+                  if (product?.seller) {
+                    if (window.innerWidth >= 768) {
+                      sessionStorage.setItem(
+                        "sellerData",
+                        JSON.stringify(product.seller),
+                      );
+                      router.push(`/${locale}/seller/${product.seller.slug}`);
+                    } else {
+                      setSellerOpen(true);
+                    }
+                  }
+                }}
               />
               <ProductAccordion
                 description={product ? product.description : ""}
@@ -131,7 +148,7 @@ export default function ProductPage() {
         </>
       ) : (
         // ✅ Mobile layout
-        <div className="flex flex-col w-full overflow-hidden mb-[132px]">
+        <div className="flex flex-col w-full mb-[132px]">
           {/* Product gallery at top (scrolls naturally) */}
           <div className="w-full">
             <ProductGallery variant="modal" media={media} loading={loading} />

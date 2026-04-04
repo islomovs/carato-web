@@ -60,7 +60,7 @@ export default function ProductCard({
       <div className="relative w-full aspect-[166/196] md:aspect-[329/364] overflow-hidden rounded-md">
         {/* Discount Badge */}
         {productData.discountPercent && (
-          <div className="absolute top-2 left-2 bg-[#F04438] rounded-[2px] py-[3px] px-2 z-10">
+          <div className="absolute top-2 left-2 bg-[#F04438] rounded-[2px] py-[3px] px-2 z-[5]">
             <p className="text-[12px] font-normal text-white uppercase">
               СКИДКА -{productData.discountPercent}%
             </p>
@@ -90,7 +90,7 @@ export default function ProductCard({
                   toast.success(t("addedToWishlist"));
                 }
               }}
-              className="absolute top-2 right-2 w-9 h-9 rounded-full flex items-center justify-center z-10 cursor-pointer"
+              className="absolute top-2 right-2 w-9 h-9 rounded-full flex items-center justify-center z-[5] cursor-pointer"
             >
               <Image
                 src={
