@@ -31,7 +31,7 @@ export default function NewsCard({ item }: { item: NewsItem }) {
         </p>
         <p className="text-black text-[18px] font-medium mt-1">{item.title}</p>
         <p className="text-black text-[14px] font-light leading-[20px] mt-[4px] line-clamp-1">
-          {item.description}
+          {item.subtitle}
         </p>
       </div>
     </div>
