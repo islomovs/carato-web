@@ -34,7 +34,7 @@ export function useCategoriesCatalogue() {
   return { catalogues, loading, error };
 }
 
-export function useCategoryCatalogue(slug: string) {
+export function useCategoryCatalogue(slug: string | null) {
   const [catalogue, setCatalogue] = useState<CategoryCatalogueBySlug | null>(
     null
   );
@@ -48,7 +48,7 @@ export function useCategoryCatalogue(slug: string) {
     async function fetchData() {
       try {
         setLoading(true);
-        const data = await getCategoryCatalogueBySlug(slug, locale);
+        const data = await getCategoryCatalogueBySlug(slug || "", locale);
         setCatalogue(data);
       } catch (err) {
         console.error("Failed to load catalogue:", err);

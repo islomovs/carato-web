@@ -82,7 +82,7 @@ export interface ProductsFilterParams {
   metals?: number[];
   sizes?: number[];
   sortType?: SortOption;
-  seller?: string; 
+  seller?: string;
 }
 
 export const INITIAL_FILTERS = {
@@ -117,7 +117,7 @@ export async function fetchAllProducts(
       subcategorySlug: params.subcategorySlug || undefined,
       metals: params.metals?.length ? params.metals : undefined,
       sizes: params.sizes?.length ? params.sizes : undefined,
-      sortBy: params.sortType || undefined,
+      sortType: params.sortType || undefined,
       seller: params.seller != null ? params.seller : undefined,
     },
   });

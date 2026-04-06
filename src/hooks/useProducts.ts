@@ -31,7 +31,12 @@ export function useProducts(
       return;
     }
     // Prevent request if no category or subcategory is selected
-    if (!allowSearchOnly && !filters.categorySlug && !filters.subcategorySlug && !filters.seller) {
+    if (
+      !allowSearchOnly &&
+      !filters.categorySlug &&
+      !filters.subcategorySlug &&
+      !filters.seller
+    ) {
       return;
     }
 
@@ -119,17 +124,11 @@ export function useProducts(
         categorySlug: prev.categorySlug,
         subcategorySlug: prev.subcategorySlug,
         seller: prev.seller,
+        // Preserve sortType only if newFilters doesn't explicitly pass it
+        ...("sortType" in newFilters ? {} : { sortType: prev.sortType }),
         ...newFilters,
       };
       const equal = JSON.stringify(prev) === JSON.stringify(next);
-      console.log(
-        "🔵 updateFilters equal?",
-        equal,
-        "prev.weightTo:",
-        prev.weightTo,
-        "next.weightTo:",
-        next.weightTo,
-      );
       return equal ? prev : next;
     });
     setPage(1);

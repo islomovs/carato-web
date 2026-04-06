@@ -1,5 +1,9 @@
 {
-  "catalog" : {
+  "catalog": {
     "loadMore": "СМОТРЕТЬ ЕЩЁ {count}"
+  },
+  "mobileCatalog": {
+    "collectionsTitle": "Коллекции",
+    "seeAll": "Посмотреть всю продукцию"
   }
 }

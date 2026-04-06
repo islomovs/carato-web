@@ -1,5 +1,9 @@
 {
-  "catalog" : {
+  "catalog": {
     "loadMore": "YANADA KO'RISH {count}"
+  },
+  "mobileCatalog": {
+    "collectionsTitle": "Kolleksiyalar",
+    "seeAll": "Barcha mahsulotlarni ko'rish"
   }
 }

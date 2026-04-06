@@ -69,7 +69,7 @@ export default function CatalogPage({ slug }: CatalogPageProps) {
   >({});
 
   return (
-    <div className="w-full">
+    <div className="w-full pt-16 md:mt-0">
       <CatalogHeader refTitle={refTitle} title={resolved?.label} />
       {catLoading || !resolved ? (
         <div className="w-full h-[48px] bg-gray-100 rounded-md animate-pulse mb-4" />

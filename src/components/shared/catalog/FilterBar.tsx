@@ -163,7 +163,7 @@ export default function FilterBar({
 
       <div
         ref={refBar}
-        className={`sticky ${stickyTop} z-10 border-t border-[#EEF2F6] bg-white`}
+        className={`sticky ${stickyTop} z-10 border-y border-[#EEF2F6] bg-white`}
       >
         <div className="w-full flex items-center justify-between px-4 md:px-8 py-[22px]">
           <Button

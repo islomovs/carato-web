@@ -25,6 +25,8 @@ export interface CategoryCatalogueBySlug {
   id: number;
   slug: string;
   name: string;
+  desktopImage: string;
+  mobileImage: string;
   categories: [
     {
       id: number;

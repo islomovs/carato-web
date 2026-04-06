@@ -24,7 +24,7 @@ export default async function Home() {
   ]);
 
   return (
-    <div className="w-full h-full text-center md:pt-0">
+    <div className="w-full h-full text-center pt-16 md:pt-0">
       <BannerCarousel />
       <StoriesSection />
 

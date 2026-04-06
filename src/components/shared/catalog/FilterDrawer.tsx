@@ -65,7 +65,7 @@ export default function FilterDrawer({
   ];
 
   // Replace mockFilters (titles now translatable strings):
-  const mockFilters: FilterOption[] = [
+  const realFilters: FilterOption[] = [
     { title: t("sort"), options: SORT_OPTIONS.map((o) => t(o.labelKey)) },
     { title: t("metals"), options: metals.map((m) => m.name) },
     { title: t("priceRange"), options: [] },
@@ -270,7 +270,7 @@ export default function FilterDrawer({
 
               {/* Body: accordion style */}
               <div className="flex-1 overflow-y-auto px-10 pt-5 pb-6 space-y-8">
-                {mockFilters.map((filter) => (
+                {realFilters.map((filter) => (
                   <FilterAccordion
                     key={filter.title}
                     filter={filter}
@@ -355,7 +355,7 @@ export default function FilterDrawer({
                 {mobileActiveFilter ? (
                   <FilterOptionsMobile
                     title={mobileActiveFilter}
-                    mockFilters={mockFilters}
+                    mockFilters={realFilters}
                     selected={tempSelected}
                     setSelected={setTempSelected}
                     price={tempPrice ?? priceRange}
@@ -367,7 +367,7 @@ export default function FilterDrawer({
                   />
                 ) : (
                   <FilterListMobile
-                    mockFilters={mockFilters}
+                    mockFilters={realFilters}
                     selected={selected}
                     setMobileActiveFilter={setMobileActiveFilter}
                     setTempSelected={setTempSelected}
@@ -402,10 +402,86 @@ export default function FilterDrawer({
                       )
                     }
                     className="w-full py-7 text-sm font-normal uppercase"
+                    // In FilterDrawer, replace the mobile apply button onClick:
                     onClick={() => {
-                      setSelected(tempSelected);
-                      if (mobileActiveFilter === t("priceRange") && tempPrice)
+                      // Merge temp into selected first
+                      const mergedSelected = { ...selected, ...tempSelected };
+
+                      console.log("mergedSelected:", mergedSelected);
+                      console.log(
+                        "SORT_OPTIONS labels:",
+                        SORT_OPTIONS.map((o) => t(o.labelKey)),
+                      );
+                      // Commit to parent selected state
+                      setSelected(mergedSelected);
+
+                      if (mobileActiveFilter === t("priceRange") && tempPrice) {
                         setPriceRange(tempPrice);
+                      }
+
+                      // Build and send API filters using merged state directly (not stale closure)
+                      const apiFilters: Partial<typeof INITIAL_FILTERS> = {};
+                      const sortVal = mergedSelected[t("sort")]?.[0];
+                      if (sortVal) {
+                        // Try direct value match first (in case it's stored as SortOption value)
+                        const directMatch = [
+                          "PRICE_ASC",
+                          "PRICE_DESC",
+                          "CREATED_DESC",
+                          "BEST_RATING_DESC",
+                        ].includes(sortVal);
+
+                        if (directMatch) {
+                          apiFilters.sortType = sortVal as SortOption;
+                        } else {
+                          // Fallback: match by translated label
+                          const match = SORT_OPTIONS.find(
+                            (o) => t(o.labelKey) === sortVal,
+                          );
+                          if (match) apiFilters.sortType = match.value;
+                        }
+                      }
+                      const resolvedPrice =
+                        mobileActiveFilter === t("priceRange") && tempPrice
+                          ? tempPrice
+                          : priceRange;
+
+                      if (resolvedPrice[0] > 0)
+                        apiFilters.priceFrom = resolvedPrice[0];
+                      if (resolvedPrice[1] < 50000000)
+                        apiFilters.priceTo = resolvedPrice[1];
+                      if (weightRange[0] > 0.5)
+                        apiFilters.weightFrom = weightRange[0];
+                      if (weightRange[1] < 100)
+                        apiFilters.weightTo = weightRange[1];
+
+                      if (sortVal) {
+                        const match = SORT_OPTIONS.find(
+                          (o) => t(o.labelKey) === sortVal,
+                        );
+                        console.log("sort match:", match, "sortVal:", sortVal); // ← add
+                        if (match) apiFilters.sortType = match.value;
+                      }
+                      console.log("final apiFilters:", apiFilters); // ← add
+
+                      if (mergedSelected[t("metals")]?.length) {
+                        const ids = mergedSelected[t("metals")]
+                          .map(
+                            (name) => metals.find((m) => m.name === name)?.id,
+                          )
+                          .filter(Boolean) as number[];
+                        if (ids.length) apiFilters.metals = ids;
+                      }
+
+                      if (mergedSelected[t("sizes")]?.length) {
+                        const ids = mergedSelected[t("sizes")]
+                          .map((name) => sizes.find((s) => s.name === name)?.id)
+                          .filter(Boolean) as number[];
+                        if (ids.length) apiFilters.sizes = ids;
+                      }
+
+                      onUpdateFilters(apiFilters);
+
                       setMobileActiveFilter(null);
                       setTempSelected({});
                       setTempPrice(null);

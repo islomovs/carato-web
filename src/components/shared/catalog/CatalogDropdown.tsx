@@ -175,6 +175,7 @@ export default function CatalogDropdown({
                   <div className="w-full flex-[2] relative">
                     <Image
                       src={
+                        selected?.desktopImage || // ← catalogue's own image
                         selected?.categories?.[0]?.desktopImage ||
                         "/images/promo1.jpg"
                       }
@@ -186,7 +187,10 @@ export default function CatalogDropdown({
 
                   <div className="w-full flex-[1] relative">
                     <Image
-                      src="/images/promo2.jpg"
+                      src={
+                        selected?.categories?.[0]?.desktopImage ||
+                        "/images/promo2.jpg"
+                      }
                       alt="promo-small"
                       fill
                       className="object-cover"
