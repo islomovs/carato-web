@@ -8,6 +8,8 @@ import { useForm } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import { withMask } from "use-mask-input";
 import { Input } from "@/components/ui/input";
+import { submitPartnershipApplication } from "@/services/partnership";
+import { toast } from "sonner";
 
 type PartnerFormValues = {
   company: string;
@@ -127,6 +129,7 @@ export default function PartnersPage() {
     handleSubmit,
     control,
     formState: { errors },
+    reset,
   } = useForm<PartnerFormValues>({
     defaultValues: {
       company: "",
@@ -137,13 +140,34 @@ export default function PartnersPage() {
     },
   });
 
-  const onSubmit = (data: PartnerFormValues) => {
+  const [submitting, setSubmitting] = useState(false);
+
+  const onSubmit = async (data: PartnerFormValues) => {
     if (!selectedCountry) {
       setCountryError(t("errors.countryRequired"));
       return;
     }
     setCountryError("");
-    console.log({ ...data, country: selectedCountry });
+
+    try {
+      setSubmitting(true);
+      await submitPartnershipApplication({
+        company: data.company,
+        fullName: data.fullName,
+        phone: data.phone,
+        email: data.email,
+        country: selectedCountry,
+      });
+
+      toast.success(t("submitSuccess"));
+
+      reset();
+      setSelectedCountry("");
+    } catch {
+      toast.error(t("submitError"));
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -175,7 +199,7 @@ export default function PartnersPage() {
                     .getElementById("partner-form")
                     ?.scrollIntoView({ behavior: "smooth" });
                 }}
-                className="bg-black text-white hover:bg-white hover:text-black cursor-pointer font-normal uppercase rounded-md z-20 w-full md:w-[280px] h-[52px] text-sm"
+                className="bg-black text-white border border-black hover:bg-white hover:text-black cursor-pointer font-normal uppercase rounded-md z-20 w-full md:w-[280px] h-[52px] text-sm"
               >
                 {t("learnMoreBanner")}
               </Button>
@@ -428,10 +452,11 @@ export default function PartnersPage() {
               <div className="mt-2">
                 <Button
                   type="submit"
-                  className="w-full bg-black text-white border border-black hover:bg-white hover:text-black cursor-pointer font-normal uppercase rounded-md"
+                  disabled={submitting}
+                  className="w-full bg-black text-white border border-black hover:bg-white hover:text-black cursor-pointer font-normal uppercase rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{ height: 52, fontSize: 14 }}
                 >
-                  {t("submit")}
+                  {submitting ? t("submitting") : t("submit")}
                 </Button>
               </div>
             </form>

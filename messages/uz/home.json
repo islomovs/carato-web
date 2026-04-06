@@ -23,5 +23,12 @@
     "news": "Yangiliklar",
     "learnMore": "Batafsil o'rganish",
     "loadError": "Kategoriya yuklashda xatolik yuz berdi"
+  },
+  "appBar": {
+    "home": "Bosh sahifa",
+    "catalog": "Katalog",
+    "wishlist": "Izohlar",
+    "cart": "Savat",
+    "profile": "Profil"
   }
 }

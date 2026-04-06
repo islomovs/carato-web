@@ -1,0 +1,33 @@
+{
+  "partners": {
+    "heroTitle": "Carato hamkori bo'ling",
+    "heroSubtitle": "Zargarlik hamkorlar tarmog'iga qo'shiling",
+    "learnMoreBanner": "Arizangizni yuboring",
+    "whyTitle": "Nega Carato?",
+    "whyDescription": "Biz zargarlik san'atini odamlarga yaqinlashtirishga intilamiz. Carato har qanday didga mos keladigan zargarlik buyumlarini topish mumkin bo'lgan platformani yaratadi: kundalik taqish uchun minimalist uzuklardan tortib, maxsus tadbirlar uchun noyob asarlargacha. Har bir zargarlik buyumi o'z hikoyasini olib yurishi va odamga o'ziga xosligini ta'kidlashga yordam berishi kerak, deb ishonamiz.",
+    "formTitle": "Arizangizni yuboring",
+    "company": "Kompaniya",
+    "companyPlaceholder": "Kompaniya nomini kiriting",
+    "fullName": "FIO",
+    "fullNamePlaceholder": "FIO ni kiriting",
+    "country": "Davlat",
+    "countryPlaceholder": "Davlatni tanlang",
+    "phone": "Telefon raqami",
+    "phonePlaceholder": "+998 90 000-00-00",
+    "email": "Pochta manzili",
+    "emailPlaceholder": "email@example.com",
+    "submit": "Arizani yuborish",
+    "errors": {
+      "companyRequired": "Kompaniya nomini kiriting",
+      "fullNameRequired": "FIO ni kiriting",
+      "phoneRequired": "Telefon raqamini kiriting",
+      "phoneInvalid": "To'g'ri telefon raqamini kiriting",
+      "emailRequired": "Pochta manzilini kiriting",
+      "emailInvalid": "To'g'ri email manzilini kiriting",
+      "countryRequired": "Davlatni tanlang"
+    },
+    "submitSuccess": "Arizangiz muvaffaqiyatli yuborildi",
+    "submitError": "Arizani yuborishda xatolik yuz berdi. Qaytadan urinib ko'ring",
+    "submitting": "Yuborilmoqda..."
+  }
+}

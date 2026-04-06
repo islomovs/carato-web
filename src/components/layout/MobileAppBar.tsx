@@ -3,33 +3,45 @@
 import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import clsx from "clsx";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 export default function MobileAppBar() {
+  const t = useTranslations("appBar");
   const pathname = usePathname();
   const router = useRouter();
   const locale = useLocale();
 
   const navItems = [
-    { label: "Главная", href: `/${locale}`, icon: "/icons/home.svg" },
-    { label: "Каталог", href: `/${locale}/catalog`, icon: "/icons/grid.svg" },
+    { label: t("home"), href: `/${locale}`, icon: "/icons/home.svg" },
     {
-      label: "Избранное",
+      label: t("catalog"),
+      href: `/${locale}/catalog`,
+      icon: "/icons/grid.svg",
+    },
+    {
+      label: t("wishlist"),
       href: `/${locale}/wishlist`,
       icon: "/icons/heart.svg",
     },
     {
-      label: "Корзина",
+      label: t("cart"),
       href: `/${locale}/cart`,
       icon: "/icons/shopping-bag.svg",
     },
-    { label: "Профиль", href: `/${locale}/profile`, icon: "/icons/user.svg" },
+    {
+      label: t("profile"),
+      href: `/${locale}/profile`,
+      icon: "/icons/user.svg",
+    },
   ];
 
-  const isActive = (href: string) =>
-    href === "/"
-      ? pathname === "/"
-      : pathname.startsWith(href) && href !== "/wishlist";
+  const isActive = (href: string) => {
+    if (href === `/${locale}`) {
+      return pathname === href;
+    }
+
+    return pathname.startsWith(href);
+  };
 
   console.log("PATHNAME:", pathname);
   console.log("PATHNAME is matching:", isActive(`/${locale}/catalog`));
@@ -52,14 +64,14 @@ export default function MobileAppBar() {
               height={20}
               className={clsx(
                 "transition",
-                active ? "brightness-0" : "opacity-50"
+                active ? "brightness-0" : "opacity-50",
               )}
             />
 
             <span
               className={clsx(
                 "text-[12px] font-medium mt-[4px] leading-3",
-                active ? "text-black" : "text-[#9AA4B2]"
+                active ? "text-black" : "text-[#9AA4B2]",
               )}
             >
               {item.label}

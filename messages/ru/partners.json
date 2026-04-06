@@ -25,6 +25,9 @@
       "emailRequired": "Введите почтовый адрес",
       "emailInvalid": "Введите корректный email",
       "countryRequired": "Выберите страну"
-    }
+    },
+    "submitSuccess": "Заявка успешно отправлена",
+    "submitError": "Ошибка при отправке заявки. Попробуйте снова",
+    "submitting": "Отправка..."
   }
 }
