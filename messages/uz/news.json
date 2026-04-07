@@ -1,5 +1,11 @@
 {
   "news": {
-    "failedToLoadNews": "Yangiliklarni yuklashda xatolik yuz berdi"
+    "failedToLoadNews": "Yangiliklarni yuklashda xatolik yuz berdi",
+    "authorPrefix": "Maqolani yozgan",
+    "latestNews": "So'nggi yangiliklar"
+  },
+  "qa": {
+    "title": "Savollar va javoblar",
+    "frequentQuestions": "Tez-tez beriladigan savollar"
   }
 }

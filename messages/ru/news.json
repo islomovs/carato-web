@@ -1,7 +1,11 @@
 {
   "news": {
     "failedToLoadNews": "Не удалось загрузить новости",
-  "authorPrefix": "Статью написал",
-  "latestNews": "Последние новости"
+    "authorPrefix": "Статью написал",
+    "latestNews": "Последние новости"
+  },
+  "qa": {
+    "title": "Вопросы и ответы",
+    "frequentQuestions": "Частые вопросы"
   }
 }

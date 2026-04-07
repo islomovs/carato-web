@@ -21,7 +21,7 @@ export default function Footer() {
           {[
             { title: "news", href: "/news" },
             { title: "forPartners", href: "/partners" },
-            { title: "qna", href: "/q-and-a" },
+            { title: "qna", href: "/qa" },
           ].map(({ title, href }) => (
             <Link href={href} key={title}>
               <NavButton className="text-[14px] font-[400] text-black mx-[12px]">
