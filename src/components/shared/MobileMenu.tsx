@@ -31,7 +31,7 @@ export default function MobileMenu({
       icon: "/icons/coins-hand.svg",
       href: "/partners",
     },
-    { title: t("qna"), icon: "/icons/help-circle.svg", href: "/q-and-a" },
+    { title: t("qna"), icon: "/icons/help-circle.svg", href: "/qa" },
     { title: t("phone"), icon: "/icons/phone.svg", href: "/about" },
   ];
 

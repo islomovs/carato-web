@@ -39,7 +39,7 @@ export default function NewsPage() {
   }
 
   return (
-    <div className="w-full md:px-8">
+    <div className="w-full my-16 md:my-0 md:px-8">
       {/* Header */}
       <CatalogHeader refTitle={refTitle} title="News" />
 
