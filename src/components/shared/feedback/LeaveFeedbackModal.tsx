@@ -37,7 +37,7 @@ export default function LeaveFeedbackModal({
     files?: string;
   }>({});
 
-  const { createFeedback, loading } = useFeedback(productSlug);
+  const { createFeedback, submitting: loading } = useFeedback(productSlug);
 
   const validate = () => {
     const newErrors: typeof errors = {};
@@ -59,8 +59,9 @@ export default function LeaveFeedbackModal({
       await createFeedback({
         product: productSlug,
         rating: selectedRating,
-        text: shortReview + (detailedReview ? `\n${detailedReview}` : ""),
-        // optionally, handle mediaFiles upload here if backend supports
+        title: shortReview,
+        description: detailedReview || shortReview,
+        mediaFiles,
       });
 
       toast.success(t("feedbackSubmittedSuccess"));

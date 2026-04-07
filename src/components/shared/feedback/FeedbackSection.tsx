@@ -4,7 +4,14 @@
 import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 import Image from "next/image";
 import { Button } from "../../ui/button";
-import { useState } from "react";
+import {
+  JSXElementConstructor,
+  Key,
+  ReactElement,
+  ReactNode,
+  ReactPortal,
+  useState,
+} from "react";
 import LeaveFeedbackModal from "./LeaveFeedbackModal";
 import { useTranslations } from "next-intl";
 import { useFeedback } from "@/hooks/useFeedback";
@@ -12,6 +19,8 @@ import { Skeleton } from "@/components/ui/skeleton"; // shadcn skeleton import
 import AuthModal from "../auth-modal";
 import { getTokenPair } from "@/lib/axios/instance";
 import { useAuthModalStore } from "@/lib/authModalStore";
+import FullscreenViewer from "../product/FullscreenViewer";
+import { MediaItemT } from "../product/MediaItem";
 
 export default function FeedbackSection({
   overallRating,
@@ -28,6 +37,10 @@ export default function FeedbackSection({
   const [openFeedback, setOpenFeedback] = useState(false);
   const [page, setPage] = useState(1);
   const pageSize = 10;
+  const [fullscreenMedia, setFullscreenMedia] = useState<MediaItemT[] | null>(
+    null,
+  );
+  const [fullscreenIndex, setFullscreenIndex] = useState(0);
 
   const { openAuth } = useAuthModalStore();
 
@@ -40,29 +53,40 @@ export default function FeedbackSection({
 
   const totalPages = pagination.totalPages;
 
-  // Normalize API response
-  const formattedFeedbacks = feedback.map((item, index) => ({
-    id: index + 1,
-    userName: item.user.fullName,
-    rating: item.rating,
-    date: item.createdTime,
-    title: "",
-    description: item.text,
-    media:
-      item.media && item.media.length > 0
-        ? item.media.map((m, i) => ({
-            id: i + 1,
-            src: m.src,
-            type: m.src.endsWith(".mp4") ? "video" : "image",
-          }))
-        : [
-            {
-              id: 1,
-              src: "/images/category-placeholder.png",
-              type: "image",
-            },
-          ],
-  }));
+  const feedbackList = Array.isArray(feedback) ? feedback : [];
+
+  const formattedFeedbacks = feedbackList.map(
+    (
+      item: {
+        user: { fullName: any };
+        rating: any;
+        createdTime: any;
+        title: any;
+        description: any;
+        media: { image: string }[];
+      },
+      index: number,
+    ) => ({
+      id: index + 1,
+      userName: item.user.fullName,
+      rating: item.rating,
+      date: item.createdTime,
+      title: item.title,
+      description: item.description, // was item.text
+      media:
+        item.media.length > 0
+          ? item.media.map((m: { image: string }, i: number) => ({
+              id: i + 1,
+              src: m.image, // was m.src
+              type: m.image.endsWith(".mp4") ? "video" : "image",
+            }))
+          : [], // no media = show nothing, not a placeholder
+    }),
+  );
+
+  console.log("💬 Formatted feedbacks:", formattedFeedbacks);
+  console.log("📊 Pagination info:", pagination);
+  console.log("⚠️ Feedback loading:", feedbackLoading, "Error:", feedbackError);
 
   if (!slug) return null;
 
@@ -105,7 +129,6 @@ export default function FeedbackSection({
       </div>
     );
   }
-
 
   return (
     <div className="flex flex-col gap-8">
@@ -187,72 +210,135 @@ export default function FeedbackSection({
         {feedbackError && <div className="text-red-500">{feedbackError}</div>}
 
         {!feedbackLoading &&
-          formattedFeedbacks.map((f) => (
-            <div key={f.id} className="border-t border-[#EEF2F6] py-3 md:py-4">
-              {/* User + stars */}
-              <div className="flex items-center gap-2">
-                <span className="font-[500] text-[16px]">{f.userName}</span>
-                <div className="flex gap-0.5">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star
-                      key={i}
-                      size={16}
-                      className={`${
-                        i < f.rating
-                          ? "fill-[#FAC515] text-[#FAC515]"
-                          : "text-[#FAC515]"
-                      } `}
-                      strokeWidth={i < f.rating ? 0 : 1.5}
-                    />
-                  ))}
+          formattedFeedbacks.map(
+            (f: {
+              id: Key | null | undefined;
+              userName:
+                | string
+                | number
+                | bigint
+                | boolean
+                | ReactElement<unknown, string | JSXElementConstructor<any>>
+                | Iterable<ReactNode>
+                | ReactPortal
+                | Promise<
+                    | string
+                    | number
+                    | bigint
+                    | boolean
+                    | ReactPortal
+                    | ReactElement<unknown, string | JSXElementConstructor<any>>
+                    | Iterable<ReactNode>
+                    | null
+                    | undefined
+                  >
+                | null
+                | undefined;
+              rating: number;
+              date: string | number | Date;
+              media: any[];
+              description:
+                | string
+                | number
+                | bigint
+                | boolean
+                | ReactElement<unknown, string | JSXElementConstructor<any>>
+                | Iterable<ReactNode>
+                | ReactPortal
+                | Promise<
+                    | string
+                    | number
+                    | bigint
+                    | boolean
+                    | ReactPortal
+                    | ReactElement<unknown, string | JSXElementConstructor<any>>
+                    | Iterable<ReactNode>
+                    | null
+                    | undefined
+                  >
+                | null
+                | undefined;
+            }) => (
+              <div
+                key={f.id}
+                className="border-t border-[#EEF2F6] py-3 md:py-4"
+              >
+                {/* User + stars */}
+                <div className="flex items-center gap-2">
+                  <span className="font-[500] text-[16px]">{f.userName}</span>
+                  <div className="flex gap-0.5">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        size={16}
+                        className={`${
+                          i < f.rating
+                            ? "fill-[#FAC515] text-[#FAC515]"
+                            : "text-[#FAC515]"
+                        } `}
+                        strokeWidth={i < f.rating ? 0 : 1.5}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Date */}
+                <div className="mt-0.5 md:mt-2 font-[300] text-[12px]">
+                  {(() => {
+                    const d = new Date(f.date);
+                    return `${d.getDate()} ${d.toLocaleString("ru-RU", {
+                      month: "long",
+                    })} ${d.getFullYear()}`;
+                  })()}
+                </div>
+
+                {/* Media */}
+                {f.media && f.media.length > 0 && (
+                  <div className="flex gap-2 mt-3 md:mt-5">
+                    {f.media.map((m: any, mi: number) => (
+                      <div
+                        key={m.id}
+                        className="w-16 h-16 flex-shrink-0 overflow-hidden flex items-center justify-center cursor-pointer"
+                        onClick={() => {
+                          setFullscreenMedia(
+                            f.media.map((fm: any) => ({
+                              id: fm.id,
+                              src: fm.src,
+                              type: fm.type,
+                              alt: "",
+                            })),
+                          );
+                          setFullscreenIndex(mi);
+                        }}
+                      >
+                        {m.type === "image" ? (
+                          <Image
+                            src={m.src}
+                            alt="media"
+                            width={64}
+                            height={64}
+                            className="object-cover w-full h-full"
+                          />
+                        ) : (
+                          <video
+                            src={m.src}
+                            className="w-full h-full object-cover"
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Text */}
+                <div className="mt-3 md:mt-5">
+                  <div className="font-light text-xs text-[#4B5565]">
+                    {f.description}
+                  </div>
                 </div>
               </div>
-
-              {/* Date */}
-              <div className="mt-0.5 md:mt-2 font-[300] text-[12px]">
-                {(() => {
-                  const d = new Date(f.date);
-                  return `${d.getDate()} ${d.toLocaleString("ru-RU", {
-                    month: "long",
-                  })} ${d.getFullYear()}`;
-                })()}
-              </div>
-
-              {/* Media */}
-              {f.media && f.media.length > 0 && (
-                <div className="flex gap-2 mt-3 md:mt-5">
-                  {f.media.map((m: any) => (
-                    <div
-                      key={m.id}
-                      className="w-16 h-16 flex-shrink-0 overflow-hidden flex items-center justify-center"
-                    >
-                      {m.type === "image" ? (
-                        <Image
-                          src={m.src}
-                          alt="media"
-                          width={64}
-                          height={64}
-                          className="object-cover w-full h-full"
-                        />
-                      ) : (
-                        <video
-                          src={m.src}
-                          className="w-full h-full object-cover"
-                        />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Text */}
-              <div className="mt-3 md:mt-5">
-                <div className="font-light text-xs text-[#4B5565]">
-                  {f.description}
-                </div>
-              </div>
-            </div>
-          ))}
+            ),
+          )}
       </div>
 
       {/* ----- PAGINATION ----- */}
@@ -260,9 +346,8 @@ export default function FeedbackSection({
         <div className="hidden md:flex justify-center mt-[52px]">
           <div className="flex items-center gap-3">
             <button
-              onClick={() => setPage(Math.max(1, page - 1))}
-              disabled={page === 1}
-              className="px-2 disabled:opacity-30"
+              onClick={() => setPage(Math.max(0, page - 1))}
+              disabled={page === 0}
             >
               <ChevronLeft />
             </button>
@@ -272,18 +357,23 @@ export default function FeedbackSection({
             </span>
 
             <button
-              onClick={() => setPage(Math.min(totalPages, page + 1))}
-              disabled={page === totalPages}
-              className="px-2 disabled:opacity-30"
+              onClick={() => setPage(Math.min(totalPages - 1, page + 1))}
+              disabled={page === totalPages - 1}
             >
               <ChevronRight />
             </button>
           </div>
         </div>
       )}
-      <AuthModal
-        initialMode="phone"
-      />
+      <AuthModal initialMode="phone" />
+      {fullscreenMedia && (
+        <FullscreenViewer
+          media={fullscreenMedia}
+          startIndex={fullscreenIndex}
+          onClose={() => setFullscreenMedia(null)}
+          loading={false}
+        />
+      )}
     </div>
   );
 }

@@ -3,7 +3,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { YMaps, Map, Placemark, Clusterer } from "@pbe/react-yandex-maps";
 import { fetchAllStores, Store } from "@/services/stores";
 
@@ -35,22 +35,61 @@ function StoreItem({
       </p>
 
       <div className="flex items-center gap-[2px] mt-2">
-        <Image src="/icons/calendar.svg" alt="hours" width={18} height={18} className="flex-shrink-0" />
-        <span style={{ fontWeight: 300, fontSize: 12, lineHeight: "18px", marginLeft: 2 }}>
+        <Image
+          src="/icons/calendar.svg"
+          alt="hours"
+          width={18}
+          height={18}
+          className="flex-shrink-0"
+        />
+        <span
+          style={{
+            fontWeight: 300,
+            fontSize: 12,
+            lineHeight: "18px",
+            marginLeft: 2,
+          }}
+        >
           {store.workingHours}
         </span>
       </div>
 
       <div className="flex items-center gap-[2px] mt-1">
-        <Image src="/icons/phone.svg" alt="phone" width={18} height={18} className="flex-shrink-0" />
-        <span style={{ fontWeight: 300, fontSize: 12, lineHeight: "18px", marginLeft: 2 }}>
+        <Image
+          src="/icons/phone.svg"
+          alt="phone"
+          width={18}
+          height={18}
+          className="flex-shrink-0"
+        />
+        <span
+          style={{
+            fontWeight: 300,
+            fontSize: 12,
+            lineHeight: "18px",
+            marginLeft: 2,
+          }}
+        >
           {store.phone}
         </span>
       </div>
 
       <div className="flex items-start gap-[2px] mt-1">
-        <Image src="/icons/marker.svg" alt="location" width={18} height={18} className="flex-shrink-0 mt-[1px]" />
-        <span style={{ fontWeight: 300, fontSize: 12, lineHeight: "18px", marginLeft: 2 }}>
+        <Image
+          src="/icons/marker.svg"
+          alt="location"
+          width={18}
+          height={18}
+          className="flex-shrink-0 mt-[1px]"
+        />
+        <span
+          style={{
+            fontWeight: 300,
+            fontSize: 12,
+            lineHeight: "18px",
+            marginLeft: 2,
+          }}
+        >
           {store.address}
         </span>
       </div>
@@ -62,12 +101,34 @@ function StoreItem({
 
 function EmptyState({ t }: { t: (k: string) => string }) {
   return (
-    <div className="flex flex-col items-center text-center px-[26px]" style={{ paddingTop: 52 }}>
-      <Image src="/icons/search-grey.svg" alt="no results" width={80} height={80} />
-      <p style={{ fontWeight: 500, fontSize: 20, lineHeight: "28px", marginTop: 12 }}>
+    <div
+      className="flex flex-col items-center text-center px-[26px]"
+      style={{ paddingTop: 52 }}
+    >
+      <Image
+        src="/icons/search-grey.svg"
+        alt="no results"
+        width={80}
+        height={80}
+      />
+      <p
+        style={{
+          fontWeight: 500,
+          fontSize: 20,
+          lineHeight: "28px",
+          marginTop: 12,
+        }}
+      >
         {t("notFound")}
       </p>
-      <p style={{ fontWeight: 400, fontSize: 14, lineHeight: "20px", marginTop: 12 }}>
+      <p
+        style={{
+          fontWeight: 400,
+          fontSize: 14,
+          lineHeight: "20px",
+          marginTop: 12,
+        }}
+      >
         {t("tryAgain")}
       </p>
     </div>
@@ -127,7 +188,9 @@ function StoresMap({
       >
         <button
           type="button"
-          onClick={() => mapRef.current?.setZoom((mapRef.current.getZoom() || 12) + 1)}
+          onClick={() =>
+            mapRef.current?.setZoom((mapRef.current.getZoom() || 12) + 1)
+          }
           className="flex items-center justify-center text-lg font-bold cursor-pointer"
           style={{ width: 36, height: 36 }}
         >
@@ -135,7 +198,9 @@ function StoresMap({
         </button>
         <button
           type="button"
-          onClick={() => mapRef.current?.setZoom((mapRef.current.getZoom() || 12) - 1)}
+          onClick={() =>
+            mapRef.current?.setZoom((mapRef.current.getZoom() || 12) - 1)
+          }
           className="flex items-center justify-center text-lg font-bold cursor-pointer"
           style={{ width: 36, height: 36 }}
         >
@@ -148,7 +213,10 @@ function StoresMap({
         onClick={() => {
           if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition((pos) => {
-              mapRef.current?.setCenter([pos.coords.latitude, pos.coords.longitude], 16);
+              mapRef.current?.setCenter(
+                [pos.coords.latitude, pos.coords.longitude],
+                16,
+              );
             });
           }
         }}
@@ -162,20 +230,28 @@ function StoresMap({
           transform: isMobile ? undefined : "translateY(-50%)",
         }}
       >
-        <Image src="/icons/navigation.png" alt="My location" width={24} height={24} />
+        <Image
+          src="/icons/navigation.png"
+          alt="My location"
+          width={24}
+          height={24}
+        />
       </div>
 
       <YMaps query={{ apikey: "62a8dde9-9abb-4c5a-81c1-67a6bd19e7a8" }}>
         <Map
           className="w-full h-full map"
           defaultState={{
-            center: stores.length > 0
-              ? [stores[0].latitude, stores[0].longitude]
-              : [41.314472, 69.27991],
+            center:
+              stores.length > 0
+                ? [stores[0].latitude, stores[0].longitude]
+                : [41.314472, 69.27991],
             zoom: 12,
           }}
           options={getMapOptions()}
-          instanceRef={(ref: any) => { if (ref) mapRef.current = ref; }}
+          instanceRef={(ref: any) => {
+            if (ref) mapRef.current = ref;
+          }}
         >
           <Clusterer
             options={{
@@ -200,8 +276,8 @@ function StoresMap({
                     iconImageOffset: [-12, -12],
                     iconShape: {
                       type: "Circle",
-                    //   coordinates: [0, 0],
-                    //   radius: 20,
+                      //   coordinates: [0, 0],
+                      //   radius: 20,
                     },
                     // Custom circle background
                     iconContentLayout: undefined,
@@ -245,14 +321,18 @@ export default function ShopsPage() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
+  const locale = useLocale();
+
   useEffect(() => {
-    fetchAllStores().then(setStores).catch(() => setStores([]));
-  }, []);
+    fetchAllStores(1, 100, locale)
+      .then(setStores)
+      .catch(() => setStores([]));
+  }, [locale]);
 
   const filtered = stores.filter(
     (s) =>
-      s.name.toLowerCase().includes(search.toLowerCase()) ||
-      s.address.toLowerCase().includes(search.toLowerCase()),
+      s?.name?.toLowerCase().includes(search.toLowerCase()) ||
+      s?.address?.toLowerCase().includes(search.toLowerCase()),
   );
 
   const handleSelect = (id: number) => {
@@ -280,7 +360,14 @@ export default function ShopsPage() {
 
         {/* Content block */}
         <div style={{ padding: 16 }}>
-          <p style={{ fontWeight: 400, fontSize: 24, lineHeight: "34px", marginBottom: 16 }}>
+          <p
+            style={{
+              fontWeight: 400,
+              fontSize: 24,
+              lineHeight: "34px",
+              marginBottom: 16,
+            }}
+          >
             {t("title")}
           </p>
 
@@ -289,14 +376,25 @@ export default function ShopsPage() {
             className="flex items-center border border-black rounded-[4px]"
             style={{ padding: 12 }}
           >
-            <Image src="/icons/search-grey.svg" alt="search" width={20} height={20} className="flex-shrink-0" />
+            <Image
+              src="/icons/search-grey.svg"
+              alt="search"
+              width={20}
+              height={20}
+              className="flex-shrink-0"
+            />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={t("searchPlaceholder")}
               className="flex-1 outline-none bg-transparent ml-3"
-              style={{ fontWeight: 400, fontSize: 14, lineHeight: "20px", color: "#697586" }}
+              style={{
+                fontWeight: 400,
+                fontSize: 14,
+                lineHeight: "20px",
+                color: "#697586",
+              }}
             />
           </div>
         </div>
@@ -321,6 +419,7 @@ export default function ShopsPage() {
     );
   }
 
+  console.log("Rendering desktop layout with stores:", stores, filtered);
   // ── DESKTOP ──────────────────────────────────────────────────────────────────
   return (
     <div className="flex w-full" style={{ height: "100vh" }}>
@@ -330,7 +429,14 @@ export default function ShopsPage() {
         style={{ width: 381, height: "100vh" }}
       >
         {/* Fixed header: title + search */}
-        <div style={{ paddingTop: 52, paddingLeft: 32, paddingRight: 32, paddingBottom: 0 }}>
+        <div
+          style={{
+            paddingTop: 52,
+            paddingLeft: 32,
+            paddingRight: 32,
+            paddingBottom: 0,
+          }}
+        >
           <p style={{ fontWeight: 400, fontSize: 28, lineHeight: "40px" }}>
             {t("title")}
           </p>
@@ -339,14 +445,25 @@ export default function ShopsPage() {
             className="flex items-center border border-black rounded-[4px] mt-5"
             style={{ padding: 12, height: 44 }}
           >
-            <Image src="/icons/search-grey.svg" alt="search" width={20} height={20} className="flex-shrink-0" />
+            <Image
+              src="/icons/search-grey.svg"
+              alt="search"
+              width={20}
+              height={20}
+              className="flex-shrink-0"
+            />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={t("searchPlaceholder")}
               className="flex-1 outline-none bg-transparent ml-3"
-              style={{ fontWeight: 400, fontSize: 14, lineHeight: "20px", color: "#697586" }}
+              style={{
+                fontWeight: 400,
+                fontSize: 14,
+                lineHeight: "20px",
+                color: "#697586",
+              }}
             />
           </div>
         </div>
