@@ -1,0 +1,25 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appIDs": [
+          "8XMPQSJN3A.uz.carato.caratoJewelleryMobile"
+        ],
+        "paths": [
+          "*"
+        ],
+        "components": [
+          {
+            "/": "/*"
+          }
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": [
+      "8XMPQSJN3A.uz.carato.caratoJewelleryMobile"
+    ]
+  }
+}

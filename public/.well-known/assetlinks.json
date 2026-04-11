@@ -1,0 +1,15 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.get_login_creds"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "uz.carato.carato_client_mobile",
+      "sha256_cert_fingerprints": [
+        "1A:E2:12:BE:DE:EC:91:F9:A8:BE:F8:A8:D7:44:79:FD:36:CD:2C:33:91:06:9E:9A:44:0A:CE:A0:02:71:73:3E"
+      ]
+    }
+  }
+]
