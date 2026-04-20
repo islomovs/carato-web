@@ -16,7 +16,6 @@ import { toast } from "sonner";
 import { getTokenPair } from "@/lib/axios/instance";
 import NotifySizeModal from "../checkout/NotifySizeModal";
 import DetermineSizeModal from "../checkout/DetermineSizeModal";
-import useLockScroll from "@/hooks/useLockScroll";
 import { useWishlistStore } from "@/lib/wishlistStore";
 import { WishlistItem } from "@/services/wishlist";
 import { useLocale } from "next-intl";
@@ -60,7 +59,9 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
     }
   };
 
-  useLockScroll(openNotify || openDetermine);
+  // Note: useLockScroll is NOT needed here — Radix UI's Dialog already handles
+  // scroll locking with proper scrollbar-width compensation internally.
+  // Adding it on top causes a double-lock and visual layout shift.
 
   const { add, remove, isInWishlist } = useWishlistStore();
 
@@ -127,7 +128,7 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
               })}
             </div>
             <span className="font-light text-sm underline ml-2">
-              {Math.round(rating)} {t("reviews")}
+              {(stableProduct as any)?.reviewsQuantity || 0} {t("reviews")}
             </span>
           </div>
         </div>
@@ -214,10 +215,19 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
           <span className="font-normal text-sm">20 - 23 сентября</span>
         </div>
 
-        <NotifySizeModal open={openNotify} onOpenChange={setOpenNotify} />
+        <NotifySizeModal
+          open={openNotify}
+          onOpenChange={setOpenNotify}
+          productId={stableProduct.id}
+          categorySizes={stableProduct.category?.productSizes}
+        />
         <DetermineSizeModal
           open={openDetermine}
           onOpenChange={setOpenDetermine}
+          categorySizes={stableProduct.category?.productSizes}
+          categoryName={stableProduct.category?.name}
+          categorySlug={stableProduct.subcategory?.slug ?? stableProduct.category?.slug}
+          sizeGuideType={stableProduct.category?.sizeGuideType}
         />
 
         {/* Auth modal */}

@@ -18,10 +18,10 @@ export default function StoryList({ stories, onSelect }: StoryListProps) {
     <div className="flex overflow-x-auto no-scrollbar">
       {stories.map((story, i) => (
         <motion.div
-          key={story.title || i}
+          key={i}
           onClick={() => onSelect(i)}
           className="relative min-w-[144px] h-[200px] cursor-pointer group overflow-hidden shrink-0"
-          whileHover={{ scale: 1.02 }}
+          // whileHover={{ scale: 1.02 }}  ← delete this line
         >
           <Image
             src={story.image}

@@ -2,6 +2,7 @@
   "home": {
     "header": {
       "catalog": "Mahsulotlar katalogi",
+      "collections": "Kolleksiyalar",
       "shops": "Do'konlar",
       "about": "Kompaniya haqida",
       "wishlist": "Izohlar",
@@ -22,7 +23,8 @@
     "seeAll": "Barchasini ko'rish",
     "news": "Yangiliklar",
     "learnMore": "Batafsil o'rganish",
-    "loadError": "Kategoriya yuklashda xatolik yuz berdi"
+    "loadError": "Kategoriya yuklashda xatolik yuz berdi",
+    "collectionsTitle": "Kolleksiyalar"
   },
   "appBar": {
     "home": "Bosh sahifa",

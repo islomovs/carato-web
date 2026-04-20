@@ -19,21 +19,58 @@ import { Label } from "@/components/ui/label";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { withMask } from "use-mask-input";
+import { createStockAlertSubscription } from "@/services/stockAlert";
+import { CategorySize } from "@/services/product";
+import { toast } from "sonner";
 
 interface NotifySizeModalProps {
   open: boolean;
   onOpenChange: (val: boolean) => void;
+  productId: number;
+  categorySizes?: CategorySize[];
 }
 
 export default function NotifySizeModal({
   open,
   onOpenChange,
+  productId,
+  categorySizes,
 }: NotifySizeModalProps) {
   const t = useTranslations("product");
-  const [size, setSize] = useState("");
+  const [sizeId, setSizeId] = useState<string>("");
+  const [phone, setPhone] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const id = useId();
 
-  const availableSizes = ["155", "160", "165", "170", "175"];
+  const handleSubmit = async () => {
+    if (!sizeId) {
+      toast.error(t("selectSize"));
+      return;
+    }
+
+    const rawPhone = phone.replace(/\D/g, "");
+    if (rawPhone.length < 12) {
+      toast.error(t("invalidPhone"));
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      await createStockAlertSubscription({
+        customerPhone: phone,
+        product: productId,
+        productSize: Number(sizeId),
+      });
+      toast.success(t("notifySuccess"));
+      onOpenChange(false);
+      setSizeId("");
+      setPhone("");
+    } catch {
+      toast.error(t("notifyError"));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -54,6 +91,7 @@ export default function NotifySizeModal({
             {t("notifySize")}
           </DialogTitle>
         </DialogHeader>
+
         <div className="px-4">
           <div className="flex flex-col gap-8">
             <div>
@@ -65,16 +103,22 @@ export default function NotifySizeModal({
                 <span className="text-red-600 ml-[2px]">*</span>
               </Label>
 
-              <Select value={size} onValueChange={setSize}>
+              <Select value={sizeId} onValueChange={setSizeId}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Выберите размер" />
+                  <SelectValue placeholder={t("selectSizePlaceholder")} />
                 </SelectTrigger>
                 <SelectContent className="z-[80]">
-                  {availableSizes.map((s) => (
-                    <SelectItem key={s} value={s}>
-                      {s}
+                  {categorySizes && categorySizes.length > 0 ? (
+                    categorySizes.map((s) => (
+                      <SelectItem key={s.id} value={String(s.id)}>
+                        {s.name}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="no-sizes" disabled>
+                      {t("noSizesAvailable")}
                     </SelectItem>
-                  ))}
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -91,6 +135,8 @@ export default function NotifySizeModal({
                 id={`${id}-phone`}
                 type="text"
                 placeholder="+998 90 123-45-67"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
                 ref={withMask("+\\9\\9\\8 99 999-99-99", {
                   placeholder: "_",
                   showMaskOnHover: false,
@@ -99,9 +145,13 @@ export default function NotifySizeModal({
               />
             </div>
 
-            <Button className="cursor-pointer w-full bg-black text-white h-[52px] text-[14px] uppercase rounded-md">
-              {t("notifyMe")}
-            </Button>
+            <Button
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className="cursor-pointer w-full bg-black text-white h-[52px] text-[14px] uppercase rounded-md"
+            >
+              {isSubmitting ? t("submitting") : t("notifyMe")}
+              </Button>
           </div>
         </div>
       </DialogContent>

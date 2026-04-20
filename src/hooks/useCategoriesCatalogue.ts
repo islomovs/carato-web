@@ -36,7 +36,7 @@ export function useCategoriesCatalogue() {
 
 export function useCategoryCatalogue(slug: string | null) {
   const [catalogue, setCatalogue] = useState<CategoryCatalogueBySlug | null>(
-    null
+    null,
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -62,4 +62,25 @@ export function useCategoryCatalogue(slug: string | null) {
   }, [slug, locale]);
 
   return { catalogue, loading, error };
+}
+
+export function useAllCataloguesFull() {
+  const { catalogues, loading: listLoading } = useCategoriesCatalogue();
+  const [fullCatalogues, setFullCatalogues] = useState<
+    CategoryCatalogueBySlug[]
+  >([]);
+  const [loading, setLoading] = useState(true);
+  const locale = useLocale();
+
+  useEffect(() => {
+    if (!catalogues.length) return;
+    Promise.all(
+      catalogues.map((c) => getCategoryCatalogueBySlug(c.slug, locale)),
+    ).then((results) => {
+      setFullCatalogues(results);
+      setLoading(false);
+    });
+  }, [catalogues, locale]);
+
+  return { fullCatalogues, loading: listLoading || loading };
 }

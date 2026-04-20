@@ -24,7 +24,7 @@ export default function ProductCard({
   onOpen,
 }: {
   product: Product | WishlistItem;
-  onOpen: (product: Product | WishlistItem) => void;
+  onOpen?: (product: Product | WishlistItem) => void;
 }) {
   const productData: Product = isWishlistItem(product)
     ? (product as Product)
@@ -32,6 +32,7 @@ export default function ProductCard({
 
   const t = useTranslations("product");
   const [hovered, setHovered] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const locale = useLocale();
   const isAuthenticated = Boolean(getTokenPair().token);
 
@@ -57,7 +58,7 @@ export default function ProductCard({
       onClick={() => router.push(`/product/${productData.slug}`)}
     >
       {/* Image section */}
-      <div className="relative w-full aspect-[166/196] md:aspect-[329/364] overflow-hidden rounded-md">
+      <div className="relative w-full aspect-[166/196] md:aspect-[329/364] overflow-hidden bg-[#F8FAFC]">
         {/* Discount Badge */}
         {productData.discountPercent && (
           <div className="absolute top-2 left-2 bg-[#F04438] rounded-[2px] py-[3px] px-2 z-[5]">
@@ -112,7 +113,8 @@ export default function ProductCard({
           alt={productData.name || "Product Image"}
           fill
           sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          className="object-cover w-full h-full pointer-events-none transition-transform duration-300 group-hover:scale-105"
+          className={`object-cover w-full h-full pointer-events-none transition-transform duration-300 group-hover:scale-105 ${loaded ? "opacity-100" : "opacity-0"}`}
+          onLoad={() => setLoaded(true)}
         />
 
         {/* Overlay */}
@@ -131,7 +133,7 @@ export default function ProductCard({
 
         {/* Add to Cart button */}
         <AnimatePresence>
-          {hovered && (
+          {hovered && onOpen && (
             <motion.div
               key="cta"
               initial={{ y: 28, opacity: 0 }}

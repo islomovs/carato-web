@@ -46,10 +46,15 @@ export default function ProductGallery({
       <>
         {/* Gallery left */}
         <div className="w-full">
-          {/* Grid layout updated: 2 items in first row, 3 in second */}
           <div className="grid gap-[20px]">
-            {/* Row 1 — two large images */}
-            <div className="grid grid-cols-2 gap-[20px]">
+            {/* Row 1 — single image takes full width; 2+ images use 2-col grid */}
+            <div
+              className={
+                media.length === 1
+                  ? "grid grid-cols-1"
+                  : "grid grid-cols-2 gap-[20px]"
+              }
+            >
               {media.slice(0, 2).map((m, i) => (
                 <div
                   key={m.id}
@@ -68,26 +73,29 @@ export default function ProductGallery({
               ))}
             </div>
 
-            {/* Row 2 — three smaller images */}
-            <div className="grid grid-cols-3 gap-[20px]">
-              {media.slice(2, 5).map((m, i) => (
-                <div
-                  key={m.id}
-                  className="relative cursor-pointer"
-                  style={{ height: 264 }}
-                >
-                  <MediaItem
-                    media={m}
-                    loading={loading}
-                    onClick={() => {
-                      setIndex(2 + i);
-                      setIsFullscreenOpen(true);
-                    }}
-                  />
-                </div>
-              ))}
-            </div>
+            {/* Row 2 — three smaller images (only rendered if there are 3+ images) */}
+            {media.length > 2 && (
+              <div className="grid grid-cols-3 gap-[20px]">
+                {media.slice(2, 5).map((m, i) => (
+                  <div
+                    key={m.id}
+                    className="relative cursor-pointer"
+                    style={{ height: 264 }}
+                  >
+                    <MediaItem
+                      media={m}
+                      loading={loading}
+                      onClick={() => {
+                        setIndex(2 + i);
+                        setIsFullscreenOpen(true);
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
+
           {/* Fullscreen overlay launcher */}
           {isFullscreenOpen && (
             <FullscreenViewer

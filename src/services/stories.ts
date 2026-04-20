@@ -1,44 +1,62 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import api from "@/lib/axios/instance";
 
-export interface StoryImage {
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export interface StorySummary {
   id: number;
-  createdTime: string;
   title: string;
-  startTime: string;
-  endTime: string;
-  textUz: string;
-  textRu: string;
-  textEn: string;
   image: string;
-  sortOrder: number;
-  redirectTo?: string;
 }
 
-export interface Story {
+export interface StoryMediaItem {
   id: number;
-  text: string;
-  createdTime: string;
   startTime: string;
-  endTime: string;
-  image: string;
-  sortOrder: number;
-  isActive: boolean;
-  images: StoryImage[];
+  text: string;
+  image: string; // may be a video URL — use isVideoUrl() to check
+  redirectTo: string;
 }
 
+export interface StoryDetail {
+  id: number;
+  media: StoryMediaItem[];
+}
+
+// Alias used by the hook and components
+export type Story = StorySummary;
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+export function isVideoUrl(url: string): boolean {
+  return /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url);
+}
+
+// ─── API calls ────────────────────────────────────────────────────────────────
+
+// GET /api/v1/stories/all — thumbnail list shown on home page
 export async function getStories(locale: string): Promise<Story[]> {
-  const response = await api.get<{ content?: Story[]; data?: Story[] }>(
-    "/api/v1/stories/all",
-    {
+  try {
+    const response = await api.get<Story[]>("/api/v1/stories/all", {
       headers: { "Accept-Language": locale },
-    }
-  );
-
-  const data = response.data;
-  // handle if backend returns { content: [...] } or plain array
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data?.content)) return data.content;
-  if (Array.isArray(data?.data)) return data.data;
-  return [];
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error("🔥 API ERROR (getStories):", {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data,
+      url: error.config?.url,
+    });
+    throw error;
+  }
 }
 
+export async function getStoryById(
+  id: number,
+  locale: string,
+): Promise<StoryDetail> {
+  const response = await api.get<StoryDetail>(`/api/v1/stories/${id}`, {
+    headers: { "Accept-Language": locale },
+  });
+  return response.data;
+}

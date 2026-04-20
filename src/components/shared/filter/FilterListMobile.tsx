@@ -33,7 +33,7 @@ const appliedCount = (title: string) => {
 };
 
   return (
-    <div className="overflow-y-auto h-full">
+    <div className="overflow-y-auto h-full z-[1000]">
       <div className="px-4 py-4 space-y-4">
         {mockFilters.map((filter) => (
           <div key={filter.title} className="border-b border-[#EEF2F6]">

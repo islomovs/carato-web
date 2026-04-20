@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import CatalogDropdown from "../shared/catalog/CatalogDropdown";
+import CollectionsDropdown from "../shared/catalog/CollectionsDropdown";
 import { AnimatePresence } from "framer-motion";
 import { useEffect } from "react";
 import MobileLanguageModal from "../shared/MobileLanguageModal";
@@ -20,6 +21,7 @@ import SearchOverlay from "../shared/SearchOverlay";
 export default function Header() {
   const t = useTranslations("home.header");
   const [isCatalogOpen, setIsCatalogOpen] = useState(false);
+  const [isCollectionsOpen, setIsCollectionsOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [langModalOpen, setLangModalOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState("uz");
@@ -30,16 +32,44 @@ export default function Header() {
 
   const [searchOpen, setSearchOpen] = useState(false);
 
-  useEffect(() => {
-    const shouldLock = menuOpen || isCatalogOpen || searchOpen;
+  const handleOpenSearch = () => {
+    setIsCatalogOpen(false);
+    setIsCollectionsOpen(false);
+    setSearchOpen(true);
+  };
 
+  // Lock scroll + compensate header for any open dropdown/overlay
+  const anyDropdownOpen = isCatalogOpen || isCollectionsOpen;
+
+  useEffect(() => {
+    if (anyDropdownOpen) {
+      const scrollbarWidth =
+        window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.overflow = "hidden";
+      if (scrollbarWidth > 0) {
+        document.body.style.paddingRight = `${scrollbarWidth}px`;
+        document.documentElement.style.setProperty(
+          "--removed-body-scroll-bar-size",
+          `${scrollbarWidth}px`
+        );
+      }
+      return () => {
+        document.body.style.overflow = "";
+        document.body.style.paddingRight = "";
+        document.documentElement.style.removeProperty(
+          "--removed-body-scroll-bar-size"
+        );
+      };
+    }
+  }, [anyDropdownOpen]);
+
+  useEffect(() => {
+    const shouldLock = menuOpen || searchOpen;
     if (shouldLock) {
       const scrollY = window.scrollY;
-
       document.body.style.position = "fixed";
       document.body.style.top = `-${scrollY}px`;
       document.body.style.width = "100%";
-
       return () => {
         document.body.style.position = "";
         document.body.style.top = "";
@@ -47,7 +77,7 @@ export default function Header() {
         window.scrollTo(0, scrollY);
       };
     }
-  }, [menuOpen, isCatalogOpen, searchOpen]);
+  }, [menuOpen, searchOpen]);
 
   const HEADER_HEIGHT_PX = 65;
   const APPBAR_HEIGHT_PX = 52;
@@ -72,11 +102,13 @@ export default function Header() {
           </button>
         </div>
 
-        {/* Left size btns: shops, about, catalog */}
+        {/* Desktop nav: shops, about, catalog, collections */}
         <DesktopNav
           t={t}
           isCatalogOpen={isCatalogOpen}
           setIsCatalogOpen={setIsCatalogOpen}
+          isCollectionsOpen={isCollectionsOpen}
+          setIsCollectionsOpen={setIsCollectionsOpen}
         />
 
         {/* Main logo */}
@@ -99,7 +131,7 @@ export default function Header() {
           <div className="flex md:hidden items-center gap-2">
             <button
               className="w-9 h-9 flex items-center justify-center rounded-md hover:bg-[#EEF2F6] transition-colors cursor-pointer"
-              onClick={() => setSearchOpen(true)}
+              onClick={handleOpenSearch}
             >
               <Image
                 src="/icons/search.svg"
@@ -119,12 +151,13 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* Desktop btns: search, cart, wishlist, profile, language */}
-          <HeaderIcons setSearchOpen={setSearchOpen} />
+          {/* Desktop: search, cart, wishlist, profile, language */}
+          <HeaderIcons setSearchOpen={handleOpenSearch} />
           {searchOpen && <SearchOverlay onClose={() => setSearchOpen(false)} />}
         </div>
       </div>
 
+      {/* Catalog dropdown */}
       {isCatalogOpen && (
         <CatalogDropdown
           isOpen={isCatalogOpen}
@@ -132,9 +165,27 @@ export default function Header() {
         />
       )}
 
+      {/* Collections dropdown */}
+      <CollectionsDropdown
+        isOpen={isCollectionsOpen}
+        onClose={() => setIsCollectionsOpen(false)}
+      />
+
+      {/* Backdrop for dropdowns — closes on outside click */}
+      {anyDropdownOpen && (
+        <div
+          className="fixed inset-0 top-[65px] bg-[#00000040] z-40"
+          onClick={() => {
+            setIsCatalogOpen(false);
+            setIsCollectionsOpen(false);
+          }}
+        />
+      )}
+
       <AnimatePresence>
         {menuOpen && (
           <MobileMenu
+            key="mobile-menu"
             currentLang={currentLang}
             setLangModalOpen={setLangModalOpen}
             closeMenu={() => setMenuOpen(false)}
@@ -142,13 +193,15 @@ export default function Header() {
             APPBAR_HEIGHT_PX={APPBAR_HEIGHT_PX}
           />
         )}
-        <MobileLanguageModal
-          open={langModalOpen}
-          onClose={() => setLangModalOpen(false)}
-          currentLang={currentLang}
-          setCurrentLang={setCurrentLang}
-        />
       </AnimatePresence>
+
+      {/* MobileLanguageModal uses Radix Dialog internally — keep outside AnimatePresence to avoid duplicate-key conflict */}
+      <MobileLanguageModal
+        open={langModalOpen}
+        onClose={() => setLangModalOpen(false)}
+        currentLang={currentLang}
+        setCurrentLang={setCurrentLang}
+      />
     </header>
   );
 }

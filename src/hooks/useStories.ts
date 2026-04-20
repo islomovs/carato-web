@@ -18,8 +18,7 @@ export function useStories(locale: string) {
         if (mounted) setStories(data);
       } catch (err) {
         console.error("Failed to fetch stories:", err);
-        if (mounted)
-          setError("Failed to load stories, showing placeholder data.");
+        if (mounted) setError("Failed to load stories.");
       } finally {
         if (mounted) setLoading(false);
       }

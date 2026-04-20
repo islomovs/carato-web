@@ -161,3 +161,16 @@
   z-index: 19 !important;
   background-color: #00000040 !important;
 }
+
+/*
+  When any scroll-lock is active (Radix Dialog, our custom useLockScroll, etc.)
+  the scrollbar disappears and the page gains padding-right to compensate.
+  Fixed elements like the header are NOT affected by body padding, so they
+  visually jump left. This rule pads the header by the scrollbar width using
+  the CSS variable that react-remove-scroll (used by Radix Dialog) sets on :root.
+  useLockScroll also sets this variable manually for non-Radix overlays.
+*/
+header {
+  padding-right: var(--removed-body-scroll-bar-size, 0px);
+  transition: padding-right 0s;
+}

@@ -7,6 +7,7 @@ const NAMESPACES = [
   "auth",
   "product",
   "catalog",
+  "collection",
   "cart",
   "profile",
   "checkout",

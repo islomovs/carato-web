@@ -1,12 +1,11 @@
 import { motion } from "framer-motion";
-import { Story } from "./types";
 
 export default function StoryProgressBars({
   currentStory,
   activeImageIndex,
   progress,
 }: {
-  currentStory: Story;
+  currentStory: { images: { image: string }[] }; // ← loosened type
   activeImageIndex: number;
   progress: number;
 }) {

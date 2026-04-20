@@ -10,8 +10,11 @@ import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { useProducts } from "@/hooks/useProducts";
 import { INITIAL_FILTERS } from "@/services/product";
-import { useCategories } from "@/hooks/useCategories";
 import { resolveSlugType } from "@/lib/slugResolver";
+import {
+  useAllCataloguesFull,
+  useCategoriesCatalogue,
+} from "@/hooks/useCategoriesCatalogue";
 
 const PAGE_SIZE = 20;
 
@@ -21,11 +24,9 @@ interface CatalogPageProps {
 
 export default function CatalogPage({ slug }: CatalogPageProps) {
   const t = useTranslations("catalog");
-
-  const { categories, loading: catLoading } = useCategories();
-
+  const { catalogues, loading: catLoading } = useCategoriesCatalogue();
   const resolved =
-    !catLoading && slug ? resolveSlugType(slug, categories) : null;
+    !catLoading && slug ? resolveSlugType(slug, catalogues) : null;
 
   const {
     products,
@@ -44,10 +45,7 @@ export default function CatalogPage({ slug }: CatalogPageProps) {
 
   useEffect(() => {
     if (!resolved) return;
-
-    updateFilters({
-      [resolved.type]: resolved.value,
-    });
+    updateFilters({ [resolved.type]: resolved.value });
   }, [resolved?.type, resolved?.value]);
 
   const productsReady = !slug || (!catLoading && resolved);
@@ -63,14 +61,32 @@ export default function CatalogPage({ slug }: CatalogPageProps) {
 
   const refTitle = useRef<HTMLDivElement | null>(null);
   const refBar = useRef<HTMLDivElement | null>(null);
-
   const [selectedFilters, setSelectedFilters] = useState<
     Record<string, string[]>
   >({});
 
+  const { fullCatalogues, loading: fullLoading } = useAllCataloguesFull();
+
+  const label = (() => {
+    if (!slug) return undefined;
+    for (const cat of fullCatalogues) {
+      if (cat.slug === slug) return cat.name;
+      for (const c of cat.categories ?? []) {
+        if (c.slug === slug) return c.name;
+        for (const s of c.subcategories ?? []) {
+          if (s.slug === slug) return s.name;
+        }
+      }
+    }
+    return undefined; // return undefined instead of slug while loading
+  })();
+
   return (
     <div className="w-full pt-16 md:mt-0">
-      <CatalogHeader refTitle={refTitle} title={resolved?.label} />
+      <CatalogHeader
+        refTitle={refTitle}
+        title={fullLoading ? undefined : label}
+      />{" "}
       {catLoading || !resolved ? (
         <div className="w-full h-[48px] bg-gray-100 rounded-md animate-pulse mb-4" />
       ) : (
@@ -88,10 +104,8 @@ export default function CatalogPage({ slug }: CatalogPageProps) {
         />
       )}
       <div className="w-full p-4 md:px-8 md:pt-8 items-center mb-40">
-        {/* Mobile view — Load More */}
         <div className="md:hidden">
           <ProductGrid products={mobileProducts} loading={loading} />
-
           {visibleCount < totalElements && (
             <div className="flex justify-center mt-10">
               <Button
@@ -104,8 +118,6 @@ export default function CatalogPage({ slug }: CatalogPageProps) {
             </div>
           )}
         </div>
-
-        {/* Desktop view — Pagination */}
         <div className="hidden md:block">
           <ProductGrid products={displayedProducts} loading={isLoading} />
           {totalPages > 1 && (

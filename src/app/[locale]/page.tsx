@@ -5,10 +5,11 @@ import ProductsBlock from "@/components/layout/ProductsBlock";
 import CategoriesBlock from "@/components/layout/CategoriesBlock";
 import NewsSection from "@/components/layout/NewsSection";
 import CollectionsSection from "@/components/layout/CollectionsSection";
-import StoriesSection from "@/components/layout/StoriesComponent";
+import StoriesSection from "@/components/shared/stories/StoriesSection";
 import { getProductSets } from "@/services/productSets";
 import { getProductsBySet } from "@/services/productSetProducts";
 import { getLocale } from "next-intl/server";
+import {} from "@/services/stories";
 
 export default async function Home() {
   const locale = await getLocale();

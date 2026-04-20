@@ -1,18 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
-import { ChevronLeft } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
 import { Seller } from "@/services/product";
 import SellerInfoCard from "./SellerInfoCard";
 import SellerDetailDialog from "./SellerDetailDialog";
 import SellerCatalog from "./SellerCatalog";
 
 export default function SellerPageContent({ slug }: { slug: string }) {
-  const t = useTranslations("seller");
-  const router = useRouter();
   const [seller, setSeller] = useState<Seller | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
 

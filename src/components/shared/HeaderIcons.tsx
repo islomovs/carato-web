@@ -8,7 +8,7 @@ import { useWishlistStore } from "@/lib/wishlistStore";
 import { useAuthModalStore } from "@/lib/authModalStore";
 
 type HeaderIconsProps = {
-  setSearchOpen: (val: boolean) => void;
+  setSearchOpen: () => void;
 };
 
 export default function HeaderIcons({ setSearchOpen }: HeaderIconsProps) {
@@ -25,7 +25,7 @@ export default function HeaderIcons({ setSearchOpen }: HeaderIconsProps) {
       {/* Search */}
       <IconButton
         icon="/icons/search.svg"
-        onClick={() => setSearchOpen(true)}
+        onClick={setSearchOpen}
       />
 
       {/* Cart */}

@@ -9,13 +9,29 @@ export interface ProductVariant {
   stockQuantity: number;
 }
 
+export interface CategorySize {
+  id: number;
+  name: string;
+}
+
 export interface Product {
   id: number;
   slug: string;
   name: string;
   characteristics: string;
   price: number;
-  category: { id: number; name: string; slug: string };
+  category: {
+    id: number;
+    name: string;
+    slug: string;
+    productSizes?: CategorySize[];
+    /**
+     * TODO: ask backend to add this field.
+     * Drives which measurement guide to show in DetermineSizeModal.
+     * Values: "ring" | "bracelet" | "necklace" | "clothing" | null
+     */
+    sizeGuideType?: string | null;
+  };
   metal: { id: number; name: string; fineness: number };
   weight: number;
   images: { image: string }[];
@@ -77,6 +93,7 @@ export interface ProductsFilterParams {
   priceTo?: number;
   weightFrom?: number;
   weightTo?: number;
+  catalogueSlug?: string;
   categorySlug?: string;
   subcategorySlug?: string;
   metals?: number[];
@@ -91,8 +108,9 @@ export const INITIAL_FILTERS = {
   priceTo: null as number | null,
   weightFrom: null as number | null,
   weightTo: null as number | null,
-  categorySlug: "",
-  subcategorySlug: "",
+  catalogueSlug: null as string | null,
+  categorySlug: null as string | null,
+  subcategorySlug: null as string | null,
   metals: [] as number[],
   sizes: [] as number[],
   sortType: null as SortOption | null,
@@ -113,6 +131,7 @@ export async function fetchAllProducts(
       priceTo: params.priceTo != null ? params.priceTo : undefined,
       weightFrom: params.weightFrom != null ? params.weightFrom : undefined,
       weightTo: params.weightTo != null ? params.weightTo : undefined,
+      catalogueSlug: params.catalogueSlug || undefined,
       categorySlug: params.categorySlug || undefined,
       subcategorySlug: params.subcategorySlug || undefined,
       metals: params.metals?.length ? params.metals : undefined,

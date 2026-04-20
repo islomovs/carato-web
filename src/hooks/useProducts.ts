@@ -33,6 +33,7 @@ export function useProducts(
     // Prevent request if no category or subcategory is selected
     if (
       !allowSearchOnly &&
+      !filters.catalogueSlug &&
       !filters.categorySlug &&
       !filters.subcategorySlug &&
       !filters.seller
@@ -54,6 +55,7 @@ export function useProducts(
           weightFrom:
             filters.weightFrom != null ? filters.weightFrom : undefined,
           weightTo: filters.weightTo != null ? filters.weightTo : undefined,
+          catalogueSlug: filters.catalogueSlug || undefined,
           categorySlug: filters.categorySlug || undefined,
           subcategorySlug: filters.subcategorySlug || undefined,
           metals: filters.metals?.length ? filters.metals : undefined,
@@ -121,6 +123,7 @@ export function useProducts(
     setFilters((prev: any) => {
       const next = {
         ...INITIAL_FILTERS,
+        catalogueSlug: prev.catalogueSlug,
         categorySlug: prev.categorySlug,
         subcategorySlug: prev.subcategorySlug,
         seller: prev.seller,

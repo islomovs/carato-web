@@ -42,6 +42,19 @@
     "uzs": "SO'M",
     "addedToCartSuccess": "Mahsulot savatchaga muvaffaqiyatli qo'shildi",
     "addedToCartError": "Mahsulotni savatchaga qo'shib bo'lmadi",
-    "selectSize": "Iltimos, savatchaga qo'shishdan oldin o'lchamni tanlang"
+    "selectSize": "Iltimos, savatchaga qo'shishdan oldin o'lchamni tanlang",
+    "selectSizePlaceholder": "O'lchamni tanlang",
+    "noSizesAvailable": "O'lchamlar mavjud emas",
+    "invalidPhone": "Telefon raqami noto'g'ri",
+    "notifySuccess": "Xabarnomaga muvaffaqiyatli obuna bo'ldingiz",
+    "notifyError": "Xabarnomaga obuna bo'lib bo'lmadi",
+    "submitting": "Yuborilmoqda...",
+    "yourSize": "Sizning o'lchamingiz:",
+    "mmPlaceholder": "O'lchamni mm da kiriting",
+    "sizeUnavailable": "Bunday o'lcham mavjud emas",
+    "wrapWrist": "Bilagingizni ip yoki qog'oz lentasi bilan o'rang.",
+    "wrapNeck": "Bo'yningizni ip yoki qog'oz lentasi bilan o'rang.",
+    "wrapBody": "Kerakli tana qismini ip yoki qog'oz lentasi bilan o'rang.",
+    "invalidMeasurement": "To'g'ri son kiriting"
   }
 }

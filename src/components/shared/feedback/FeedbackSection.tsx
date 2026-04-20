@@ -13,14 +13,14 @@ import {
   useState,
 } from "react";
 import LeaveFeedbackModal from "./LeaveFeedbackModal";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useFeedback } from "@/hooks/useFeedback";
 import { Skeleton } from "@/components/ui/skeleton"; // shadcn skeleton import
 import AuthModal from "../auth-modal";
 import { getTokenPair } from "@/lib/axios/instance";
-import { useAuthModalStore } from "@/lib/authModalStore";
 import FullscreenViewer from "../product/FullscreenViewer";
 import { MediaItemT } from "../product/MediaItem";
+import { useRouter } from "next/navigation";
 
 export default function FeedbackSection({
   overallRating,
@@ -42,7 +42,8 @@ export default function FeedbackSection({
   );
   const [fullscreenIndex, setFullscreenIndex] = useState(0);
 
-  const { openAuth } = useAuthModalStore();
+  const router = useRouter();
+  const locale = useLocale();
 
   const {
     feedback,
@@ -169,7 +170,7 @@ export default function FeedbackSection({
           variant="outline"
           onClick={() => {
             if (!isAuthenticated) {
-              openAuth();
+              router.push(`/${locale}/auth`);
               return;
             }
             setOpenFeedback(true);

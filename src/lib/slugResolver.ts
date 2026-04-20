@@ -1,20 +1,20 @@
-import { Category } from "@/services/categories";
+import { CategoryCatalogue } from "@/services/category-catalogues";
 
-export function resolveSlugType(slug: string, categories: Category[]) {
-  for (const cat of categories) {
-    if (cat.slug === slug) {
-      return { type: "categorySlug", value: slug, label: cat.name };
+export function resolveSlugType(slug: string, catalogues: CategoryCatalogue[]) {
+  for (const catalogue of catalogues) {
+    // Level 1 — catalogue
+    if (catalogue.slug === slug) {
+      return { type: "catalogueSlug", value: slug, label: catalogue.name };
     }
 
-    if (cat.subcategories) {
-      for (const sub of cat.subcategories) {
-        if (sub.slug === slug) {
-          return { type: "subcategorySlug", value: slug, label: sub.name };
-        }
+    // Level 2 — category
+    for (const cat of catalogue.categories ?? []) {
+      if (cat.slug === slug) {
+        return { type: "categorySlug", value: slug, label: cat.name };
       }
     }
   }
 
-  // fallback
-  return { type: "categorySlug", value: slug, label: slug };
+  // Level 3 — subcategory not in list response, label resolved separately
+  return { type: "subcategorySlug", value: slug, label: null };
 }

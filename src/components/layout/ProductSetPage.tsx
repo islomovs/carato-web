@@ -41,7 +41,7 @@ export default function ProductSetPage({ slug }: { slug: string }) {
   const mobileProducts = products.slice(0, visibleCount);
 
   return (
-    <div className="w-full md:pt-0">
+    <div className="w-full pt-16 md:pt-0">
       <div className="flex items-center justify-center my-[52px]">
         <h1 className="text-[28px] leading-[34px] text-center font-[400]">
           {title}

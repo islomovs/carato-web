@@ -6,10 +6,12 @@ import Image from "next/image";
 import { NavButton } from "../ui/nav-button";
 import { useTranslations, useLocale } from "next-intl";
 import { useCollections } from "@/hooks/useCollection";
+import { useRouter } from "next/navigation";
 
 export default function CollectionsSection() {
   const t = useTranslations("home");
   const locale = useLocale();
+  const router = useRouter();
   const { collections, loading, error } = useCollections(locale);
 
   const [activeIndex, setActiveIndex] = useState(0);
@@ -98,6 +100,7 @@ export default function CollectionsSection() {
                       active
                       className="w-fit uppercase text-black hover:text-black"
                       underlineColor="black"
+                      onClick={() => router.push(`/${locale}/collections/${item.slug}`)}
                     >
                       {t("seeAll")}
                     </NavButton>
@@ -169,6 +172,7 @@ export default function CollectionsSection() {
                       active
                       className="w-fit uppercase text-black hover:text-black"
                       underlineColor="black"
+                      onClick={() => router.push(`/${locale}/collections/${item.slug}`)}
                     >
                       {t("seeAll")}
                     </NavButton>

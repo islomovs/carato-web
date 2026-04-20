@@ -7,18 +7,16 @@ export interface CategoryCatalogue {
   name: string;
   sortOrder: number;
   isActive: boolean;
-  categories: [
-    {
-      id: number;
-      slug: string;
-      name: string;
-      mobileImage: string;
-      desktopImage: string;
-      isActive: boolean;
-      isDeleted: boolean;
-      showOnMainPage: boolean;
-    },
-  ];
+  categories: {
+    id: number;
+    slug: string;
+    name: string;
+    mobileImage: string;
+    desktopImage: string;
+    isActive: boolean;
+    isDeleted: boolean;
+    showOnMainPage: boolean;
+  }[];
 }
 
 export interface CategoryCatalogueBySlug {
@@ -27,24 +25,20 @@ export interface CategoryCatalogueBySlug {
   name: string;
   desktopImage: string;
   mobileImage: string;
-  categories: [
-    {
+  categories: {
+    id: number;
+    slug: string;
+    name: string;
+    mobileImage: string;
+    desktopImage: string;
+    subcategories: {
       id: number;
       slug: string;
       name: string;
-      mobileImage: string;
-      desktopImage: string;
-      subcategories: [
-        {
-          id: number;
-          slug: string;
-          name: string;
-          mobileImage: string | null;
-          desktopImage: string | null;
-        },
-      ];
-    },
-  ];
+      mobileImage: string | null;
+      desktopImage: string | null;
+    }[];
+  }[];
 }
 
 export async function getCategoryCatalogues(locale: string) {
