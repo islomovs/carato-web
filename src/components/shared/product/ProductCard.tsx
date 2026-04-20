@@ -44,7 +44,7 @@ export default function ProductCard({
   const router = useRouter();
 
   const handleOpen = (productData: Product | WishlistItem) =>
-    onOpen(productData);
+    onOpen?.(productData);
 
   const discountedPrice = productData.discountPercent
     ? Math.round(productData.price * (1 - productData.discountPercent / 100))
