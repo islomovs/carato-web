@@ -251,7 +251,7 @@ function StoresMap({
                       type: "Circle",
                       coordinates: [0, 0],
                       radius: 14,
-                    },
+                    } as any,
                     balloonAutoPan: false,
                     hideIconOnBalloonOpen: false,
                   }}
