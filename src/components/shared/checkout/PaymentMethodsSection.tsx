@@ -4,7 +4,7 @@ import { Button } from "../../ui/button";
 import { Control, useController } from "react-hook-form";
 import { useTranslations } from "next-intl";
 
-type PaymentOption = "CLICK" | "PAYME" | "CASH";
+type PaymentOption = "ATMOS" | "CASH";
 
 interface PaymentTypesSectionProps {
   control?: Control<any>;
@@ -36,9 +36,8 @@ export default function PaymentTypesSection({
       <div className="flex flex-row gap-3">
         {(
           [
-            { key: "CLICK", label: "Click" },
-            { key: "PAYME", label: "Payme" },
-            { key: "CASH", label: "Наличными" },
+            { key: "ATMOS", label: "Online payment" },
+            { key: "CASH", label: "Cash" },
           ] as { key: PaymentOption; label: string }[]
         ).map((opt) => {
           const selected = field.value === opt.key;

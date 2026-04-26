@@ -134,21 +134,31 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
         </div>
 
         {/* Pricing */}
-        <div className="flex items-center">
-          <span className="font-medium text-2xl">
-            {selectedVariant?.price ?? product.price} {t("uzs")}
-          </span>
-          {(selectedVariant?.discountPrice ?? 0) > 0 && (
-            <span className="font-medium text-base text-[#9AA4B2] line-through ml-3">
-              {selectedVariant.price} {t("uzs")}
-            </span>
-          )}
-          {(selectedVariant?.discountPercent ?? 0) > 0 && (
-            <span className="font-normal text-xs text-[#FEFDF0] bg-[#F04438] py-1 px-2 rounded-[2px] ml-3">
-              -{selectedVariant.discountPercent}%
-            </span>
-          )}
-        </div>
+        {(() => {
+          const basePrice = selectedVariant?.price ?? product.price;
+          const discountPct = selectedVariant?.discountPercent ?? product.discountPercent ?? 0;
+          const salePrice =
+            discountPct > 0
+              ? Math.round(basePrice * (1 - discountPct / 100))
+              : null;
+          return (
+            <div className="flex items-center gap-3">
+              <span className="font-medium text-2xl">
+                {(salePrice ?? basePrice).toLocaleString()} {t("uzs")}
+              </span>
+              {salePrice && (
+                <>
+                  <span className="font-medium text-base text-[#9AA4B2] line-through">
+                    {basePrice.toLocaleString()} {t("uzs")}
+                  </span>
+                  <span className="font-normal text-xs text-[#FEFDF0] bg-[#F04438] py-1 px-2 rounded-[2px]">
+                    -{discountPct}%
+                  </span>
+                </>
+              )}
+            </div>
+          );
+        })()}
 
         {/* Sizes */}
         <ProductSizeSelector

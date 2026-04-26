@@ -14,6 +14,7 @@ interface CartItemProps {
   updateQuantity: (slug: string, sizeId: number, quantity: number) => void;
   removeItem: () => void;
   onToggleWishlist: () => void;
+  onOpen?: (item: CartItem) => void;
 }
 
 export function CartItem({
@@ -21,13 +22,13 @@ export function CartItem({
   updateQuantity,
   removeItem,
   onToggleWishlist,
+  onOpen,
 }: CartItemProps) {
   const t = useTranslations("cart");
 
   const [localQty, setLocalQty] = useState(item.quantity);
   const [syncing, setSyncing] = useState(false);
 
-  // Debounced API call
   const debouncedRef = useRef<(qty: number) => void>(() => {});
   useEffect(() => {
     debouncedRef.current = debounce((newQty: number) => {
@@ -45,9 +46,6 @@ export function CartItem({
   };
 
   const handleIncrement = () => {
-    console.log("Clicked increment");
-    console.log("Current localQty:", localQty);
-    console.log("Stock quantity:", item.product.variants[0].stockQuantity);
     if (localQty < item.product.variants[0].stockQuantity) {
       const newQty = localQty + 1;
       setLocalQty(newQty);
@@ -85,15 +83,25 @@ export function CartItem({
           >
             <Image src="/icons/trash.svg" alt="Trash" width={20} height={20} />
           </button>
-          {/* Image */}
-          <CartItemImage item={item} onToggleWishlist={onToggleWishlist} />
+
+          {/* Image — clickable to open modal */}
+          <div
+            className={onOpen ? "cursor-pointer" : ""}
+            onClick={() => onOpen?.(item)}
+          >
+            <CartItemImage item={item} onToggleWishlist={onToggleWishlist} />
+          </div>
 
           {/* Details */}
           <div
             className={`flex-1 flex flex-col justify-between gap-4 md:gap-6 ${item.product.stockQuantity === 1 ? "md:justify-between" : "md:justify-normal"}`}
           >
             <div className="flex flex-col md:gap-2">
-              <p className="text-base font-medium mr-7 md:mr-0">
+              {/* Name — clickable to open modal */}
+              <p
+                className={`text-base font-medium mr-7 md:mr-0 ${onOpen ? "cursor-pointer hover:underline" : ""}`}
+                onClick={() => onOpen?.(item)}
+              >
                 {item.product.name}
               </p>
               <p className="hidden md:block text-xs text-[#697586] font-normal">

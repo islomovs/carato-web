@@ -17,7 +17,7 @@ import { useCreateOrder } from "@/hooks/useCreateOrder";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export type PaymentOption = "click" | "payme" | "cash";
+export type PaymentOption = "ATMOS" | "CASH";
 
 type CheckoutLayerProps = {
   open: boolean;
@@ -32,15 +32,12 @@ export default function CheckoutLayer({
 }: CheckoutLayerProps) {
   const t = useTranslations("checkout");
   const { createOrder } = useCreateOrder();
+  const router = useRouter();
 
   const cartItems = useCartStore((state) => state.cartItems);
-
   const [deliveryPrice, setDeliveryPrice] = useState(0);
-
   const { totalQuantity, totalPrice, totalOldPrice } = useCartStore();
-
   const savings = totalOldPrice() - totalPrice();
-
   const totalSum = totalPrice() + deliveryPrice;
 
   const {
@@ -60,7 +57,7 @@ export default function CheckoutLayer({
     floor: string;
     comment: string;
     deliveryPreferredTime: string;
-    paymentType: "CLICK" | "PAYME" | "CASH";
+    paymentType: "ATMOS" | "CASH";
     totalSum: number;
     promocode: string;
   }>({
@@ -77,7 +74,7 @@ export default function CheckoutLayer({
       floor: "",
       comment: "",
       deliveryPreferredTime: "",
-      paymentType: "CLICK",
+      paymentType: "ATMOS",
       totalSum: 0,
     },
   });
@@ -87,17 +84,14 @@ export default function CheckoutLayer({
       toast.error(t("errors.deliveryRequired"));
       return;
     }
-
     if (!data.address) {
       toast.error(t("errors.addressRequired"));
       return;
     }
-
     if (!data.deliveryPreferredTime) {
       toast.error(t("errors.dateTimeRequired"));
       return;
     }
-
     if (!data.paymentType) {
       toast.error(t("errors.paymentRequired"));
       return;
@@ -119,24 +113,25 @@ export default function CheckoutLayer({
         totalSum,
       };
 
-      console.log("🔥 Checkout Payload:", payload);
+      console.log("Checkout Payload:", payload);
 
       const response = await createOrder(payload);
+      const checkoutUrl = response?.checkoutUrl;
 
-      if (response.checkoutUrl) {
-        window.open(response.checkoutUrl, "_blank");
-        router.push("/profile");
+      if (data.paymentType === "ATMOS" && checkoutUrl) {
+        // checkoutUrl is returned directly by the order creation endpoint
+        window.location.href = checkoutUrl;
       } else {
-        console.error("No checkoutUrl in response:", response);
+        // CASH or no checkout URL — go to profile orders tab
+        router.push("/profile?tab=orders");
       }
     } catch (err) {
       console.error("Failed to create order:", err);
+      toast.error("Could not place order. Please try again.");
     }
   };
 
   const containerClass = "w-full mx-auto h-full bg-white flex flex-col";
-
-  const router = useRouter();
 
   function onBack() {
     router.back();
@@ -159,7 +154,6 @@ export default function CheckoutLayer({
           />
         )}
 
-        {/* sheet */}
         <div
           className={
             fullPage

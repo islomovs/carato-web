@@ -4,7 +4,9 @@ import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { MyOrdersAll } from "@/services/order";
+import { createAtmosPayment } from "@/services/atmos";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 
 interface OrderCardProps {
   order: MyOrdersAll;
@@ -12,15 +14,14 @@ interface OrderCardProps {
 }
 
 const statusMap: Record<string, { label: string; color: string }> = {
-  new: { label: "Новый", color: "bg-gray-500" },
-  assembling: { label: "В сборке", color: "bg-blue-500" },
-  delivering: { label: "В доставке", color: "bg-orange-500" },
-  processed: { label: "В обработке", color: "bg-green-500" },
-  withdrawable: { label: "Доступен к выводу", color: "bg-teal-500" },
-  cancelled: { label: "Отменён", color: "bg-red-600" },
+  new: { label: "Noviy", color: "bg-gray-500" },
+  assembling: { label: "V sborke", color: "bg-blue-500" },
+  delivering: { label: "V dostavke", color: "bg-orange-500" },
+  processed: { label: "V obrabotke", color: "bg-green-500" },
+  withdrawable: { label: "Dostup k vyvodu", color: "bg-teal-500" },
+  cancelled: { label: "Otmenen", color: "bg-red-600" },
 };
 
-// helper function
 function formatDate(iso: string) {
   const d = new Date(iso);
   const day = String(d.getDate()).padStart(2, "0");
@@ -34,34 +35,49 @@ export default function OrderCard({ order, onOpenDetails }: OrderCardProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
+  const [paying, setPaying] = useState(false);
 
   const statusKey = order.status?.toLowerCase() || "new";
   const statusInfo = statusMap[statusKey] || statusMap.new;
+  const canPay = !order.isPaid && statusKey !== "cancelled";
 
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
-
-    // Check overflow for scrollbar
     setIsOverflowing(el.scrollWidth > el.clientWidth);
-
     const onScroll = () => setIsScrolled(el.scrollLeft > 0);
     el.addEventListener("scroll", onScroll);
     return () => el.removeEventListener("scroll", onScroll);
   }, [order.images]);
+
+  const handlePay = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setPaying(true);
+    try {
+      const res = await createAtmosPayment(order.id);
+      const redirectUrl = res?.checkoutUrl || res?.redirectUrl;
+      if (redirectUrl) {
+        window.location.href = redirectUrl;
+      } else {
+        toast.error(t("noPaymentLink"));
+      }
+    } catch {
+      toast.error(t("paymentError"));
+    } finally {
+      setPaying(false);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-4 border border-[#CDD5DF] py-4 mb-6">
       <div className="flex flex-row justify-between px-6">
         <div className="flex flex-col gap-1">
           <h1 className="font-medium text-sm">{t("orderDate")}</h1>
-          <p className="font-light text-base">
-            {formatDate(order.createdTime)}
-          </p>
+          <p className="font-light text-base">{formatDate(order.createdTime)}</p>
         </div>
         <div className="flex flex-col gap-1">
           <h1 className="font-medium text-sm">{t("orderId")}</h1>
-          <p className="font-light text-base">№ {order.id}</p>
+          <p className="font-light text-base">Nr {order.id}</p>
         </div>
         <div className="flex flex-col gap-1">
           <h1 className="font-medium text-sm">{t("orderStatus")}</h1>
@@ -70,19 +86,31 @@ export default function OrderCard({ order, onOpenDetails }: OrderCardProps) {
             <p className="font-light text-base">{statusInfo.label}</p>
           </div>
         </div>
-        <Button
-          variant="default"
-          onClick={onOpenDetails}
-          className="uppercase text-black cursor-pointer px-2 py-4 rounded-md bg-[#EEF2F6] hover:bg-[#E3E8EF] text-xs font-normal flex items-center gap-1"
-        >
-          {t("orderDetails")}
-          <Image
-            src="/icons/arrow-narrow-right.svg"
-            alt="Arrow right"
-            width={20}
-            height={20}
-          />
-        </Button>
+        <div className="flex items-center gap-2">
+          {canPay && (
+            <Button
+              type="button"
+              onClick={handlePay}
+              disabled={paying}
+              className="uppercase cursor-pointer px-3 py-4 rounded-md bg-black text-white hover:bg-white hover:text-black border border-black text-xs font-normal disabled:opacity-50"
+            >
+              {paying ? t("payOrderPending") : t("payOrder")}
+            </Button>
+          )}
+          <Button
+            variant="default"
+            onClick={onOpenDetails}
+            className="uppercase text-black cursor-pointer px-2 py-4 rounded-md bg-[#EEF2F6] hover:bg-[#E3E8EF] text-xs font-normal flex items-center gap-1"
+          >
+            {t("orderDetails")}
+            <Image
+              src="/icons/arrow-narrow-right.svg"
+              alt="Arrow right"
+              width={20}
+              height={20}
+            />
+          </Button>
+        </div>
       </div>
 
       <div

@@ -13,12 +13,13 @@ export default function CartItemPrice({
 }) {
   const t = useTranslations("cart");
   const variant = item.product.variants[0];
-  const hasDiscount = !!variant.discountPrice;
+  const hasDiscount = (variant.discountPercent ?? 0) > 0;
 
-  const finalPrice = hasDiscount
-    ? variant.discountPrice * item.quantity
-    : variant.price * item.quantity;
+  const unitSalePrice = hasDiscount
+    ? Math.round(variant.price * (1 - (variant.discountPercent ?? 0) / 100))
+    : variant.price;
 
+  const finalPrice = unitSalePrice * item.quantity;
   const oldPrice = variant.price * item.quantity;
 
   return (

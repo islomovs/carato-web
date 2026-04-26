@@ -1,7 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import ReviewsBlock from "@/components/shared/product/ReviewsBlock";
@@ -17,7 +18,20 @@ const tabs = [
 export default function Profile() {
   const t = useTranslations("profile");
 
-  const [active, setActive] = useState("personal");
+  const searchParams = useSearchParams();
+  const [active, setActive] = useState(() => {
+    const tab = searchParams.get("tab");
+    return tab === "orders" || tab === "personal" || tab === "reviews"
+      ? tab
+      : "personal";
+  });
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab === "orders" || tab === "personal" || tab === "reviews") {
+      setActive(tab);
+    }
+  }, [searchParams]);
 
   return (
     <>

@@ -1,8 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useLocale } from "next-intl";
-import { getProductSets, getProductsBySetPaginated } from "@/services/productSets";
+import { useLocale, useTranslations } from "next-intl";
+import {
+  getProductSets,
+  getProductsBySetPaginated,
+} from "@/services/productSets";
 import { Product } from "@/services/product";
 import ProductGrid from "../shared/catalog/ProductGrid";
 import CatalogPagination from "../shared/catalog/CatalogPagination";
@@ -11,6 +14,7 @@ import { Button } from "@/components/ui/button";
 const PAGE_SIZE = 20;
 
 export default function ProductSetPage({ slug }: { slug: string }) {
+  const t = useTranslations("seller");
   const locale = useLocale();
   const [title, setTitle] = useState<string>("");
   const [products, setProducts] = useState<Product[]>([]);
@@ -60,7 +64,7 @@ export default function ProductSetPage({ slug }: { slug: string }) {
                 }
                 className="w-[400px] max-w-full py-[8px] text-[12px] text-black border-black hover:bg-gray-50"
               >
-                Показать ещё ({totalElements - visibleCount})
+                {t("loadMore", { count: totalElements - visibleCount })}
               </Button>
             </div>
           )}

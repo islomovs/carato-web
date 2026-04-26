@@ -11,7 +11,7 @@ export interface CartItem {
     name: string;
     stockQuantity: number;
     price: number;
-    discountPrice?: number;
+    discountPrice?: number; // deprecated — backend no longer sends this
     discountPercent?: number;
     images: { image: string }[];
     variants: ProductVariant[];
@@ -203,9 +203,11 @@ export const useCartStore = create<CartStore>((set, get) => {
     totalPrice: () => {
       const cart = get().cartItems;
       return cart.reduce((acc, item) => {
+        const v = item.product.variants[0];
         const price =
-          item.product.variants[0].discountPrice ??
-          item.product.variants[0].price;
+          (v.discountPercent ?? 0) > 0
+            ? Math.round(v.price * (1 - (v.discountPercent ?? 0) / 100))
+            : v.price;
         return acc + price * item.quantity;
       }, 0);
     },

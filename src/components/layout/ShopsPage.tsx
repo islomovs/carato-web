@@ -135,6 +135,20 @@ function EmptyState({ t }: { t: (k: string) => string }) {
   );
 }
 
+// ─── Marker SVG (inline, no external image needed) ───────────────────────────
+
+function markerHref(selected: boolean): string {
+  const bg = selected ? "%23000000" : "%23ffffff";
+  const dot = selected ? "%23ffffff" : "%23000000";
+  return (
+    "data:image/svg+xml," +
+    `<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'>` +
+    `<circle cx='14' cy='14' r='12' fill='${bg}' stroke='%23000000' stroke-width='2'/>` +
+    `<circle cx='14' cy='14' r='5' fill='${dot}'/>` +
+    `</svg>`
+  );
+}
+
 // ─── Yandex Map ───────────────────────────────────────────────────────────────
 
 function StoresMap({
@@ -150,7 +164,7 @@ function StoresMap({
 }) {
   const mapRef = useRef<any>(null);
 
-  // Navigate map to selected store
+  // Pan to selected store
   useEffect(() => {
     if (!mapRef.current || selectedId === null) return;
     const store = stores.find((s) => s.id === selectedId);
@@ -161,103 +175,64 @@ function StoresMap({
     }
   }, [selectedId, stores]);
 
-  const getMapOptions = () => ({
+  const mapOptions = {
     copyrightLogoVisible: false,
     copyrightProvidersVisible: false,
     avoidFractionalZoom: true,
     suppressMapOpenBlock: true,
-  });
+  };
 
-  const rightOffset = isMobile ? 16 : 32;
-  const bottomOffset = isMobile ? 16 : undefined;
-  const topOffset = isMobile ? undefined : "50%";
+  const right = isMobile ? 16 : 32;
 
   return (
     <div className="relative w-full h-full">
       {/* Zoom controls */}
       <div
-        className="absolute z-[999] flex flex-col items-center justify-between bg-white border border-black rounded-md"
-        style={{
-          width: 36,
-          height: 72,
-          right: rightOffset,
-          bottom: isMobile ? (bottomOffset ?? 0) + 52 : undefined,
-          top: topOffset,
-          transform: isMobile ? undefined : "translateY(-50%)",
-        }}
+        className="absolute z-[999] flex flex-col items-center justify-between bg-white border border-black rounded-md overflow-hidden"
+        style={{ width: 36, height: 72, right, bottom: isMobile ? 68 : "auto", top: isMobile ? "auto" : "50%", transform: isMobile ? undefined : "translateY(-50%)" }}
       >
         <button
           type="button"
-          onClick={() =>
-            mapRef.current?.setZoom((mapRef.current.getZoom() || 12) + 1)
-          }
-          className="flex items-center justify-center text-lg font-bold cursor-pointer"
-          style={{ width: 36, height: 36 }}
-        >
-          +
-        </button>
+          onClick={() => mapRef.current?.setZoom((mapRef.current.getZoom() ?? 12) + 1)}
+          className="flex items-center justify-center w-full flex-1 text-lg font-bold cursor-pointer hover:bg-gray-100"
+        >+</button>
+        <div className="w-full h-px bg-gray-200" />
         <button
           type="button"
-          onClick={() =>
-            mapRef.current?.setZoom((mapRef.current.getZoom() || 12) - 1)
-          }
-          className="flex items-center justify-center text-lg font-bold cursor-pointer"
-          style={{ width: 36, height: 36 }}
-        >
-          −
-        </button>
+          onClick={() => mapRef.current?.setZoom((mapRef.current.getZoom() ?? 12) - 1)}
+          className="flex items-center justify-center w-full flex-1 text-lg font-bold cursor-pointer hover:bg-gray-100"
+        >−</button>
       </div>
 
       {/* My location button */}
-      <div
+      <button
+        type="button"
         onClick={() => {
-          if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((pos) => {
-              mapRef.current?.setCenter(
-                [pos.coords.latitude, pos.coords.longitude],
-                16,
-              );
-            });
-          }
+          if (!navigator.geolocation) return;
+          navigator.geolocation.getCurrentPosition((pos) => {
+            mapRef.current?.setCenter([pos.coords.latitude, pos.coords.longitude], 16, { duration: 300 });
+          });
         }}
         className="absolute z-[999] bg-white flex items-center justify-center border border-black rounded-md cursor-pointer shadow-md active:scale-95 transition-transform"
-        style={{
-          width: 36,
-          height: 36,
-          right: rightOffset,
-          bottom: isMobile ? bottomOffset : undefined,
-          top: topOffset ? `calc(${topOffset} + 80px)` : undefined,
-          transform: isMobile ? undefined : "translateY(-50%)",
-        }}
+        style={{ width: 36, height: 36, right, bottom: isMobile ? 24 : "auto", top: isMobile ? "auto" : "calc(50% + 84px)", transform: isMobile ? undefined : "translateY(-50%)" }}
       >
-        <Image
-          src="/icons/navigation.png"
-          alt="My location"
-          width={24}
-          height={24}
-        />
-      </div>
+        <Image src="/icons/navigation.png" alt="My location" width={20} height={20} />
+      </button>
 
-      <YMaps query={{ apikey: "62a8dde9-9abb-4c5a-81c1-67a6bd19e7a8" }}>
+      <YMaps query={{ apikey: "62a8dde9-9abb-4c5a-81c1-67a6bd19e7a8", load: "package.full" }}>
         <Map
           className="w-full h-full map"
           defaultState={{
-            center:
-              stores.length > 0
-                ? [stores[0].latitude, stores[0].longitude]
-                : [41.314472, 69.27991],
+            center: stores.length > 0 ? [stores[0].latitude, stores[0].longitude] : [41.314472, 69.27991],
             zoom: 12,
           }}
-          options={getMapOptions()}
-          instanceRef={(ref: any) => {
-            if (ref) mapRef.current = ref;
-          }}
+          options={mapOptions}
+          instanceRef={(ref: any) => { if (ref) mapRef.current = ref; }}
         >
           <Clusterer
             options={{
-              preset: "islands#blackClusterIcons",
+              preset: "islands#invertedBlackClusterIcons",
               groupByCoordinates: false,
-              clusterIconLayout: "default#pieChart",
             }}
           >
             {stores.map((store) => {
@@ -269,31 +244,17 @@ function StoresMap({
                   onClick={() => onSelect(store.id)}
                   options={{
                     iconLayout: "default#image",
-                    iconImageHref: isSelected
-                      ? "/icons/diamond-white.png"
-                      : "/icons/diamond.png",
-                    iconImageSize: [24, 24],
-                    iconImageOffset: [-12, -12],
+                    iconImageHref: markerHref(isSelected),
+                    iconImageSize: [28, 28],
+                    iconImageOffset: [-14, -14],
                     iconShape: {
                       type: "Circle",
-                      //   coordinates: [0, 0],
-                      //   radius: 20,
+                      coordinates: [0, 0],
+                      radius: 14,
                     },
-                    // Custom circle background
-                    iconContentLayout: undefined,
-                    // Use a balloon-less approach with custom layout
                     balloonAutoPan: false,
                     hideIconOnBalloonOpen: false,
-                    // Circle marker
-                    iconColor: isSelected ? "#000000" : "#ffffff",
-                    // strokeColor: "#000000",
-                    // strokeWidth: 1,
-                    // fillColor: isSelected ? "#000000" : "#ffffff",
-                    // Override with custom icon for circle with diamond
-                    preset: undefined,
                   }}
-                  // Wrap in circle div via iconLayout
-                  modules={["geoObject.addon.balloon"]}
                 />
               );
             })}

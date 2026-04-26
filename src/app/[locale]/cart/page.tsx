@@ -12,11 +12,17 @@ import { useCartStore } from "@/lib/cartStore";
 import { useLocale, useTranslations } from "next-intl";
 import { CartSkeleton } from "@/components/shared/cart/CartSkeleton";
 import { useWishlistStore } from "@/lib/wishlistStore";
+import ProductsBlockModal from "@/components/shared/product/ProductsBlockModal";
+import { Product } from "@/services/product";
+import type { CartItem as CartItemType } from "@/lib/cartStore";
+import useLockScroll from "@/hooks/useLockScroll";
 // import { CartItem as CartItemType } from "@/lib/cartStore";
 
 export default function CartPage() {
   const router = useRouter();
   const [openCheckout, setOpenCheckout] = useState(false);
+  const [selectedCartItem, setSelectedCartItem] = useState<CartItemType | null>(null);
+  useLockScroll(!!selectedCartItem);
   const t = useTranslations("cart");
   const locale = useLocale();
 
@@ -58,6 +64,10 @@ export default function CartPage() {
 
   const handleRemove = (slug: string, sizeId: number) => {
     removeItem(slug, sizeId);
+  };
+
+  const handleOpenProduct = (item: CartItemType) => {
+    setSelectedCartItem(item);
   };
 
   // Savings
@@ -243,6 +253,7 @@ export default function CartPage() {
                     onToggleWishlist={() =>
                       handleToggleWishlist(item.product.slug)
                     }
+                    onOpen={handleOpenProduct}
                   />
                 ))}
               </div>
@@ -272,6 +283,14 @@ export default function CartPage() {
           open={openCheckout}
           onClose={() => setOpenCheckout(false)}
           fullPage={true}
+        />
+      )}
+
+      {selectedCartItem && (
+        <ProductsBlockModal
+          slug={selectedCartItem.product.slug}
+          selectedProduct={selectedCartItem.product as unknown as Product}
+          onClose={() => setSelectedCartItem(null)}
         />
       )}
     </>
