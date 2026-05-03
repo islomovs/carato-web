@@ -165,7 +165,11 @@ export default function SearchOverlay({ onClose }: { onClose: () => void }) {
                         {products.map((p: Product) => (
                           <div
                             key={p.id}
-                            className="md:h-[64px] py-3 uppercase text-sm leading-[20px]"
+                            className="md:h-[64px] py-3 uppercase text-sm leading-[20px] cursor-pointer"
+                            onClick={() => {
+                              onClose();
+                              router.push(`/product/${p.slug}`);
+                            }}
                           >
                             {highlightQuery(p.name)}
                           </div>
@@ -188,10 +192,11 @@ export default function SearchOverlay({ onClose }: { onClose: () => void }) {
                             <div
                               key={product.slug}
                               className="min-w-[300px] flex-shrink-0"
+                              onClick={onClose}
                             >
                               <ProductCard
                                 product={product}
-                                onOpen={() => {}}
+                                onOpen={onClose}
                               />
                             </div>
                           ))}
@@ -215,10 +220,11 @@ export default function SearchOverlay({ onClose }: { onClose: () => void }) {
                                 hidden: { opacity: 0, y: 8 },
                                 visible: { opacity: 1, y: 0 },
                               }}
+                              onClick={onClose}
                             >
                               <ProductCard
                                 product={product}
-                                onOpen={() => {}}
+                                onOpen={onClose}
                               />
                             </motion.div>
                           ))}
