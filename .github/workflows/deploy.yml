@@ -36,10 +36,10 @@ jobs:
             echo "📦 Loading Node/NPM..."
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm install 20
 
             echo "📦 Installing dependencies..."
-            sudo rm -rf node_modules package-lock.json
-            npm cache clean --force
+            sudo rm -rf node_modules package-lock.json .next
             npm install --legacy-peer-deps
 
             echo "🏗️  Building project..."
