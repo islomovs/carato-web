@@ -38,6 +38,7 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
             echo "📦 Installing dependencies..."
+            rm -rf node_modules package-lock.json
             sudo npm install --force
 
             echo "🏗️  Building project..."
