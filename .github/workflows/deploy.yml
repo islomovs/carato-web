@@ -39,10 +39,11 @@ jobs:
 
             echo "📦 Installing dependencies..."
             sudo rm -rf node_modules package-lock.json
-            sudo npm install --legacy-peer-deps
+            npm cache clean --force
+            npm install --legacy-peer-deps
 
             echo "🏗️  Building project..."
-            sudo npm run build
+            npm run build
 
             echo "🚀 Restarting PM2 process..."
             pm2 delete carato-web || true
