@@ -44,6 +44,10 @@ export interface Product {
   subcategory?: { id: number; name: string; slug: string };
   stockQuantity: number;
   metalPrice: number;
+  oldPrice?: number | null;
+  isPriceIncreased?: boolean | null;
+  shopMarginPercent?: number | null;
+  caratoMarginPercent?: number | null;
   seller: Seller;
 }
 

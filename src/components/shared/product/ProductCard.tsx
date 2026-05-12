@@ -12,6 +12,7 @@ import { WishlistItem } from "@/services/wishlist";
 import { useWishlistStore } from "@/lib/wishlistStore";
 import { getTokenPair } from "@/lib/axios/instance";
 import { useAuthModalStore } from "@/lib/authModalStore";
+import PriceArrow from "./PriceArrow";
 
 export function isWishlistItem(
   item: Product | WishlistItem,
@@ -168,22 +169,25 @@ export default function ProductCard({
 
         {/* Price & Discounted Price */}
         <div className="flex flex-col md:flex-row items-start md:items-center gap-1 md:gap-2 mb-3">
-          {/* Discounted Price */}
           {discountedPrice ? (
             <>
-              <p className="text-lg font-medium text-black">
-                {discountedPrice.toLocaleString()} {t("uzs")}
-              </p>
-
-              {/* Old Price */}
+              <div className="flex items-center" style={{ gap: 4 }}>
+                <p className="text-lg font-medium text-black">
+                  {discountedPrice.toLocaleString()} {t("uzs")}
+                </p>
+                <PriceArrow isPriceIncreased={productData.isPriceIncreased} size={16} />
+              </div>
               <p className="text-sm line-through text-[#9AA4B2]">
                 {productData?.price?.toLocaleString()} {t("uzs")}
               </p>
             </>
           ) : (
-            <p className="text-lg font-medium text-black">
-              {productData?.price?.toLocaleString()} {t("uzs")}
-            </p>
+            <div className="flex items-center" style={{ gap: 4 }}>
+              <p className="text-lg font-medium text-black">
+                {productData?.price?.toLocaleString()} {t("uzs")}
+              </p>
+              <PriceArrow isPriceIncreased={productData.isPriceIncreased} size={16} />
+            </div>
           )}
         </div>
       </div>

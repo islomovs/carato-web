@@ -119,10 +119,8 @@ export default function CheckoutLayer({
       const checkoutUrl = response?.checkoutUrl;
 
       if (data.paymentType === "ATMOS" && checkoutUrl) {
-        // checkoutUrl is returned directly by the order creation endpoint
         window.location.href = checkoutUrl;
       } else {
-        // CASH or no checkout URL — go to profile orders tab
         router.push("/profile?tab=orders");
       }
     } catch (err) {
@@ -138,80 +136,79 @@ export default function CheckoutLayer({
   }
 
   if (!open && !fullPage) return null;
+  if (!open) return null;
 
   return (
-    open && (
-      <div
-        className={fullPage ? "" : "fixed inset-0 z-50"}
-        aria-modal={!fullPage}
-        role={fullPage ? "region" : "dialog"}
-      >
-        {!fullPage && (
-          <div
-            className="absolute inset-0 bg-black/40"
-            onClick={onClose}
-            aria-hidden="true"
-          />
-        )}
-
+    <div
+      className={fullPage ? "" : "fixed inset-0 z-50"}
+      aria-modal={!fullPage}
+      role={fullPage ? "region" : "dialog"}
+    >
+      {!fullPage && (
         <div
-          className={
-            fullPage
-              ? containerClass
-              : "absolute left-0 right-0 bottom-0 top-0 overflow-auto"
-          }
+          className="absolute inset-0 bg-black/40"
+          onClick={onClose}
+          aria-hidden="true"
+        />
+      )}
+
+      <div
+        className={
+          fullPage
+            ? containerClass
+            : "absolute left-0 right-0 bottom-0 top-0 overflow-auto"
+        }
+      >
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex-1 flex flex-col"
         >
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="flex-1 flex flex-col"
-          >
-            <div className="flex flex-row h-full md:mb-20">
-              <div className="w-full mx-auto h-full bg-white flex flex-col md:px-4 md:pt-[52px]">
-                <PageHeader
-                  title={t("title")}
-                  onBack={onBack}
-                  onClose={onClose}
-                  absoluteClose={true}
-                  centeredTitle={true}
-                  showDesktopButton={true}
-                  className="md:relative md:justify-start md:gap-8 md:border-0 md:top-auto md:z-auto md:bg-transparent md:px-0 md:py-0"
-                />
-                <div className="flex-1 space-y-6 px-4 pt-8 md:px-4 pb-56 md:pb-20 overflow-auto">
-                  <ContactInfoSection
-                    control={control}
-                    register={register}
-                    errors={errors}
-                  />
-
-                  <hr className="border-t border-[#EEF2F6]" />
-
-                  <DeliveryOptionsSection watch={watch} setValue={setValue} />
-
-                  <AddressSection watch={watch} setValue={setValue} />
-
-                  <DateTimeSection
-                    setValue={setValue}
-                    setDeliveryPrice={setDeliveryPrice}
-                  />
-
-                  <hr className="border-t border-[#EEF2F6]" />
-
-                  <PaymentTypesSection control={control} name="paymentType" />
-
-                  <PromocodeField control={control} name="promocode" />
-                </div>
-              </div>
-              <TotalsColumn
-                totalPrice={totalPrice()}
-                savings={savings}
-                count={totalQuantity()}
-                control={control}
-                isCheckoutPage
+          <div className="flex flex-row h-full md:mb-20">
+            <div className="w-full mx-auto h-full bg-white flex flex-col md:px-4 md:pt-[52px]">
+              <PageHeader
+                title={t("title")}
+                onBack={onBack}
+                onClose={onClose}
+                absoluteClose={true}
+                centeredTitle={true}
+                showDesktopButton={true}
+                className="md:relative md:justify-start md:gap-8 md:border-0 md:top-auto md:z-auto md:bg-transparent md:px-0 md:py-0"
               />
+              <div className="flex-1 space-y-6 px-4 pt-8 md:px-4 pb-56 md:pb-20 overflow-auto">
+                <ContactInfoSection
+                  control={control as any}
+                  register={register}
+                  errors={errors}
+                />
+
+                <hr className="border-t border-[#EEF2F6]" />
+
+                <DeliveryOptionsSection watch={watch} setValue={setValue} />
+
+                <AddressSection watch={watch} setValue={setValue} />
+
+                <DateTimeSection
+                  setValue={setValue}
+                  setDeliveryPrice={setDeliveryPrice}
+                />
+
+                <hr className="border-t border-[#EEF2F6]" />
+
+                <PaymentTypesSection control={control as any} name="paymentType" />
+
+                <PromocodeField control={control as any} name="promocode" />
+              </div>
             </div>
-          </form>
-        </div>
+            <TotalsColumn
+              totalPrice={totalPrice()}
+              savings={savings}
+              count={totalQuantity()}
+              control={control as any}
+              isCheckoutPage
+            />
+          </div>
+        </form>
       </div>
-    )
+    </div>
   );
 }

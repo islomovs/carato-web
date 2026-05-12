@@ -20,6 +20,7 @@ import { useWishlistStore } from "@/lib/wishlistStore";
 import { WishlistItem } from "@/services/wishlist";
 import { useLocale } from "next-intl";
 import { useAuthModalStore } from "@/lib/authModalStore";
+import PriceArrow from "./PriceArrow";
 
 interface ProductInfoProps {
   product: Product | WishlistItem;
@@ -133,7 +134,7 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
           </div>
         </div>
 
-        {/* Pricing */}
+        {/* Pricing + Info Box */}
         {(() => {
           const basePrice = selectedVariant?.price ?? product.price;
           const discountPct = selectedVariant?.discountPercent ?? product.discountPercent ?? 0;
@@ -141,21 +142,77 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
             discountPct > 0
               ? Math.round(basePrice * (1 - discountPct / 100))
               : null;
+
+          const weight = (stableProduct as any).weight ?? null;
+          const metalPrice = (stableProduct as any).metalPrice ?? null;
+          const caratoTax =
+            ((stableProduct as any).shopMarginPercent ?? 0) +
+            ((stableProduct as any).caratoMarginPercent ?? 0);
+          const isPriceIncreased = (stableProduct as any).isPriceIncreased ?? null;
+
           return (
-            <div className="flex items-center gap-3">
-              <span className="font-medium text-2xl">
-                {(salePrice ?? basePrice).toLocaleString()} {t("uzs")}
-              </span>
-              {salePrice && (
-                <>
-                  <span className="font-medium text-base text-[#9AA4B2] line-through">
+            <div className="flex flex-col" style={{ gap: 20 }}>
+              {/* Price row */}
+              {salePrice ? (
+                <div className="flex items-center flex-wrap" style={{ gap: 4 }}>
+                  <span className="font-medium text-2xl">
+                    {salePrice.toLocaleString()} {t("uzs")}
+                  </span>
+                  <PriceArrow isPriceIncreased={isPriceIncreased} size={24} />
+                  <span className="font-medium text-base text-[#9AA4B2] line-through" style={{ marginLeft: 12 }}>
                     {basePrice.toLocaleString()} {t("uzs")}
                   </span>
                   <span className="font-normal text-xs text-[#FEFDF0] bg-[#F04438] py-1 px-2 rounded-[2px]">
                     -{discountPct}%
                   </span>
-                </>
+                </div>
+              ) : (
+                <div className="flex items-center" style={{ gap: 4 }}>
+                  <span className="font-medium text-2xl">
+                    {basePrice.toLocaleString()} {t("uzs")}
+                  </span>
+                  <PriceArrow isPriceIncreased={isPriceIncreased} size={24} />
+                </div>
               )}
+
+              {/* 3-column info box */}
+              <div
+                className="w-full grid grid-cols-3"
+                style={{ background: "#F8FAFC", paddingTop: 24, paddingBottom: 24, paddingLeft: 40, paddingRight: 40 }}
+              >
+                {/* Col 1 — ВЕС ТОВАРА */}
+                <div className="flex flex-col items-center gap-[2px]">
+                  <span style={{ fontFamily: "Manrope, sans-serif", fontWeight: 400, fontSize: 12, lineHeight: "18px", letterSpacing: "0.8%", color: "#667085", textAlign: "center" }}>
+                    ВЕС ТОВАРА
+                  </span>
+                  <span style={{ fontFamily: "Manrope, sans-serif", fontWeight: 500, fontSize: 14, lineHeight: "20px", letterSpacing: "0.6%", color: "#000", textAlign: "center" }}>
+                    {weight != null ? `${weight} г` : "—"}
+                  </span>
+                </div>
+
+                {/* Col 2 — СТОИМОСТЬ ЗОЛОТА */}
+                <div className="flex flex-col items-center gap-[2px]">
+                  <span style={{ fontFamily: "Manrope, sans-serif", fontWeight: 400, fontSize: 12, lineHeight: "18px", letterSpacing: "0.8%", color: "#667085", textAlign: "center" }}>
+                    СТОИМОСТЬ ЗОЛОТА
+                  </span>
+                  <div className="flex items-center" style={{ gap: 2 }}>
+                    <PriceArrow isPriceIncreased={isPriceIncreased} size={16} />
+                    <span style={{ fontFamily: "Manrope, sans-serif", fontWeight: 500, fontSize: 14, lineHeight: "20px", letterSpacing: "0.6%", color: isPriceIncreased === null || isPriceIncreased === undefined ? "#000" : isPriceIncreased ? "#17B26A" : "#F04438" }}>
+                      {metalPrice != null ? metalPrice.toLocaleString() : "—"}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Col 3 — НАЛОГ CARATO */}
+                <div className="flex flex-col items-center gap-[2px]">
+                  <span style={{ fontFamily: "Manrope, sans-serif", fontWeight: 400, fontSize: 12, lineHeight: "18px", letterSpacing: "0.8%", color: "#667085", textAlign: "center" }}>
+                    НАЛОГ CARATO
+                  </span>
+                  <span style={{ fontFamily: "Manrope, sans-serif", fontWeight: 500, fontSize: 14, lineHeight: "20px", letterSpacing: "0.6%", color: "#000", textAlign: "center" }}>
+                    {caratoTax}%
+                  </span>
+                </div>
+              </div>
             </div>
           );
         })()}
