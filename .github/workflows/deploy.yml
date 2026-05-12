@@ -39,7 +39,7 @@ jobs:
 
             echo "📦 Installing dependencies..."
             sudo rm -rf node_modules package-lock.json
-            sudo npm install --force
+            sudo npm install --legacy-peer-deps
 
             echo "🏗️  Building project..."
             sudo npm run build
