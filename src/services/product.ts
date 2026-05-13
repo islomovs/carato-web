@@ -3,10 +3,15 @@ import api from "@/lib/axios/instance";
 
 export interface ProductVariant {
   size: { id: number; name: string };
+  barcode?: string;
   price: number;
   discountPrice: number;
   discountPercent: number;
   stockQuantity: number;
+  metalPrice?: number | null;
+  weight?: number | null;
+  shopMarginPercent?: number | null;
+  caratoMarginPercent?: number | null;
 }
 
 export interface CategorySize {

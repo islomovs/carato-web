@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { NavButton } from "@/components/ui/nav-button";
 import { ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
   useCategoriesCatalogue,
   useCategoryCatalogue,
@@ -24,6 +25,7 @@ export default function CatalogDropdown({
   setIsCatalogOpen,
 }: CatalogDropdownProps) {
   const router = useRouter();
+  const t = useTranslations("catalog");
 
   const { catalogues, loading } = useCategoriesCatalogue();
   const [selectedCatalogue, setSelectedCatalogue] = React.useState("");
@@ -89,7 +91,7 @@ export default function CatalogDropdown({
                     }}
                     className="h-9 text-sm p-2 border border-black rounded-md text-black font-normal hover:bg-black hover:text-white transition-colors uppercase flex items-center justify-between gap-2 cursor-pointer"
                   >
-                    <span>Посмотреть все</span>
+                    <span>{t("seeAllCategory")}</span>
                     <ArrowRight className="w-5 h-5" />
                   </Button>
                 </div>

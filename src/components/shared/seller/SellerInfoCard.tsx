@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Star } from "lucide-react";
 import { Seller } from "@/services/product";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 interface SellerInfoCardProps {
   seller: Seller;
@@ -19,6 +20,8 @@ export default function SellerInfoCard({
   variant = "mobile",
 }: SellerInfoCardProps) {
   const t = useTranslations("seller");
+  const [imgError, setImgError] = useState(false);
+  const sellerImageSrc = imgError || !seller.image ? "/images/product-placeholder.png" : seller.image;
 
   const StarRow = () => (
     <div className="flex items-center gap-2">
@@ -59,10 +62,11 @@ export default function SellerInfoCard({
             style={{ width: 56, height: 56 }}
           >
             <Image
-              src={seller.image || "/images/product-placeholder.png"}
+              src={sellerImageSrc}
               alt={seller.name}
               width={56}
               height={56}
+              onError={() => setImgError(true)}
               className="object-contain w-full h-full"
             />
           </div>

@@ -3,6 +3,7 @@
 import * as React from "react";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
+import { useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -27,13 +28,11 @@ const languages = [
 ];
 
 export function LanguageSwitcher() {
-  const [current, setCurrent] = React.useState("uz");
+  const current = useLocale();
   const router = useRouter();
   const pathname = usePathname();
 
   const handleChangeLocale = (code: string) => {
-    setCurrent(code);
-
     const segments = pathname.split("/");
     segments[1] = code;
     const newPath = segments.join("/");

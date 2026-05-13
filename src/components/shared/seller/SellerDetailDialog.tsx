@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Seller } from "@/services/product";
 import {
   Dialog,
@@ -17,15 +17,14 @@ interface SellerDetailDialogProps {
   onClose: () => void;
 }
 
-const formatSellerDate = (dateStr: string) => {
+const formatSellerDate = (dateStr: string, locale: string) => {
   const date = new Date(dateStr);
-  return `с ${date
-    .toLocaleDateString("ru-RU", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    })
-    .replace(" г.", " года")}`;
+  const formatted = date.toLocaleDateString(locale === "ru" ? "ru-RU" : "uz-UZ", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).replace(" г.", " года");
+  return locale === "ru" ? `с ${formatted}` : `${formatted} dan`;
 };
 
 export default function SellerDetailDialog({
@@ -34,12 +33,13 @@ export default function SellerDetailDialog({
   onClose,
 }: SellerDetailDialogProps) {
   const t = useTranslations("seller");
+  const locale = useLocale();
 
   const stats = [
     {
       icon: "/icons/calendar.svg",
       label: t("withUs"),
-      value: seller.createdTime ? formatSellerDate(seller.createdTime) : "—",
+      value: seller.createdTime ? formatSellerDate(seller.createdTime, locale) : "—",
     },
     {
       icon: "/icons/receipt.svg",

@@ -143,11 +143,12 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
               ? Math.round(basePrice * (1 - discountPct / 100))
               : null;
 
-          const weight = (stableProduct as any).weight ?? null;
-          const metalPrice = (stableProduct as any).metalPrice ?? null;
+          const activeVariant = selectedVariant ?? stableProduct.variants?.[0] ?? null;
+          const weight = activeVariant?.weight ?? null;
+          const metalPrice = activeVariant?.metalPrice ?? null;
           const caratoTax =
-            ((stableProduct as any).shopMarginPercent ?? 0) +
-            ((stableProduct as any).caratoMarginPercent ?? 0);
+            (activeVariant?.shopMarginPercent ?? 0) +
+            (activeVariant?.caratoMarginPercent ?? 0);
           const isPriceIncreased = (stableProduct as any).isPriceIncreased ?? null;
 
           return (

@@ -1,6 +1,7 @@
 {
   "catalog": {
-    "loadMore": "YANADA KO'RISH {count}"
+    "loadMore": "YANADA KO'RISH {count}",
+    "seeAllCategory": "Hammasini ko'rish"
   },
   "mobileCatalog": {
     "collectionsTitle": "Kolleksiyalar",

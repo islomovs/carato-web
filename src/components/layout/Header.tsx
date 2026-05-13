@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import CatalogDropdown from "../shared/catalog/CatalogDropdown";
 import CollectionsDropdown from "../shared/catalog/CollectionsDropdown";
 import { AnimatePresence } from "framer-motion";
@@ -24,7 +24,7 @@ export default function Header() {
   const [isCollectionsOpen, setIsCollectionsOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [langModalOpen, setLangModalOpen] = useState(false);
-  const [currentLang, setCurrentLang] = useState("uz");
+  const currentLang = useLocale();
   const isAuthenticated = Boolean(getTokenPair().token);
   const router = useRouter();
 
@@ -200,7 +200,7 @@ export default function Header() {
         open={langModalOpen}
         onClose={() => setLangModalOpen(false)}
         currentLang={currentLang}
-        setCurrentLang={setCurrentLang}
+        setCurrentLang={() => {}}
       />
     </header>
   );

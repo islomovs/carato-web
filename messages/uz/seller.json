@@ -1,0 +1,15 @@
+{
+  "seller": {
+    "shopTitle": "Sotuvchi do'koni",
+    "sellerDetails": "Sotuvchi haqida batafsil",
+    "aboutSeller": "Sotuvchi do'koni haqida",
+    "share": "Ulashish",
+    "understood": "Tushunarli",
+    "withUs": "Biz bilan",
+    "totalOrders": "Barcha vaqtdagi buyurtmalar",
+    "averageRating": "O'rtacha baho",
+    "reviewsCount": "Sharhlar soni",
+    "reviews": "{count} sharh",
+    "loadMore": "Ko'proq ko'rsatish ({count})"
+  }
+}

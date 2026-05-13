@@ -1,6 +1,7 @@
 {
   "catalog": {
-    "loadMore": "СМОТРЕТЬ ЕЩЁ {count}"
+    "loadMore": "СМОТРЕТЬ ЕЩЁ {count}",
+    "seeAllCategory": "Посмотреть все"
   },
   "mobileCatalog": {
     "collectionsTitle": "Коллекции",
