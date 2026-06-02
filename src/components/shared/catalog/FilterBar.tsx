@@ -9,6 +9,7 @@ import FilterChipsDesktop from "../filter/FilterChipsDesktop";
 import { INITIAL_FILTERS, SortOption } from "@/services/product";
 import { useTranslations } from "next-intl";
 import { Dispatch, SetStateAction } from "react";
+import { CategoryCatalogueBySlug } from "@/services/category-catalogues";
 
 export interface Metal {
   id: number;
@@ -32,6 +33,31 @@ interface Props {
   previewLoading: boolean;
   onPreviewFilters: (filters: Partial<typeof INITIAL_FILTERS>) => void;
   stickyTop?: string;
+  fullCatalogues?: CategoryCatalogueBySlug[];
+}
+
+function findCatalogueSlug(name: string, catalogues: CategoryCatalogueBySlug[]): string | undefined {
+  return catalogues.find((c) => c.name === name)?.slug;
+}
+
+function findCategorySlug(name: string, catalogues: CategoryCatalogueBySlug[]): string | undefined {
+  for (const cat of catalogues) {
+    for (const c of cat.categories ?? []) {
+      if (c.name === name) return c.slug;
+    }
+  }
+  return undefined;
+}
+
+function findSubcategorySlug(name: string, catalogues: CategoryCatalogueBySlug[]): string | undefined {
+  for (const cat of catalogues) {
+    for (const c of cat.categories ?? []) {
+      for (const s of c.subcategories ?? []) {
+        if (s.name === name) return s.slug;
+      }
+    }
+  }
+  return undefined;
 }
 
 const SORT_VALUE_MAP: Record<string, SortOption> = {
@@ -53,6 +79,7 @@ export default function FilterBar({
   previewLoading,
   onPreviewFilters,
   stickyTop = "top-16",
+  fullCatalogues = [],
 }: Props) {
   const t = useTranslations("filters");
   const [filterOpen, setFilterOpen] = useState(false);
@@ -99,10 +126,29 @@ export default function FilterBar({
     if (currentWeightRange[0] > 0.5) api.weightFrom = currentWeightRange[0];
     if (currentWeightRange[1] < 100) api.weightTo = currentWeightRange[1];
 
-    if (uiFilters[t("categories")]?.length)
-      api.categorySlug = uiFilters[t("categories")][0];
-    if (uiFilters[t("subcategories")]?.length)
-      api.subcategorySlug = uiFilters[t("subcategories")][0];
+    const catalogueName = uiFilters[t("catalogue")]?.[0];
+    if (catalogueName) {
+      const slug = findCatalogueSlug(catalogueName, fullCatalogues);
+      if (slug) api.catalogueSlug = slug;
+    }
+
+    const catName = uiFilters[t("categories")]?.[0];
+    if (catName) {
+      const slug = findCategorySlug(catName, fullCatalogues);
+      if (slug) {
+        api.categorySlug = slug;
+        api.catalogueSlug = undefined; // category is more specific than catalogue
+      }
+    }
+    const subName = uiFilters[t("subcategories")]?.[0];
+    if (subName) {
+      const slug = findSubcategorySlug(subName, fullCatalogues);
+      if (slug) {
+        api.subcategorySlug = slug;
+        api.categorySlug = undefined; // subcategory is most specific
+        api.catalogueSlug = undefined;
+      }
+    }
 
     return api;
   };
@@ -111,6 +157,13 @@ export default function FilterBar({
     const updated = { ...selectedFilters };
     updated[title] = updated[title]?.filter((o) => o !== option);
     if (!updated[title]?.length) delete updated[title];
+    // Clearing a category also clears its subcategories
+    if (title === t("categories")) delete updated[t("subcategories")];
+    // Clearing a catalogue also clears category and subcategory
+    if (title === t("catalogue")) {
+      delete updated[t("categories")];
+      delete updated[t("subcategories")];
+    }
     setSelectedFilters(updated);
 
     if (title === t("weight")) {
@@ -159,6 +212,7 @@ export default function FilterBar({
         setPriceRange={setPriceRange}
         weightRange={weightRange}
         setWeightRange={setWeightRange}
+        fullCatalogues={fullCatalogues}
       />
 
       <div

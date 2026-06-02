@@ -82,17 +82,23 @@ export function useProducts(
     try {
       const merged = {
         ...INITIAL_FILTERS,
+        catalogueSlug: filters.catalogueSlug,
         categorySlug: filters.categorySlug,
         subcategorySlug: filters.subcategorySlug,
         seller: filters.seller,
         ...newFilters,
       };
+      // Most-specific scope wins for preview
+      const scopeParams = merged.subcategorySlug
+        ? { subcategorySlug: merged.subcategorySlug || undefined }
+        : merged.categorySlug
+        ? { categorySlug: merged.categorySlug || undefined }
+        : { catalogueSlug: merged.catalogueSlug || undefined };
       const response = await fetchAllProducts(
         {
           page: 1,
           size: 1,
-          categorySlug: merged.categorySlug || undefined,
-          subcategorySlug: merged.subcategorySlug || undefined,
+          ...scopeParams,
           priceFrom: merged.priceFrom != null ? merged.priceFrom : undefined,
           priceTo: merged.priceTo != null ? merged.priceTo : undefined,
           weightFrom: merged.weightFrom != null ? merged.weightFrom : undefined,
@@ -121,11 +127,23 @@ export function useProducts(
 
   const updateFilters = (newFilters: Partial<typeof INITIAL_FILTERS>) => {
     setFilters((prev: any) => {
+      // Preserve slug scope from URL unless newFilters explicitly sets a more-specific scope
+      const hasNewSubcategory = "subcategorySlug" in newFilters;
+      const hasNewCategory = "categorySlug" in newFilters;
+      const hasNewCatalogue = "catalogueSlug" in newFilters;
+
       const next = {
         ...INITIAL_FILTERS,
-        catalogueSlug: prev.catalogueSlug,
-        categorySlug: prev.categorySlug,
-        subcategorySlug: prev.subcategorySlug,
+        // Preserve catalogue unless overridden or a more-specific scope is set
+        catalogueSlug:
+          hasNewSubcategory || hasNewCategory || hasNewCatalogue
+            ? undefined
+            : prev.catalogueSlug,
+        categorySlug:
+          hasNewSubcategory || hasNewCategory
+            ? undefined
+            : prev.categorySlug,
+        subcategorySlug: hasNewSubcategory ? undefined : prev.subcategorySlug,
         seller: prev.seller,
         // Preserve sortType only if newFilters doesn't explicitly pass it
         ...("sortType" in newFilters ? {} : { sortType: prev.sortType }),

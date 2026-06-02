@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { INITIAL_FILTERS, SortOption } from "@/services/product";
 import { useTranslations } from "next-intl";
 import { Metal, Size } from "./FilterBar";
+import { CategoryCatalogueBySlug } from "@/services/category-catalogues";
 
 interface FilterDrawerProps {
   open: boolean;
@@ -30,6 +31,7 @@ interface FilterDrawerProps {
   setPriceRange: (v: [number, number]) => void;
   weightRange: [number, number];
   setWeightRange: (v: [number, number]) => void;
+  fullCatalogues?: CategoryCatalogueBySlug[];
 }
 
 type FilterOption = {
@@ -53,6 +55,7 @@ export default function FilterDrawer({
   setPriceRange,
   weightRange,
   setWeightRange,
+  fullCatalogues = [],
 }: FilterDrawerProps) {
   const t = useTranslations("filters");
 
@@ -64,6 +67,34 @@ export default function FilterDrawer({
     { labelKey: "sortMostExpensive", value: "PRICE_DESC" },
   ];
 
+  // Compute category and subcategory options from the full catalogue tree
+  // Scope categories to the selected catalogue chip (if any)
+  const selectedCatalogueName = selected[t("catalogue")]?.[0] ?? null;
+  const scopedCatalogues = selectedCatalogueName
+    ? fullCatalogues.filter((c) => c.name === selectedCatalogueName)
+    : fullCatalogues;
+
+  const allCategoryNames: string[] = [];
+  for (const catalogue of scopedCatalogues) {
+    for (const cat of catalogue.categories ?? []) {
+      allCategoryNames.push(cat.name);
+    }
+  }
+
+  const selectedCategoryName = selected[t("categories")]?.[0] ?? null;
+  const subcategoryNamesForSelected: string[] = [];
+  if (selectedCategoryName) {
+    for (const catalogue of fullCatalogues) {
+      for (const cat of catalogue.categories ?? []) {
+        if (cat.name === selectedCategoryName) {
+          for (const sub of cat.subcategories ?? []) {
+            subcategoryNamesForSelected.push(sub.name);
+          }
+        }
+      }
+    }
+  }
+
   // Replace mockFilters (titles now translatable strings):
   const realFilters: FilterOption[] = [
     { title: t("sort"), options: SORT_OPTIONS.map((o) => t(o.labelKey)) },
@@ -71,8 +102,12 @@ export default function FilterDrawer({
     { title: t("priceRange"), options: [] },
     { title: t("weight"), options: [] },
     { title: t("sizes"), options: sizes.map((s) => s.name) },
-    { title: t("categories"), options: [] },
-    { title: t("subcategories"), options: [] },
+    ...(allCategoryNames.length > 0
+      ? [{ title: t("categories"), options: allCategoryNames }]
+      : []),
+    ...(subcategoryNamesForSelected.length > 0
+      ? [{ title: t("subcategories"), options: subcategoryNamesForSelected }]
+      : []),
   ];
 
   const filterTypeMap: Record<string, "price" | "weight" | "sort" | "metal"> = {
@@ -127,6 +162,8 @@ export default function FilterDrawer({
         : [...(prev[title] || []), option];
       const updated = { ...prev, [title]: newOptions };
       if (newOptions.length === 0) delete updated[title];
+      // Clearing/changing category also clears subcategories
+      if (title === t("categories")) delete updated[t("subcategories")];
       return updated;
     });
   };
@@ -172,6 +209,29 @@ export default function FilterDrawer({
   );
   const [tempPrice, setTempPrice] = useState<[number, number] | null>(null);
 
+  const findCatalogueSlug = (name: string): string | undefined =>
+    fullCatalogues.find((c) => c.name === name)?.slug;
+
+  const findCategorySlug = (name: string): string | undefined => {
+    for (const catalogue of fullCatalogues) {
+      for (const cat of catalogue.categories ?? []) {
+        if (cat.name === name) return cat.slug;
+      }
+    }
+    return undefined;
+  };
+
+  const findSubcategorySlug = (name: string): string | undefined => {
+    for (const catalogue of fullCatalogues) {
+      for (const cat of catalogue.categories ?? []) {
+        for (const sub of cat.subcategories ?? []) {
+          if (sub.name === name) return sub.slug;
+        }
+      }
+    }
+    return undefined;
+  };
+
   const applyFilters = () => {
     const apiFilters: Partial<typeof INITIAL_FILTERS> = {};
 
@@ -193,6 +253,22 @@ export default function FilterDrawer({
         .map((name) => sizes.find((s) => s.name === name)?.id)
         .filter(Boolean) as number[];
       if (ids.length) apiFilters.sizes = ids;
+    }
+
+    // Most-specific scope wins: subcategory > category > catalogue
+    const catalogueName = selected[t("catalogue")]?.[0];
+    const catName = selected[t("categories")]?.[0];
+    const subName = selected[t("subcategories")]?.[0];
+
+    if (subName) {
+      const slug = findSubcategorySlug(subName);
+      if (slug) apiFilters.subcategorySlug = slug;
+    } else if (catName) {
+      const slug = findCategorySlug(catName);
+      if (slug) apiFilters.categorySlug = slug;
+    } else if (catalogueName) {
+      const slug = findCatalogueSlug(catalogueName);
+      if (slug) apiFilters.catalogueSlug = slug;
     }
 
     // Write range chips into selected at apply time — not reactively
@@ -236,6 +312,21 @@ export default function FilterDrawer({
         .map((name) => sizes.find((s) => s.name === name)?.id)
         .filter(Boolean) as number[];
       if (ids.length) f.sizes = ids;
+    }
+    // Most-specific scope wins: subcategory > category > catalogue
+    const catalogueName = selected[t("catalogue")]?.[0];
+    const catName = selected[t("categories")]?.[0];
+    const subName = selected[t("subcategories")]?.[0];
+
+    if (subName) {
+      const slug = findSubcategorySlug(subName);
+      if (slug) f.subcategorySlug = slug;
+    } else if (catName) {
+      const slug = findCategorySlug(catName);
+      if (slug) f.categorySlug = slug;
+    } else if (catalogueName) {
+      const slug = findCatalogueSlug(catalogueName);
+      if (slug) f.catalogueSlug = slug;
     }
     return f;
   };

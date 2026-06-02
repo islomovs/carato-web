@@ -12,8 +12,17 @@
     "priceRange": "Narx oralig'i",
     "weight": "Vazn",
     "sizes": "O'lchamlar",
+    "catalogue": "Kolleksiya",
     "categories": "Kategoriyalar",
     "subcategories": "Subkategoriyalar",
-    "apply": "Qo'llash"
+    "apply": "Qo'llash",
+    "clearAll": "HAMMASINI TOZALASH",
+    "resetAll": "Hammasini tiklash",
+    "clearAllSuccess": "Barcha filtrlar tozalandi",
+    "filtersCleared": "Barcha filtrlar tozalandi",
+    "gr": "gr",
+    "showProducts": "{total} MAHSULOTNI KO'RSATISH",
+    "noResults": "NATIJA YO'Q",
+    "loading": "Yuklanmoqda..."
   }
 }

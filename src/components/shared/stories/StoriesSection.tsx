@@ -96,6 +96,16 @@ export default function StoriesSection() {
     openStory,
   ]);
 
+  // ─── go to previous slide / story ──────────────────────────────────────────
+  const goPrev = useCallback(() => {
+    if (activeStoryIndex === null) return;
+    if (activeImageIndex > 0) {
+      setActiveImageIndex((p) => p - 1);
+    } else if (activeStoryIndex > 0) {
+      openStory(activeStoryIndex - 1);
+    }
+  }, [activeStoryIndex, activeImageIndex, openStory]);
+
   // ─── interval timer for image slides ───────────────────────────────────────
   useEffect(() => {
     if (activeStoryIndex === null || mediaLoading) return;
@@ -155,24 +165,10 @@ export default function StoriesSection() {
   // ─── swipe ─────────────────────────────────────────────────────────────────
   const handleDragEnd = (_: any, info: PanInfo) => {
     const { offset, velocity } = info;
-
     if (offset.x > 80 || velocity.x > 500) {
-      // swipe right → previous
-      if (activeImageIndex > 0) {
-        setActiveImageIndex((p) => p - 1);
-      } else if (activeStoryIndex && activeStoryIndex > 0) {
-        openStory(activeStoryIndex - 1);
-      }
+      goPrev();
     } else if (offset.x < -80 || velocity.x < -500) {
-      // swipe left → next
-      if (activeImageIndex < activeMedia.length - 1) {
-        setActiveImageIndex((p) => p + 1);
-      } else if (
-        activeStoryIndex !== null &&
-        activeStoryIndex < stories.length - 1
-      ) {
-        openStory(activeStoryIndex + 1);
-      }
+      goNext();
     }
   };
 
@@ -331,10 +327,11 @@ export default function StoriesSection() {
                   </div>
                 )}
 
-                {progressStory && (
+                {activeStoryIndex !== null && (
                   <StoryNavigation
-                    stories={stories as any}
-                    activeStoryIndex={activeStoryIndex!}
+                    totalImages={activeMedia.length}
+                    totalStories={stories.length}
+                    activeStoryIndex={activeStoryIndex}
                     activeImageIndex={activeImageIndex}
                     setActiveStoryIndex={(idx) => {
                       if (idx === null) {
@@ -345,6 +342,8 @@ export default function StoriesSection() {
                       }
                     }}
                     setActiveImageIndex={setActiveImageIndex}
+                    onPrev={goPrev}
+                    onNext={goNext}
                   />
                 )}
               </motion.div>
