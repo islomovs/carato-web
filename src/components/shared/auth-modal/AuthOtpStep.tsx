@@ -51,6 +51,14 @@ export default function AuthOtpStep({
     }
   };
 
+  // Auto-submit when all 6 digits are entered
+  useEffect(() => {
+    if (code.length === 6) {
+      handleSubmit();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [code]);
+
   const handleResend = async () => {
     try {
       await doResend(initialPhone || phone);

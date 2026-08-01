@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import FeedbackSection from "@/components/shared/feedback/FeedbackSection";
 import ProductAccordion from "@/components/shared/product/ProductAccordion";
 import ProductGallery from "@/components/shared/product/ProductGallery";
@@ -14,6 +15,9 @@ import SellerLayer from "@/components/shared/seller/SellerLayer";
 import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 import useLockScroll from "@/hooks/useLockScroll";
+import { useWishlistStore } from "@/lib/wishlistStore";
+import { getTokenPair } from "@/lib/axios/instance";
+import { toast } from "sonner";
 
 export default function ProductPage() {
   const pathname = usePathname();
@@ -37,6 +41,10 @@ export default function ProductPage() {
 
   const [mounted, setMounted] = useState(false);
   useLockScroll(sellerOpen);
+
+  const { add: addToWishlist, remove: removeFromWishlist, isInWishlist } = useWishlistStore();
+  const isAuthenticated = Boolean(getTokenPair().token);
+  const inWishlist = product ? isInWishlist(product.slug) : false;
 
   useEffect(() => {
     setMounted(true);
@@ -149,9 +157,60 @@ export default function ProductPage() {
       ) : (
         // ✅ Mobile layout
         <div className="flex flex-col w-full mb-[132px]">
-          {/* Product gallery at top (scrolls naturally) */}
-          <div className="w-full">
+          {/* Product gallery at top with floating action bar */}
+          <div className="w-full relative">
             <ProductGallery variant="modal" media={media} loading={loading} />
+
+            {/* Floating top bar: back | wishlist + share */}
+            <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-start pointer-events-none"
+              style={{ paddingLeft: 8, paddingTop: 16, paddingRight: 8 }}>
+              <button
+                onClick={() => router.back()}
+                className="w-[36px] h-[36px] flex items-center justify-center pointer-events-auto"
+              >
+                <Image src="/icons/chevron-left.svg" alt="back" width={20} height={20} />
+              </button>
+
+              <div className="flex items-center pointer-events-auto" style={{ gap: 4 }}>
+                <button
+                  onClick={() => {
+                    if (!isAuthenticated) {
+                      router.push(`/${locale}/auth?returnTo=${encodeURIComponent(pathname)}`);
+                      return;
+                    }
+                    if (inWishlist) {
+                      removeFromWishlist(product!.slug);
+                      toast.success("Удалено из избранного");
+                    } else {
+                      addToWishlist(product!.slug, locale);
+                      toast.success("Добавлено в избранное");
+                    }
+                  }}
+                  className="w-[36px] h-[36px] flex items-center justify-center"
+                >
+                  <Image
+                    src={inWishlist ? "/icons/heart-filled.svg" : "/icons/heart.svg"}
+                    alt="wishlist"
+                    width={20}
+                    height={20}
+                  />
+                </button>
+
+                <button
+                  onClick={() => {
+                    if (navigator.share) {
+                      navigator.share({ url: window.location.href });
+                    } else {
+                      navigator.clipboard.writeText(window.location.href);
+                      toast.success("Ссылка скопирована");
+                    }
+                  }}
+                  className="w-[36px] h-[36px] flex items-center justify-center"
+                >
+                  <Image src="/icons/share.svg" alt="share" width={20} height={20} />
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Page content below gallery */}

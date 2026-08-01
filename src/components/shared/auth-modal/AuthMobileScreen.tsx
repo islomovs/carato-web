@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useLocale } from "next-intl";
 import AuthPhoneStep from "./AuthPhoneStep";
 import AuthOtpStep from "./AuthOtpStep";
@@ -16,6 +16,9 @@ export default function AuthMobileScreen() {
 
   const setStep = useAuthPageStore((s) => s.setStep);
   const reset = useAuthPageStore((s) => s.reset);
+
+  const searchParams = useSearchParams();
+  const returnTo = searchParams.get("returnTo");
 
   const [mode, setMode] = useState<"phone" | "otp">("phone");
   const [phoneValue, setPhoneValue] = useState("");
@@ -33,7 +36,7 @@ export default function AuthMobileScreen() {
 
   const onVerified = () => {
     reset();
-    router.push(`/${locale}/profile`);
+    router.push(returnTo ?? `/${locale}/profile`);
   };
 
   return (

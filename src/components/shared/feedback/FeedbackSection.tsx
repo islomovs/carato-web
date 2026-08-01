@@ -20,7 +20,7 @@ import AuthModal from "../auth-modal";
 import { getTokenPair } from "@/lib/axios/instance";
 import FullscreenViewer from "../product/FullscreenViewer";
 import { MediaItemT } from "../product/MediaItem";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function FeedbackSection({
   overallRating,
@@ -44,6 +44,7 @@ export default function FeedbackSection({
 
   const router = useRouter();
   const locale = useLocale();
+  const pathname = usePathname();
 
   const {
     feedback,
@@ -76,11 +77,13 @@ export default function FeedbackSection({
       description: item.description, // was item.text
       media:
         item.media.length > 0
-          ? item.media.map((m: { image: string }, i: number) => ({
-              id: i + 1,
-              src: m.image, // was m.src
-              type: m.image.endsWith(".mp4") ? "video" : "image",
-            }))
+          ? item.media
+              .filter((m: { image: string }) => m.image)
+              .map((m: { image: string }, i: number) => ({
+                id: i + 1,
+                src: m.image,
+                type: m.image.endsWith(".mp4") ? "video" : "image",
+              }))
           : [], // no media = show nothing, not a placeholder
     }),
   );
@@ -170,7 +173,7 @@ export default function FeedbackSection({
           variant="outline"
           onClick={() => {
             if (!isAuthenticated) {
-              router.push(`/${locale}/auth`);
+              router.push(`/${locale}/auth?returnTo=${encodeURIComponent(pathname)}`);
               return;
             }
             setOpenFeedback(true);

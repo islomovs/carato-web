@@ -19,6 +19,7 @@ import DetermineSizeModal from "../checkout/DetermineSizeModal";
 import { useWishlistStore } from "@/lib/wishlistStore";
 import { WishlistItem } from "@/services/wishlist";
 import { useLocale } from "next-intl";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuthModalStore } from "@/lib/authModalStore";
 import PriceArrow from "./PriceArrow";
 import { formatPrice } from "@/lib/formatPrice";
@@ -33,6 +34,8 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
 
   const stableProduct = useMemo(() => product as Product, [product]);
   const locale = useLocale();
+  const pathname = usePathname();
+  const router = useRouter();
 
   const [openNotify, setOpenNotify] = useState(false);
   const [openDetermine, setOpenDetermine] = useState(false);
@@ -45,6 +48,26 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
   const handleAddToCart = async () => {
     if (!isAuthenticated) {
       openAuth();
+      return;
+    }
+
+    if (!selectedVariant) {
+      toast.error(t("selectSize"));
+      return;
+    }
+
+    try {
+      await addToCart(product!.slug, selectedVariant.size.id!, 1);
+      toast.success(t("addedToCartSuccess"));
+    } catch {
+      toast.error(t("addedToCartError"));
+    }
+  };
+
+  // Mobile version: navigates to auth page with returnTo so user comes back here after login
+  const handleAddToCartMobile = async () => {
+    if (!isAuthenticated) {
+      router.push(`/${locale}/auth?returnTo=${encodeURIComponent(pathname)}`);
       return;
     }
 
@@ -303,15 +326,8 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
         <AuthModal initialMode="phone" />
       </div>
       <div className="md:hidden fixed bottom-0 left-0 right-0 px-4 py-4 flex gap-4 border-t border-[#EEF2F6] bg-white z-50">
-        {/* <Button
-          variant="outline"
-          className="flex-1 h-[52px] uppercase font-[400] text-[14px]"
-        >
-          Быстрая покупка
-        </Button> */}
-
         <Button
-          onClick={handleAddToCart}
+          onClick={handleAddToCartMobile}
           variant="default"
           className="flex-1 h-[52px] uppercase font-[400] text-[14px] bg-black text-white py-[12px] px-4 hover:bg-white hover:text-black border border-black"
         >
