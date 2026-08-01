@@ -5,6 +5,7 @@ import PaymentTypesSection from "./PaymentMethodsSection";
 import PromocodeField from "./PromocodeField";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
+import { formatPrice } from "@/lib/formatPrice";
 
 type TotalsColumnProps = {
   totalPrice: number;
@@ -39,7 +40,7 @@ export function TotalsColumn({
           </span>
           <div className="flex-1 border-b border-dotted border-black h-[14px] md:h-[18px]" />
           <span>
-            {totalPrice.toLocaleString()} {t("uzs")}
+            {formatPrice(totalPrice)} {t("uzs")}
           </span>
         </div>
 
@@ -47,7 +48,7 @@ export function TotalsColumn({
           <span>{t("savings")}</span>
           <div className="flex-1 border-b border-dotted border-black h-[14px] md:h-4" />
           <span className="text-[#F04438]">
-            {savings?.toLocaleString()} {t("uzs")}
+            {formatPrice(savings)} {t("uzs")}
           </span>
         </div>
 
@@ -57,7 +58,7 @@ export function TotalsColumn({
               <span>{t("toPay")}</span>
               <div className="flex-1 border-b border-dotted border-black h-[14px] md:h-4" />
               <span>
-                {totalPrice.toLocaleString()} {t("uzs")}
+                {formatPrice(totalPrice)} {t("uzs")}
               </span>
             </div>
             <PromocodeField

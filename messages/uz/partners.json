@@ -8,6 +8,8 @@
     "formTitle": "Arizangizni yuboring",
     "company": "Kompaniya",
     "companyPlaceholder": "Kompaniya nomini kiriting",
+    "businessType": "Biznes turi",
+    "businessTypePlaceholder": "Biznes turini tanlang",
     "fullName": "FIO",
     "fullNamePlaceholder": "FIO ni kiriting",
     "country": "Davlat",
@@ -24,7 +26,8 @@
       "phoneInvalid": "To'g'ri telefon raqamini kiriting",
       "emailRequired": "Pochta manzilini kiriting",
       "emailInvalid": "To'g'ri email manzilini kiriting",
-      "countryRequired": "Davlatni tanlang"
+      "countryRequired": "Davlatni tanlang",
+      "businessTypeRequired": "Biznes turini tanlang"
     },
     "submitSuccess": "Arizangiz muvaffaqiyatli yuborildi",
     "submitError": "Arizani yuborishda xatolik yuz berdi. Qaytadan urinib ko'ring",

@@ -11,9 +11,13 @@ import { withMask } from "use-mask-input";
 type Props = {
   onNext: (phone: string) => void;
   onOpenRegister?: () => void;
+  /** hide the internal h3 title (mobile screen renders it separately) */
+  hideTitle?: boolean;
+  /** 32 px gaps instead of 40 px */
+  compact?: boolean;
 };
 
-export default function AuthPhoneStep({ onNext }: Props) {
+export default function AuthPhoneStep({ onNext, hideTitle, compact }: Props) {
   const t = useTranslations("auth");
   const { control, handleSubmit } = useForm<{ phone: string }>({
     defaultValues: { phone: "+998 " },
@@ -35,12 +39,16 @@ export default function AuthPhoneStep({ onNext }: Props) {
     }
   };
 
+  const gap = compact ? "mb-8" : "mb-10";
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       {/* Title */}
-      <h3 className="text-[24px] font-normal text-black mb-10">
-        {t("titleLogin")}
-      </h3>
+      {!hideTitle && (
+        <h3 className={`text-[24px] font-normal text-black ${gap}`}>
+          {t("titleLogin")}
+        </h3>
+      )}
 
       <Controller
         control={control}
@@ -53,7 +61,7 @@ export default function AuthPhoneStep({ onNext }: Props) {
           },
         }}
         render={({ field, fieldState }) => (
-          <div className="mb-10">
+          <div className={gap}>
             <label className="block text-[12px] font-normal text-[#697586] mb-2">
               <div className="flex gap-[2px]">
                 <span>{t("phone")}</span>

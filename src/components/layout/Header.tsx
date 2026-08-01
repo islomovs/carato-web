@@ -18,7 +18,7 @@ import { useRouter } from "next/navigation";
 import { useAuthModalStore } from "@/lib/authModalStore";
 import SearchOverlay from "../shared/SearchOverlay";
 
-export default function Header() {
+export default function Header({ transparent = false }: { transparent?: boolean }) {
   const t = useTranslations("home.header");
   const [isCatalogOpen, setIsCatalogOpen] = useState(false);
   const [isCollectionsOpen, setIsCollectionsOpen] = useState(false);
@@ -83,7 +83,13 @@ export default function Header() {
   const APPBAR_HEIGHT_PX = 52;
 
   return (
-    <header className="fixed top-0 left-0 w-full flex justify-center border-b border-[#EEF2F6] bg-white px-2 md:px-8 z-50">
+    <header
+      className={`fixed top-0 left-0 w-full flex justify-center px-2 md:px-8 z-50 transition-colors duration-300 ${
+        transparent && !menuOpen
+          ? "bg-transparent border-b border-transparent"
+          : "border-b border-[#EEF2F6] bg-white"
+      }`}
+    >
       <AuthModal initialMode="phone" />
       <div className="container relative flex items-center justify-between py-[14px] md:py-2">
         {/* Left side: mobile menu button */}
@@ -140,15 +146,16 @@ export default function Header() {
                 height={20}
               />
             </button>
-            <Link
-              href="/auth"
+            <button
               className="w-9 h-9 flex items-center justify-center rounded-md hover:bg-[#EEF2F6] transition-colors cursor-pointer"
               onClick={() =>
-                isAuthenticated ? router.push("/profile") : openAuth()
+                isAuthenticated
+                  ? router.push(`/${currentLang}/profile`)
+                  : router.push(`/${currentLang}/auth`)
               }
             >
               <Image src="/icons/user.svg" alt="user" width={20} height={20} />
-            </Link>
+            </button>
           </div>
 
           {/* Desktop: search, cart, wishlist, profile, language */}

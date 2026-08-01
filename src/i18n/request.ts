@@ -17,6 +17,7 @@ const NAMESPACES = [
   "partners",
   "seller",
   "shops",
+  "about",
 ];
 
 export default getRequestConfig(async ({ requestLocale }) => {

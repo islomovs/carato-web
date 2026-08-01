@@ -99,11 +99,25 @@ export default function PersonalInfoBlock() {
   if (loading) return <SkeletonPersonalInfoBlock />;
   if (error)
     return (
-      <div className="text-red-600">
-        {t("loadError")}
-        <button onClick={() => location.reload()} className="underline ml-2">
+      <div className="w-full max-w-[910px] flex flex-col gap-4 mt-8 px-4 md:px-0">
+        <p className="text-red-600 text-sm">{t("loadError")}</p>
+        <button
+          onClick={() => location.reload()}
+          className="underline text-sm text-left"
+        >
           {t("retry")}
         </button>
+        <Button
+          type="button"
+          onClick={() => {
+            logout();
+            toast.success(t("loggedOutSuccessfully"));
+            router.push("/");
+          }}
+          className="w-full text-black rounded-md px-7 py-6 bg-[#EEF2F6] hover:bg-[#E3E8EF] hover:text-black font-medium cursor-pointer transition-all duration-300 uppercase"
+        >
+          {t("exit")}
+        </Button>
       </div>
     );
 

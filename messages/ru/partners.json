@@ -8,6 +8,8 @@
     "formTitle": "Подайте заявку",
     "company": "Компания",
     "companyPlaceholder": "Введите наименование компании",
+    "businessType": "Тип бизнеса",
+    "businessTypePlaceholder": "Выберите тип бизнеса",
     "fullName": "ФИО",
     "fullNamePlaceholder": "Введите ФИО",
     "country": "Страна",
@@ -24,7 +26,8 @@
       "phoneInvalid": "Введите корректный номер телефона",
       "emailRequired": "Введите почтовый адрес",
       "emailInvalid": "Введите корректный email",
-      "countryRequired": "Выберите страну"
+      "countryRequired": "Выберите страну",
+      "businessTypeRequired": "Выберите тип бизнеса"
     },
     "submitSuccess": "Заявка успешно отправлена",
     "submitError": "Ошибка при отправке заявки. Попробуйте снова",

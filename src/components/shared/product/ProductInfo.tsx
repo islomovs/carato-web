@@ -21,6 +21,7 @@ import { WishlistItem } from "@/services/wishlist";
 import { useLocale } from "next-intl";
 import { useAuthModalStore } from "@/lib/authModalStore";
 import PriceArrow from "./PriceArrow";
+import { formatPrice } from "@/lib/formatPrice";
 
 interface ProductInfoProps {
   product: Product | WishlistItem;
@@ -140,7 +141,7 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
           const discountPct = selectedVariant?.discountPercent ?? product.discountPercent ?? 0;
           const salePrice =
             discountPct > 0
-              ? Math.round(basePrice * (1 - discountPct / 100))
+              ? basePrice * (1 - discountPct / 100)
               : null;
 
           const activeVariant = selectedVariant ?? stableProduct.variants?.[0] ?? null;
@@ -157,11 +158,11 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
               {salePrice ? (
                 <div className="flex items-center flex-wrap" style={{ gap: 4 }}>
                   <span className="font-medium text-2xl">
-                    {salePrice.toLocaleString()} {t("uzs")}
+                    {formatPrice(salePrice)} {t("uzs")}
                   </span>
                   <PriceArrow isPriceIncreased={isPriceIncreased} size={24} />
                   <span className="font-medium text-base text-[#9AA4B2] line-through" style={{ marginLeft: 12 }}>
-                    {basePrice.toLocaleString()} {t("uzs")}
+                    {formatPrice(basePrice)} {t("uzs")}
                   </span>
                   <span className="font-normal text-xs text-[#FEFDF0] bg-[#F04438] py-1 px-2 rounded-[2px]">
                     -{discountPct}%
@@ -170,7 +171,7 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
               ) : (
                 <div className="flex items-center" style={{ gap: 4 }}>
                   <span className="font-medium text-2xl">
-                    {basePrice.toLocaleString()} {t("uzs")}
+                    {formatPrice(basePrice)} {t("uzs")}
                   </span>
                   <PriceArrow isPriceIncreased={isPriceIncreased} size={24} />
                 </div>
@@ -199,7 +200,7 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
                   <div className="flex items-center" style={{ gap: 2 }}>
                     <PriceArrow isPriceIncreased={isPriceIncreased} size={16} />
                     <span style={{ fontFamily: "Manrope, sans-serif", fontWeight: 500, fontSize: 14, lineHeight: "20px", letterSpacing: "0.6%", color: isPriceIncreased === null || isPriceIncreased === undefined ? "#000" : isPriceIncreased ? "#17B26A" : "#F04438" }}>
-                      {metalPrice != null ? metalPrice.toLocaleString() : "—"}
+                      {metalPrice != null ? formatPrice(metalPrice) : "—"}
                     </span>
                   </div>
                 </div>

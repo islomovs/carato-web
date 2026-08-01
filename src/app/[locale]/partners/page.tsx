@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { TextField } from "@/components/shared/TextField";
 import { useForm } from "react-hook-form";
@@ -15,21 +15,15 @@ type PartnerFormValues = {
   company: string;
   fullName: string;
   country: string;
+  businessType: string;
   phone: string;
   email: string;
 };
 
-const COUNTRIES = [
-  "Узбекистан",
-  "Казахстан",
-  "Россия",
-  "Кыргызстан",
-  "Таджикистан",
-  "Туркменистан",
-  "Азербайджан",
-  "Грузия",
-  "Другая страна",
-];
+const COUNTRIES = ["Узбекистан"];
+
+const BUSINESS_TYPES_RU = ["ООО", "ИП"];
+const BUSINESS_TYPES_UZ = ["MChJ", "YaTT"];
 
 // Grid cell data — replace src/title/description with real content
 const GRID_CELLS = {
@@ -120,9 +114,15 @@ function GridCell({
 
 export default function PartnersPage() {
   const t = useTranslations("partners");
+  const locale = useLocale();
+  const BUSINESS_TYPES = locale === "uz" ? BUSINESS_TYPES_UZ : BUSINESS_TYPES_RU;
   const [selectedCountry, setSelectedCountry] = useState("");
   const [countryOpen, setCountryOpen] = useState(false);
   const [countryError, setCountryError] = useState("");
+
+  const [selectedBusinessType, setSelectedBusinessType] = useState("");
+  const [businessTypeOpen, setBusinessTypeOpen] = useState(false);
+  const [businessTypeError, setBusinessTypeError] = useState("");
 
   const {
     register,
@@ -135,6 +135,7 @@ export default function PartnersPage() {
       company: "",
       fullName: "",
       country: "",
+      businessType: "",
       phone: "",
       email: "",
     },
@@ -143,11 +144,23 @@ export default function PartnersPage() {
   const [submitting, setSubmitting] = useState(false);
 
   const onSubmit = async (data: PartnerFormValues) => {
+    let hasScopeError = false;
+
+    if (!selectedBusinessType) {
+      setBusinessTypeError(t("errors.businessTypeRequired"));
+      hasScopeError = true;
+    } else {
+      setBusinessTypeError("");
+    }
+
     if (!selectedCountry) {
       setCountryError(t("errors.countryRequired"));
-      return;
+      hasScopeError = true;
+    } else {
+      setCountryError("");
     }
-    setCountryError("");
+
+    if (hasScopeError) return;
 
     try {
       setSubmitting(true);
@@ -157,12 +170,14 @@ export default function PartnersPage() {
         phone: data.phone,
         email: data.email,
         country: selectedCountry,
+        businessType: selectedBusinessType,
       });
 
       toast.success(t("submitSuccess"));
 
       reset();
       setSelectedCountry("");
+      setSelectedBusinessType("");
     } catch {
       toast.error(t("submitError"));
     } finally {
@@ -300,6 +315,75 @@ export default function PartnersPage() {
                   required: t("errors.companyRequired"),
                 })}
               />
+
+              {/* Business type dropdown */}
+              <div className="relative">
+                <label className="block mb-2 text-[12px] font-normal text-[#697586]">
+                  <div className="flex gap-[2px]">
+                    <span>{t("businessType")}</span>
+                    <span className="text-red-600">*</span>
+                  </div>
+                </label>
+                <div
+                  className="relative cursor-pointer"
+                  onClick={() => setBusinessTypeOpen((p) => !p)}
+                >
+                  <div
+                    className={`w-full rounded-[4px] border px-3 flex items-center justify-between ${
+                      businessTypeError ? "border-red-600" : "border-black"
+                    }`}
+                    style={{ height: 44, fontSize: 14, fontWeight: 400 }}
+                  >
+                    <span
+                      style={{
+                        color: selectedBusinessType ? "#000" : "#9AA4B2",
+                      }}
+                    >
+                      {selectedBusinessType || t("businessTypePlaceholder")}
+                    </span>
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      className={`transition-transform ${businessTypeOpen ? "rotate-180" : ""}`}
+                    >
+                      <path
+                        d="M4 6l4 4 4-4"
+                        stroke="#697586"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
+
+                  {businessTypeOpen && (
+                    <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-[#E3E8EE] rounded-md shadow-lg z-10 overflow-hidden">
+                      {BUSINESS_TYPES.map((bt) => (
+                        <div
+                          key={bt}
+                          className="px-3 py-2 hover:bg-[#F8F9FB] cursor-pointer"
+                          style={{ fontSize: 14 }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedBusinessType(bt);
+                            setBusinessTypeError("");
+                            setBusinessTypeOpen(false);
+                          }}
+                        >
+                          {bt}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {businessTypeError && (
+                  <p className="mt-2 text-[12px] font-normal text-red-600">
+                    {businessTypeError}
+                  </p>
+                )}
+              </div>
 
               <TextField
                 label={t("fullName")}

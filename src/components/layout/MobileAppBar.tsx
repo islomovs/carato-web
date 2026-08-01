@@ -4,6 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import clsx from "clsx";
 import { useLocale, useTranslations } from "next-intl";
+import { getTokenPair } from "@/lib/axios/instance";
 
 export default function MobileAppBar() {
   const t = useTranslations("appBar");
@@ -11,40 +12,24 @@ export default function MobileAppBar() {
   const router = useRouter();
   const locale = useLocale();
 
+  const isAuthenticated = Boolean(getTokenPair().token);
+
   const navItems = [
     { label: t("home"), href: `/${locale}`, icon: "/icons/home.svg" },
-    {
-      label: t("catalog"),
-      href: `/${locale}/catalog`,
-      icon: "/icons/grid.svg",
-    },
-    {
-      label: t("wishlist"),
-      href: `/${locale}/wishlist`,
-      icon: "/icons/heart.svg",
-    },
-    {
-      label: t("cart"),
-      href: `/${locale}/cart`,
-      icon: "/icons/shopping-bag.svg",
-    },
+    { label: t("catalog"), href: `/${locale}/catalog`, icon: "/icons/grid.svg" },
+    { label: t("wishlist"), href: `/${locale}/wishlist`, icon: "/icons/heart.svg" },
+    { label: t("cart"), href: `/${locale}/cart`, icon: "/icons/shopping-bag.svg" },
     {
       label: t("profile"),
-      href: `/${locale}/profile`,
+      href: isAuthenticated ? `/${locale}/profile` : `/${locale}/auth`,
       icon: "/icons/user.svg",
     },
   ];
 
   const isActive = (href: string) => {
-    if (href === `/${locale}`) {
-      return pathname === href;
-    }
-
+    if (href === `/${locale}`) return pathname === href;
     return pathname.startsWith(href);
   };
-
-  console.log("PATHNAME:", pathname);
-  console.log("PATHNAME is matching:", isActive(`/${locale}/catalog`));
 
   return (
     <div className="fixed bottom-0 left-0 right-0 h-[52px] bg-white border-t border-[#E5E7EB] flex items-center justify-between md:hidden z-50">
@@ -67,7 +52,6 @@ export default function MobileAppBar() {
                 active ? "brightness-0" : "opacity-50",
               )}
             />
-
             <span
               className={clsx(
                 "text-[12px] font-medium mt-[4px] leading-3",

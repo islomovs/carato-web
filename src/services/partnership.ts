@@ -6,6 +6,7 @@ export interface PartnershipApplicationRequest {
   email: string;
   fullName: string;
   country: string;
+  businessType: string;
 }
 
 export interface PartnershipApplicationResponse {
@@ -16,6 +17,7 @@ export interface PartnershipApplicationResponse {
   country: string;
   phone: string;
   email: string;
+  businessType: string;
 }
 
 export async function submitPartnershipApplication(

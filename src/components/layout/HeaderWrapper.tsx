@@ -48,5 +48,7 @@ export default function HeaderWrapper() {
 
   if (shouldHide) return null;
 
-  return <Header />;
+  const isAboutPage = pathname === `/${locale}/about`;
+
+  return <Header transparent={isAboutPage} />;
 }

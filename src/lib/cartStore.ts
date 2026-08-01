@@ -206,7 +206,7 @@ export const useCartStore = create<CartStore>((set, get) => {
         const v = item.product.variants[0];
         const price =
           (v.discountPercent ?? 0) > 0
-            ? Math.round(v.price * (1 - (v.discountPercent ?? 0) / 100))
+            ? v.price * (1 - (v.discountPercent ?? 0) / 100)
             : v.price;
         return acc + price * item.quantity;
       }, 0);

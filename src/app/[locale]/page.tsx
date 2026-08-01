@@ -24,6 +24,8 @@ export default async function Home() {
     thirdSet ? getProductsBySet(thirdSet.slug, 1, 10, locale) : [],
   ]);
 
+  console.log("firstProducts", firstProducts, "secondProducts", secondProducts, "thirdProducts", thirdProducts);
+
   return (
     <div className="w-full h-full text-center pt-16 md:pt-0">
       <BannerCarousel />
