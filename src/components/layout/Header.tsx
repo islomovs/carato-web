@@ -15,7 +15,6 @@ import MobileMenu from "../shared/MobileMenu";
 import HeaderIcons from "../shared/HeaderIcons";
 import { getTokenPair } from "@/lib/axios/instance";
 import { useRouter } from "next/navigation";
-import { useAuthModalStore } from "@/lib/authModalStore";
 import SearchOverlay from "../shared/SearchOverlay";
 
 export default function Header({ transparent = false }: { transparent?: boolean }) {
@@ -28,7 +27,6 @@ export default function Header({ transparent = false }: { transparent?: boolean 
   const isAuthenticated = Boolean(getTokenPair().token);
   const router = useRouter();
 
-  const { openAuth } = useAuthModalStore();
 
   const [searchOpen, setSearchOpen] = useState(false);
 
