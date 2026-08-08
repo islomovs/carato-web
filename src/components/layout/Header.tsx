@@ -28,7 +28,19 @@ export default function Header({ transparent = false }: { transparent?: boolean 
   const router = useRouter();
 
 
+  const [scrollProgress, setScrollProgress] = useState(0);
   const [searchOpen, setSearchOpen] = useState(false);
+
+  useEffect(() => {
+    if (!transparent) return;
+    const onScroll = () => {
+      const progress = Math.min(window.scrollY / 100, 1);
+      setScrollProgress(progress);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [transparent]);
 
   const handleOpenSearch = () => {
     setIsCatalogOpen(false);
@@ -82,11 +94,15 @@ export default function Header({ transparent = false }: { transparent?: boolean 
 
   return (
     <header
-      className={`fixed top-0 left-0 w-full flex justify-center px-2 md:px-8 z-50 transition-colors duration-300 ${
+      className="fixed top-0 left-0 w-full flex justify-center px-2 md:px-8 z-50"
+      style={
         transparent && !menuOpen
-          ? "bg-transparent border-b border-transparent"
-          : "border-b border-[#EEF2F6] bg-white"
-      }`}
+          ? {
+              backgroundColor: `rgba(255, 255, 255, ${scrollProgress})`,
+              borderBottom: `1px solid rgba(238, 242, 246, ${scrollProgress})`,
+            }
+          : { backgroundColor: "rgb(255,255,255)", borderBottom: "1px solid #EEF2F6" }
+      }
     >
       <AuthModal initialMode="phone" />
       <div className="container relative flex items-center justify-between py-[14px] md:py-2">

@@ -110,7 +110,7 @@ export default function CheckoutLayer({
       const payload = {
         ...data,
         products: productsPayload,
-        totalSum,
+        totalSum: Math.round(totalSum * 100) / 100,
       };
 
       console.log("Checkout Payload:", payload);

@@ -36,7 +36,7 @@ export default function SellerInfoButton({ seller, onClick }: Props) {
         </span>
         <div className="flex gap-[4px] items-center">
           {Array.from({ length: 5 }).map((_, index) => {
-            const filled = index < Math.round(seller?.averageReviewRating || 5);
+            const filled = index < Math.round(seller?.averageReviewRating ?? 0);
             return (
               <Star
                 key={index}
@@ -50,7 +50,7 @@ export default function SellerInfoButton({ seller, onClick }: Props) {
           })}
 
           <span className="font-light text-sm underline ml-2">
-            {seller?.reviewsQuantity || 10} {t("reviews")}
+            {seller?.reviewsQuantity ?? 0} {t("reviews")}
           </span>
         </div>
       </div>
