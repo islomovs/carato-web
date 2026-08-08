@@ -172,7 +172,7 @@ function CatalogDrillLayer({
                 <GridCell
                   key={item.id}
                   title={item.name}
-                  imageSrc={item.mobileImage || item.desktopImage}
+                  imageSrc={item.catalogIcon ?? item.mobileImage ?? undefined}
                   onClick={() => handleItemClick(item)}
                 />
               ))}
