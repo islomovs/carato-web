@@ -8,6 +8,7 @@ import PageHeader from "../shared/PageHeader";
 import useLockScroll from "@/hooks/useLockScroll";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
+import { useEffect } from "react";
 import YandexMap from "../shared/YandexMap";
 
 type AddressValues = {
@@ -22,12 +23,14 @@ type AddressLayerProps = {
   open: boolean;
   onClose: () => void;
   onSelect: (values: AddressValues) => void;
+  initialValues?: Partial<AddressValues>;
 };
 
 export default function AddressLayer({
   open,
   onClose,
   onSelect,
+  initialValues,
 }: AddressLayerProps) {
   const t = useTranslations("checkout");
   const {
@@ -35,17 +38,32 @@ export default function AddressLayer({
     getValues,
     setValue,
     watch,
+    reset,
     formState: { errors },
     trigger,
   } = useForm<AddressValues>({
     defaultValues: {
-      address: "",
-      apartmentNumber: "",
-      entrance: "",
-      floor: "",
-      comment: "",
+      address: initialValues?.address ?? "",
+      apartmentNumber: initialValues?.apartmentNumber ?? "",
+      entrance: initialValues?.entrance ?? "",
+      floor: initialValues?.floor ?? "",
+      comment: initialValues?.comment ?? "",
     },
   });
+
+  // Re-sync form whenever the layer opens (profile data may have loaded after mount)
+  useEffect(() => {
+    if (open) {
+      reset({
+        address: initialValues?.address ?? "",
+        apartmentNumber: initialValues?.apartmentNumber ?? "",
+        entrance: initialValues?.entrance ?? "",
+        floor: initialValues?.floor ?? "",
+        comment: initialValues?.comment ?? "",
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   const commentValue = watch("comment");
 

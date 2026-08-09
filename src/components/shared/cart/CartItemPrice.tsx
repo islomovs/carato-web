@@ -17,7 +17,7 @@ export default function CartItemPrice({
   const hasDiscount = (variant.discountPercent ?? 0) > 0;
 
   const unitSalePrice = hasDiscount
-    ? variant.price * (1 - (variant.discountPercent ?? 0) / 100)
+    ? Math.round(variant.price * (1 - (variant.discountPercent ?? 0) / 100) * 100) / 100
     : variant.price;
 
   const finalPrice = unitSalePrice * item.quantity;

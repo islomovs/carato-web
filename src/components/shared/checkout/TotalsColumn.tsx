@@ -90,7 +90,7 @@ export function TotalsColumn({
             font-medium text-sm bg-black text-white rounded-[10px] hover:bg-white hover:text-black border border-black cursor-pointer
           "
         >
-          {t("checkoutButton")}
+          {isCheckoutPage ? t("placeOrderButton") : t("checkoutButton")}
         </Button>
       </div>
     </div>

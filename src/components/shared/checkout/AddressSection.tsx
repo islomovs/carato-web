@@ -15,6 +15,10 @@ export default function AddressSection({
 }: AddressSectionProps) {
   const [addressLayer, setAddressLayer] = useState(false);
   const address = watch("address");
+  const apartmentNumber = watch("apartmentNumber");
+  const entrance = watch("entrance");
+  const floor = watch("floor");
+  const comment = watch("comment");
 
   return (
     <>
@@ -48,6 +52,7 @@ export default function AddressSection({
       <AddressLayer
         open={addressLayer}
         onClose={() => setAddressLayer(false)}
+        initialValues={{ address, apartmentNumber, entrance, floor, comment }}
         onSelect={(values) => {
           setValue("address", values.address);
           setValue("apartmentNumber", values.apartmentNumber);

@@ -14,8 +14,9 @@ import PageHeader from "../shared/PageHeader";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/lib/cartStore";
 import { useCreateOrder } from "@/hooks/useCreateOrder";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { useUserInfo } from "@/hooks/useUserInfo";
 
 export type PaymentOption = "ATMOS" | "CASH";
 
@@ -33,6 +34,7 @@ export default function CheckoutLayer({
   const t = useTranslations("checkout");
   const { createOrder } = useCreateOrder();
   const router = useRouter();
+  const { userInfo } = useUserInfo();
 
   const cartItems = useCartStore((state) => state.cartItems);
   const [deliveryPrice, setDeliveryPrice] = useState(0);
@@ -46,6 +48,7 @@ export default function CheckoutLayer({
     handleSubmit,
     watch,
     setValue,
+    reset,
     formState: { errors },
   } = useForm<{
     phone: string;
@@ -78,6 +81,23 @@ export default function CheckoutLayer({
       totalSum: 0,
     },
   });
+
+  useEffect(() => {
+    if (!userInfo) return;
+    reset({
+      phone: userInfo.phone || "+998 ",
+      fullName: userInfo.fullName || "",
+      address: userInfo.address || "",
+      apartmentNumber: userInfo.apartmentNumber || "",
+      entrance: userInfo.entrance || "",
+      floor: userInfo.floor || "",
+      deliveryType: "",
+      comment: "",
+      deliveryPreferredTime: "",
+      paymentType: "ATMOS",
+      totalSum: 0,
+    });
+  }, [userInfo, reset]);
 
   const onSubmit = async (data: any) => {
     if (!data.deliveryType) {

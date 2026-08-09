@@ -64,6 +64,23 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
     }
   };
 
+  const handleBuyInOneClick = async () => {
+    if (!isAuthenticated) {
+      openAuth();
+      return;
+    }
+    if (!selectedVariant) {
+      toast.error(t("selectSize"));
+      return;
+    }
+    try {
+      await addToCart(product!.slug, selectedVariant.size.id!, 1);
+      router.push(`/${locale}/cart`);
+    } catch {
+      toast.error(t("addedToCartError"));
+    }
+  };
+
   // Mobile version: navigates to auth page with returnTo so user comes back here after login
   const handleAddToCartMobile = async () => {
     if (!isAuthenticated) {
@@ -293,6 +310,7 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
 
           <Button
             variant="ghost"
+            onClick={handleBuyInOneClick}
             className="bg-white hover:bg-black text-black hover:text-white w-full h-[52px] font-normal rounded-md border border-black cursor-pointer uppercase"
           >
             {t("buyInOneClick")}

@@ -204,11 +204,13 @@ export const useCartStore = create<CartStore>((set, get) => {
       const cart = get().cartItems;
       return cart.reduce((acc, item) => {
         const v = item.product.variants[0];
-        const price =
+        const rawPrice =
           (v.discountPercent ?? 0) > 0
             ? v.price * (1 - (v.discountPercent ?? 0) / 100)
             : v.price;
-        return acc + price * item.quantity;
+        // Round unit price to 2dp first (matches backend calculation order)
+        const unitPrice = Math.round(rawPrice * 100) / 100;
+        return acc + unitPrice * item.quantity;
       }, 0);
     },
 
