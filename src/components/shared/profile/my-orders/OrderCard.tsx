@@ -39,7 +39,8 @@ export default function OrderCard({ order, onOpenDetails }: OrderCardProps) {
 
   const statusKey = order.status?.toLowerCase() || "new";
   const statusInfo = statusMap[statusKey] || statusMap.new;
-  const canPay = !order.isPaid && statusKey !== "cancelled";
+  // Only show pay button if there's a checkout URL (cash orders won't have one)
+  const canPay = !order.isPaid && !!order.checkoutUrl && statusKey !== "cancelled";
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -52,6 +53,11 @@ export default function OrderCard({ order, onOpenDetails }: OrderCardProps) {
 
   const handlePay = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    // Use existing checkoutUrl if present, otherwise generate one
+    if (order.checkoutUrl) {
+      window.location.href = order.checkoutUrl;
+      return;
+    }
     setPaying(true);
     try {
       const res = await createAtmosPayment(order.id);
@@ -70,29 +76,59 @@ export default function OrderCard({ order, onOpenDetails }: OrderCardProps) {
 
   return (
     <div className="flex flex-col gap-4 border border-[#CDD5DF] py-4 mb-6">
-      <div className="flex flex-row justify-between px-6">
-        <div className="flex flex-col gap-1">
-          <h1 className="font-medium text-sm">{t("orderDate")}</h1>
-          <p className="font-light text-base">{formatDate(order.createdTime)}</p>
-        </div>
-        <div className="flex flex-col gap-1">
-          <h1 className="font-medium text-sm">{t("orderId")}</h1>
-          <p className="font-light text-base">Nr {order.id}</p>
-        </div>
-        <div className="flex flex-col gap-1">
-          <h1 className="font-medium text-sm">{t("orderStatus")}</h1>
-          <div className="flex items-center gap-2">
-            <span className={`rounded-full w-2 h-2 ${statusInfo.color}`}></span>
-            <p className="font-light text-base">{statusInfo.label}</p>
+      <div className="flex flex-col gap-3 px-6">
+        {/* Info row */}
+        <div className="flex flex-row justify-between">
+          <div className="flex flex-col gap-1">
+            <h1 className="font-medium text-sm">{t("orderDate")}</h1>
+            <p className="font-light text-base">{formatDate(order.createdTime)}</p>
+          </div>
+          <div className="flex flex-col gap-1">
+            <h1 className="font-medium text-sm">{t("orderId")}</h1>
+            <p className="font-light text-base">Nr {order.id}</p>
+          </div>
+          <div className="flex flex-col gap-1">
+            <h1 className="font-medium text-sm">{t("orderStatus")}</h1>
+            <div className="flex items-center gap-2">
+              <span className={`rounded-full w-2 h-2 ${statusInfo.color}`}></span>
+              <p className="font-light text-base">{statusInfo.label}</p>
+            </div>
+          </div>
+          {/* Buttons: desktop inline */}
+          <div className="hidden md:flex items-center gap-2">
+            {canPay && (
+              <Button
+                type="button"
+                onClick={handlePay}
+                disabled={paying}
+                className="uppercase cursor-pointer px-3 py-4 rounded-md bg-black text-white hover:bg-white hover:text-black border border-black text-xs font-normal disabled:opacity-50"
+              >
+                {paying ? t("payOrderPending") : t("payOrder")}
+              </Button>
+            )}
+            <Button
+              variant="default"
+              onClick={onOpenDetails}
+              className="uppercase text-black cursor-pointer px-2 py-4 rounded-md bg-[#EEF2F6] hover:bg-[#E3E8EF] text-xs font-normal flex items-center gap-1"
+            >
+              {t("orderDetails")}
+              <Image
+                src="/icons/arrow-narrow-right.svg"
+                alt="Arrow right"
+                width={20}
+                height={20}
+              />
+            </Button>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        {/* Buttons: mobile below info */}
+        <div className="flex md:hidden items-center gap-2">
           {canPay && (
             <Button
               type="button"
               onClick={handlePay}
               disabled={paying}
-              className="uppercase cursor-pointer px-3 py-4 rounded-md bg-black text-white hover:bg-white hover:text-black border border-black text-xs font-normal disabled:opacity-50"
+              className="flex-1 uppercase cursor-pointer px-3 py-4 rounded-md bg-black text-white hover:bg-white hover:text-black border border-black text-xs font-normal disabled:opacity-50"
             >
               {paying ? t("payOrderPending") : t("payOrder")}
             </Button>
@@ -100,7 +136,7 @@ export default function OrderCard({ order, onOpenDetails }: OrderCardProps) {
           <Button
             variant="default"
             onClick={onOpenDetails}
-            className="uppercase text-black cursor-pointer px-2 py-4 rounded-md bg-[#EEF2F6] hover:bg-[#E3E8EF] text-xs font-normal flex items-center gap-1"
+            className="flex-1 uppercase text-black cursor-pointer px-2 py-4 rounded-md bg-[#EEF2F6] hover:bg-[#E3E8EF] text-xs font-normal flex items-center justify-center gap-1"
           >
             {t("orderDetails")}
             <Image

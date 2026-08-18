@@ -41,12 +41,14 @@ export default function MyFeedbackCard({ feedback }: { feedback: MyFeedback }) {
   );
   const [fullscreenIndex, setFullscreenIndex] = useState(0);
 
-  const mediaItems: MediaItemT[] = media.map((m, i) => ({
-    id: i + 1,
-    src: m.image,
-    type: m.image.endsWith(".mp4") ? "video" : "image",
-    alt: "",
-  }));
+  const mediaItems: MediaItemT[] = media
+    .filter((m) => m.image)
+    .map((m, i) => ({
+      id: i + 1,
+      src: m.image,
+      type: m.image?.endsWith(".mp4") ? "video" : "image",
+      alt: "",
+    }));
 
   const openFullscreen = (index: number) => {
     setFullscreenMedia(mediaItems);

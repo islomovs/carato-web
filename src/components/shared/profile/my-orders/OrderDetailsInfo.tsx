@@ -127,7 +127,7 @@ export default function OrderDetailsInfo({ order }: OrderDetailsInfoProps) {
             type="button"
             onClick={handlePay}
             disabled={paying}
-            className="mt-4 w-full h-[52px] uppercase font-medium text-sm bg-black text-white rounded-[10px] hover:bg-white hover:text-black border border-black cursor-pointer disabled:opacity-50"
+            className="mt-4 w-full h-[52px] uppercase font-medium text-sm bg-black text-white rounded-[10px] hover:bg-white hover:text-black border border-black cursor-pointer disabled:opacity-50 mx-4 md:mx-0 w-[calc(100%-32px)] md:w-full"
           >
             {paying ? t("payOrderPending") : t("payOrder")}
           </Button>

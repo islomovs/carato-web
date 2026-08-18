@@ -5,6 +5,7 @@ import Image from "next/image";
 import clsx from "clsx";
 import { useLocale, useTranslations } from "next-intl";
 import { getTokenPair } from "@/lib/axios/instance";
+import { useState, useEffect } from "react";
 
 export default function MobileAppBar() {
   const t = useTranslations("appBar");
@@ -12,7 +13,11 @@ export default function MobileAppBar() {
   const router = useRouter();
   const locale = useLocale();
 
-  const isAuthenticated = Boolean(getTokenPair().token);
+  // Defer auth + active state to client to avoid hydration mismatch
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  const isAuthenticated = mounted ? Boolean(getTokenPair().token) : false;
 
   const navItems = [
     { label: t("home"), href: `/${locale}`, icon: "/icons/home.svg" },
@@ -27,6 +32,7 @@ export default function MobileAppBar() {
   ];
 
   const isActive = (href: string) => {
+    if (!mounted) return false;
     if (href === `/${locale}`) return pathname === href;
     return pathname.startsWith(href);
   };

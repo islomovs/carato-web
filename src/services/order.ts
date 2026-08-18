@@ -18,6 +18,7 @@ export type CreateOrderPayload = {
   deliveryPreferredTime?: string | null; // ISO string
   paymentType: string; // e.g. "CLICK"
   totalSum: number;
+  deliveryPrice?: number;
   promocode?: string | null;
   products: OrderProductPayload[];
 };

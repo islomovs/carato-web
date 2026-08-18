@@ -24,6 +24,13 @@
     "comment": "Kurer uchun izoh",
     "commentPlaceholder": "Izohni kiriting",
     "confirm": "Tasdiqlash",
+    "uzs": "SO'M",
+    "promo": {
+      "placeholder": "Promokod",
+      "apply": "QOʻLLASH",
+      "notValid": "Promokod yaroqsiz yoki mavjud emas",
+      "applied": "Promokod qoʻllandi, chegirma:"
+    },
     "errors": {
       "fullNameRequired": "To'liq ism majburiy",
       "phoneRequired": "Telefon raqami majburiy",

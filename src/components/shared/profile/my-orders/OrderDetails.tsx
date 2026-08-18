@@ -71,7 +71,7 @@ export default function OrderDetails({
               />
 
               {/* Tabs */}
-              <div className="flex justify-start gap-[40px] relative border-b border-b-[#EEF2F6] w-full md:px-10">
+              <div className="flex justify-start gap-5 md:gap-[40px] relative border-b border-b-[#EEF2F6] w-full px-4 md:px-10">
                 {tabs.map((tab) => {
                   const isActive = tab.id === active;
 

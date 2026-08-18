@@ -59,7 +59,7 @@ export default function ProductCard({
       onClick={() => router.push(`/product/${productData.slug}`)}
     >
       {/* Image section */}
-      <div className="relative w-full aspect-[166/196] md:aspect-[329/364] overflow-hidden bg-[#F8FAFC]">
+      <div className="relative w-full aspect-square overflow-hidden bg-[#F8FAFC]">
         {/* Discount Badge */}
         {(productData.discountPercent ?? 0) > 0 && (
           <div className="absolute top-2 left-2 bg-[#F04438] rounded-[2px] py-[3px] px-2 z-[5]">

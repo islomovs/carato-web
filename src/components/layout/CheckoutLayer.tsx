@@ -38,6 +38,7 @@ export default function CheckoutLayer({
 
   const cartItems = useCartStore((state) => state.cartItems);
   const [deliveryPrice, setDeliveryPrice] = useState(0);
+  const [promoDiscount, setPromoDiscount] = useState(0);
   const { totalQuantity, totalPrice, totalOldPrice } = useCartStore();
   const savings = totalOldPrice() - totalPrice();
   const totalSum = totalPrice() + deliveryPrice;
@@ -79,6 +80,7 @@ export default function CheckoutLayer({
       deliveryPreferredTime: "",
       paymentType: "ATMOS",
       totalSum: 0,
+      promocode: "",
     },
   });
 
@@ -96,6 +98,7 @@ export default function CheckoutLayer({
       deliveryPreferredTime: "",
       paymentType: "ATMOS",
       totalSum: 0,
+      promocode: "",
     });
   }, [userInfo, reset]);
 
@@ -127,10 +130,13 @@ export default function CheckoutLayer({
         };
       });
 
+      const finalTotal = Math.round((totalSum - promoDiscount) * 100) / 100;
       const payload = {
         ...data,
         products: productsPayload,
-        totalSum: Math.round(totalSum * 100) / 100,
+        deliveryPrice,
+        totalSum: finalTotal,
+        promocode: data.promocode || null,
       };
 
       console.log("Checkout Payload:", payload);
@@ -216,7 +222,12 @@ export default function CheckoutLayer({
 
                 <PaymentTypesSection control={control as any} name="paymentType" />
 
-                <PromocodeField control={control as any} name="promocode" />
+                <PromocodeField
+                  control={control as any}
+                  name="promocode"
+                  orderPrice={totalSum}
+                  onApplied={(discount) => setPromoDiscount(discount)}
+                />
               </div>
             </div>
             <TotalsColumn
@@ -225,6 +236,9 @@ export default function CheckoutLayer({
               count={totalQuantity()}
               control={control as any}
               isCheckoutPage
+              deliveryPrice={deliveryPrice}
+              promoDiscount={promoDiscount}
+              onPromoApplied={(discount) => setPromoDiscount(discount)}
             />
           </div>
         </form>

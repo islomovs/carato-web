@@ -35,7 +35,7 @@ export default function OrderDetailsProducts({
   const router = useRouter();
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 px-4 py-6 md:px-0 md:py-0">
       {order.products.map((item, i) => (
         <div key={i} className="flex flex-col gap-2">
           <div className="flex flex-row justify-between items-center border-b-[0.5px] border-b-black">

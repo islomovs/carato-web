@@ -13,6 +13,9 @@ type TotalsColumnProps = {
   count: number;
   control?: Control<any>;
   isCheckoutPage?: boolean;
+  deliveryPrice?: number;
+  promoDiscount?: number;
+  onPromoApplied?: (discount: number) => void;
 };
 
 export function TotalsColumn({
@@ -21,9 +24,14 @@ export function TotalsColumn({
   count,
   control,
   isCheckoutPage = false,
+  deliveryPrice = 0,
+  promoDiscount = 0,
+  onPromoApplied,
 }: TotalsColumnProps) {
   const t = useTranslations("cart");
   const router = useRouter();
+
+  const finalTotal = totalPrice + deliveryPrice - promoDiscount;
 
   return (
     <div className="w-full md:max-w-[400px] bg-[#F8FAFC] flex flex-col self-stretch fixed md:static bottom-0 left-0 z-40 border-t md:border-0 border-[#E5E7EB] shadow-[0_-4px_10px_rgba(0,0,0,0.05)] md:shadow-none">
@@ -34,6 +42,8 @@ export function TotalsColumn({
         "
       >
         <h1 className="text-base font-normal mb-4">{t("yourOrder")}</h1>
+
+        {/* Items subtotal */}
         <div className="flex justify-between text-xs md:text-base font-medium">
           <span>
             {count} {t("items")}
@@ -44,6 +54,7 @@ export function TotalsColumn({
           </span>
         </div>
 
+        {/* Savings */}
         <div className="flex justify-between mt-0.5 md:mt-2 text-xs md:text-sm font-normal">
           <span>{t("savings")}</span>
           <div className="flex-1 border-b border-dotted border-black h-[14px] md:h-4" />
@@ -54,17 +65,41 @@ export function TotalsColumn({
 
         {isCheckoutPage && (
           <>
+            {/* Delivery */}
+            <div className="flex justify-between mt-0.5 md:mt-2 text-xs md:text-sm font-normal">
+              <span>{t("delivery")}</span>
+              <div className="flex-1 border-b border-dotted border-black h-[14px] md:h-4" />
+              <span className={deliveryPrice > 0 ? "text-black" : "text-[#9AA4B2]"}>
+                {deliveryPrice > 0 ? formatPrice(deliveryPrice) : "0"} {t("uzs")}
+              </span>
+            </div>
+
+            {/* Promo discount */}
+            {promoDiscount > 0 && (
+              <div className="flex justify-between mt-0.5 md:mt-2 text-xs md:text-sm font-normal">
+                <span>{t("promoDiscount")}</span>
+                <div className="flex-1 border-b border-dotted border-black h-[14px] md:h-4" />
+                <span className="text-[#17B26A]">
+                  −{formatPrice(promoDiscount)} {t("uzs")}
+                </span>
+              </div>
+            )}
+
+            {/* Final total */}
             <div className="flex justify-between mt-0.5 md:mt-2 text-xs md:text-sm font-medium">
               <span>{t("toPay")}</span>
               <div className="flex-1 border-b border-dotted border-black h-[14px] md:h-4" />
               <span>
-                {formatPrice(totalPrice)} {t("uzs")}
+                {formatPrice(finalTotal)} {t("uzs")}
               </span>
             </div>
+
             <PromocodeField
               control={control}
               name="promocode"
               isDesktopColumn
+              orderPrice={totalPrice + deliveryPrice}
+              onApplied={onPromoApplied}
             />
             <PaymentTypesSection
               control={control}
