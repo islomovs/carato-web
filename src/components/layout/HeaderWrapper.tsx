@@ -5,7 +5,7 @@ import { useLocale } from "next-intl";
 import { useEffect, useState } from "react";
 import Header from "./Header";
 import { useCartStore } from "@/lib/cartStore";
-import { getTokenPair } from "@/lib/axios/instance";
+import { useIsAuthenticated } from "@/lib/authStore";
 import { useWishlistStore } from "@/lib/wishlistStore";
 
 export function WishlistCartBootstrap() {
@@ -13,7 +13,7 @@ export function WishlistCartBootstrap() {
 
   const fetchWishlist = useWishlistStore((s) => s.fetchWishlist);
 
-  const isAuthenticated = Boolean(getTokenPair().token);
+  const isAuthenticated = useIsAuthenticated();
   const locale = useLocale();
 
   useEffect(() => {

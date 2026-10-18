@@ -2,7 +2,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Star } from "lucide-react";
+import { Minus, Plus, Star } from "lucide-react";
 import ProductSizeSelector from "./ProductSizeSelector";
 import { Button } from "../../ui/button";
 import { useTranslations } from "next-intl";
@@ -13,7 +13,7 @@ import { Product } from "@/services/product";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCartStore } from "@/lib/cartStore";
 import { toast } from "sonner";
-import { getTokenPair } from "@/lib/axios/instance";
+import { useIsAuthenticated } from "@/lib/authStore";
 import NotifySizeModal from "../checkout/NotifySizeModal";
 import DetermineSizeModal from "../checkout/DetermineSizeModal";
 import { useWishlistStore } from "@/lib/wishlistStore";
@@ -42,8 +42,38 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
   const { openAuth } = useAuthModalStore();
   const [selectedVariant, setSelectedVariant] = useState<any>(null);
   const addToCart = useCartStore((state) => state.addToCart);
+  const cartItems = useCartStore((state) => state.cartItems);
+  const updateQuantity = useCartStore((state) => state.updateQuantity);
+  const removeItem = useCartStore((state) => state.removeItem);
 
-  const isAuthenticated = Boolean(getTokenPair().token);
+  // Is the selected size already in the cart? (drives the mobile bottom bar)
+  const selectedSizeId: number | undefined = selectedVariant?.size?.id;
+  const cartItem =
+    selectedSizeId != null
+      ? cartItems.find(
+          (i) =>
+            i.product.slug === product?.slug &&
+            i.product.variants.some((v) => v.size.id === selectedSizeId),
+        )
+      : undefined;
+  const cartQty = cartItem?.quantity ?? 0;
+  const maxQty: number = selectedVariant?.stockQuantity ?? Infinity;
+
+  const handleIncrementMobile = () => {
+    if (selectedSizeId == null || cartQty >= maxQty) return;
+    updateQuantity(product.slug, selectedSizeId, cartQty + 1);
+  };
+
+  const handleDecrementMobile = () => {
+    if (selectedSizeId == null) return;
+    if (cartQty > 1) {
+      updateQuantity(product.slug, selectedSizeId, cartQty - 1);
+    } else {
+      removeItem(product.slug, selectedSizeId);
+    }
+  };
+
+  const isAuthenticated = useIsAuthenticated();
 
   const handleAddToCart = async () => {
     if (!isAuthenticated) {
@@ -343,14 +373,51 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
         {/* Auth modal */}
         <AuthModal initialMode="phone" />
       </div>
-      <div className="md:hidden fixed bottom-0 left-0 right-0 px-4 py-4 flex gap-4 border-t border-[#EEF2F6] bg-white z-50">
-        <Button
-          onClick={handleAddToCartMobile}
-          variant="default"
-          className="flex-1 h-[52px] uppercase font-[400] text-[14px] bg-black text-white py-[12px] px-4 hover:bg-white hover:text-black border border-black"
-        >
-          {t("addToCart")}
-        </Button>
+      <div className="md:hidden fixed bottom-0 left-0 right-0 px-4 py-4 flex gap-3 border-t border-[#EEF2F6] bg-white z-50">
+        {isAuthenticated && cartQty > 0 ? (
+          <>
+            {/* Quantity stepper */}
+            <div className="flex items-center justify-between shrink-0 w-[136px] h-[52px] border border-black rounded-md">
+              <button
+                type="button"
+                onClick={handleDecrementMobile}
+                aria-label="−"
+                className="w-11 h-full flex items-center justify-center cursor-pointer active:opacity-50"
+              >
+                <Minus size={18} strokeWidth={1.75} />
+              </button>
+              <span className="text-base font-medium tabular-nums select-none">
+                {cartQty}
+              </span>
+              <button
+                type="button"
+                onClick={handleIncrementMobile}
+                disabled={cartQty >= maxQty}
+                aria-label="+"
+                className="w-11 h-full flex items-center justify-center cursor-pointer active:opacity-50 disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <Plus size={18} strokeWidth={1.75} />
+              </button>
+            </div>
+
+            {/* Go to cart */}
+            <Button
+              onClick={() => router.push(`/${locale}/cart`)}
+              variant="default"
+              className="flex-1 h-[52px] uppercase font-[400] text-[14px] bg-black text-white py-[12px] px-4 hover:bg-white hover:text-black border border-black"
+            >
+              {t("goToCart")}
+            </Button>
+          </>
+        ) : (
+          <Button
+            onClick={handleAddToCartMobile}
+            variant="default"
+            className="flex-1 h-[52px] uppercase font-[400] text-[14px] bg-black text-white py-[12px] px-4 hover:bg-white hover:text-black border border-black"
+          >
+            {t("addToCart")}
+          </Button>
+        )}
       </div>
     </>
   );

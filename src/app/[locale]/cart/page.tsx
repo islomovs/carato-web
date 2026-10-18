@@ -16,6 +16,7 @@ import ProductsBlockModal from "@/components/shared/product/ProductsBlockModal";
 import { Product } from "@/services/product";
 import type { CartItem as CartItemType } from "@/lib/cartStore";
 import useLockScroll from "@/hooks/useLockScroll";
+import { useAuthStatus } from "@/lib/authStore";
 // import { CartItem as CartItemType } from "@/lib/cartStore";
 
 export default function CartPage() {
@@ -25,6 +26,15 @@ export default function CartPage() {
   useLockScroll(!!selectedCartItem);
   const t = useTranslations("cart");
   const locale = useLocale();
+
+  // Cart is for logged-in users only
+  const { ready: authReady, isAuthenticated } = useAuthStatus();
+  useEffect(() => {
+    if (authReady && !isAuthenticated) {
+      const returnTo = encodeURIComponent(`/${locale}/cart`);
+      router.replace(`/${locale}/auth?returnTo=${returnTo}&guard=1`);
+    }
+  }, [authReady, isAuthenticated, locale, router]);
 
   const { items: wishlist, add, remove } = useWishlistStore();
 
@@ -203,6 +213,8 @@ export default function CartPage() {
   //   },
   // ];
   const isEmpty = cartItems.length === 0;
+
+  if (!authReady || !isAuthenticated) return null;
 
   return (
     <>

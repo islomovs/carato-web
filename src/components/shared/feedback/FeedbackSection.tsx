@@ -17,7 +17,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useFeedback } from "@/hooks/useFeedback";
 import { Skeleton } from "@/components/ui/skeleton"; // shadcn skeleton import
 import AuthModal from "../auth-modal";
-import { getTokenPair } from "@/lib/axios/instance";
+import { useIsAuthenticated } from "@/lib/authStore";
 import FullscreenViewer from "../product/FullscreenViewer";
 import { MediaItemT } from "../product/MediaItem";
 import { useRouter, usePathname } from "next/navigation";
@@ -92,9 +92,9 @@ export default function FeedbackSection({
   console.log("📊 Pagination info:", pagination);
   console.log("⚠️ Feedback loading:", feedbackLoading, "Error:", feedbackError);
 
-  if (!slug) return null;
+  const isAuthenticated = useIsAuthenticated();
 
-  const isAuthenticated = Boolean(getTokenPair().token);
+  if (!slug) return null;
 
   if (loading) {
     return (

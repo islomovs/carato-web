@@ -16,7 +16,7 @@ import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 import useLockScroll from "@/hooks/useLockScroll";
 import { useWishlistStore } from "@/lib/wishlistStore";
-import { getTokenPair } from "@/lib/axios/instance";
+import { useIsAuthenticated } from "@/lib/authStore";
 import { toast } from "sonner";
 
 export default function ProductPage() {
@@ -43,7 +43,7 @@ export default function ProductPage() {
   useLockScroll(sellerOpen);
 
   const { add: addToWishlist, remove: removeFromWishlist, isInWishlist } = useWishlistStore();
-  const isAuthenticated = Boolean(getTokenPair().token);
+  const isAuthenticated = useIsAuthenticated();
   const inWishlist = product ? isInWishlist(product.slug) : false;
 
   useEffect(() => {

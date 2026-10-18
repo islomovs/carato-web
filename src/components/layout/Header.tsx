@@ -13,7 +13,7 @@ import AuthModal from "../shared/auth-modal/index";
 import DesktopNav from "../shared/DesktopNav";
 import MobileMenu from "../shared/MobileMenu";
 import HeaderIcons from "../shared/HeaderIcons";
-import { getTokenPair } from "@/lib/axios/instance";
+import { useIsAuthenticated } from "@/lib/authStore";
 import { useRouter } from "next/navigation";
 import SearchOverlay from "../shared/SearchOverlay";
 
@@ -24,7 +24,7 @@ export default function Header({ transparent = false }: { transparent?: boolean 
   const [menuOpen, setMenuOpen] = useState(false);
   const [langModalOpen, setLangModalOpen] = useState(false);
   const currentLang = useLocale();
-  const isAuthenticated = Boolean(getTokenPair().token);
+  const isAuthenticated = useIsAuthenticated();
   const router = useRouter();
 
 

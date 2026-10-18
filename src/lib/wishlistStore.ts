@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { create } from "zustand";
-import api from "@/lib/axios/instance";
+import api, { AUTH_LOGOUT_EVENT } from "@/lib/axios/instance";
 import { WishlistItem } from "@/services/wishlist";
 
 interface WishlistStore {
@@ -89,3 +89,10 @@ export const useWishlistStore = create<WishlistStore>((set, get) => ({
 
   isInWishlist: (slug) => get().items.some((i) => i.slug === slug),
 }));
+
+// Wipe the wishlist when the user logs out / the session expires
+if (typeof window !== "undefined") {
+  window.addEventListener(AUTH_LOGOUT_EVENT, () => {
+    useWishlistStore.setState({ items: [], error: null, loading: false });
+  });
+}

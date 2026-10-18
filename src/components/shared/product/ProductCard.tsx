@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { WishlistItem } from "@/services/wishlist";
 import { useWishlistStore } from "@/lib/wishlistStore";
-import { getTokenPair } from "@/lib/axios/instance";
+import { useIsAuthenticated } from "@/lib/authStore";
 import { useAuthModalStore } from "@/lib/authModalStore";
 import PriceArrow from "./PriceArrow";
 import { formatPrice } from "@/lib/formatPrice";
@@ -35,7 +35,7 @@ export default function ProductCard({
   const t = useTranslations("product");
   const [hovered, setHovered] = useState(false);
   const locale = useLocale();
-  const isAuthenticated = Boolean(getTokenPair().token);
+  const isAuthenticated = useIsAuthenticated();
 
   const { add, remove, isInWishlist } = useWishlistStore();
   const { openAuth } = useAuthModalStore();

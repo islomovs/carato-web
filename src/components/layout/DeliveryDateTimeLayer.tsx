@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { Button } from "../ui/button";
 import { motion, AnimatePresence } from "framer-motion";
@@ -101,7 +102,13 @@ export default function DeliveryDateTimeLayer({
 
   useLockScroll(open);
 
-  return (
+  // Render into <body> so the panel is positioned against the viewport,
+  // not against the (scrolled / transformed) checkout container.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {open && (
         <>
@@ -111,6 +118,7 @@ export default function DeliveryDateTimeLayer({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
             className="fixed inset-0 bg-[#00000040] z-[55] mb-0"
             onClick={onClose}
           />
@@ -120,12 +128,12 @@ export default function DeliveryDateTimeLayer({
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="absolute left-0 right-0 top-0 bottom-0 
-            md:fixed md:top-4 md:right-4 md:bottom-4 md:left-auto 
+            transition={{ type: "tween", ease: [0.32, 0.72, 0, 1], duration: 0.35 }}
+            style={{ willChange: "transform" }}
+            className="fixed inset-0 md:top-4 md:right-4 md:bottom-4 md:left-auto
             md:rounded-[8px] flex z-[60] bg-white overflow-hidden md:justify-end mb-0"
           >
-            <div className="md:max-w-[520px] mx-auto md:mx-0 h-full bg-white flex flex-col">
+            <div className="w-full md:w-auto md:max-w-[520px] mx-auto md:mx-0 h-full bg-white flex flex-col">
               <PageHeader
                 title={t("deliveryDateTime")}
                 onBack={onClose}
@@ -136,7 +144,7 @@ export default function DeliveryDateTimeLayer({
               />
 
               {/* content */}
-              <div className="flex-1 overflow-auto px-4 pt-8 pb-[120px] space-y-6 md:px-10 md:py-5">
+              <div className="flex-1 overflow-y-auto overscroll-contain px-4 pt-8 pb-6 space-y-6 md:px-10 md:py-5">
                 {/* Дата доставки */}
                 <div>
                   <h3 className="text-[14px] font-normal mb-6">
@@ -152,7 +160,7 @@ export default function DeliveryDateTimeLayer({
                           variant="default"
                           key={opt.label}
                           onClick={() => setSelectedDate(opt.label)}
-                          className={`flex-1 px-4 py-[21px] rounded-md border border-black cursor-pointer hover:bg-black hover:text-white min-w-48 ${
+                          className={`flex-1 px-4 py-[21px] rounded-md border border-black cursor-pointer hover:bg-black hover:text-white min-w-0 md:min-w-48 ${
                             selected
                               ? "bg-black text-white"
                               : "bg-white text-black"
@@ -230,7 +238,7 @@ export default function DeliveryDateTimeLayer({
               </div>
 
               {/* bottom fixed button */}
-              <div className="fixed bottom-0 left-0 right-0 px-4 py-3 md:px-10 md:pr-[54px] md:py-5 bg-white border-t border-[#EEF2F6] md:static md:flex md:justify-end">
+              <div className="shrink-0 px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom))] md:px-10 md:pr-[54px] md:py-5 bg-white border-t border-[#EEF2F6] md:flex md:justify-end">
                 <Button
                   type="button"
                   onClick={handleConfirm}
@@ -251,6 +259,7 @@ export default function DeliveryDateTimeLayer({
           </motion.div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 }

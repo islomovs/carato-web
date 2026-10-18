@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -8,6 +8,7 @@ import { useLocale } from "next-intl";
 import AuthPhoneStep from "./AuthPhoneStep";
 import AuthOtpStep from "./AuthOtpStep";
 import { useAuthPageStore } from "@/lib/authPageStore";
+import { getTokenPair } from "@/lib/axios/instance";
 
 export default function AuthMobileScreen() {
   const t = useTranslations("auth");
@@ -18,7 +19,21 @@ export default function AuthMobileScreen() {
   const reset = useAuthPageStore((s) => s.reset);
 
   const searchParams = useSearchParams();
-  const returnTo = searchParams.get("returnTo");
+  const rawReturnTo = searchParams.get("returnTo");
+  // Only allow in-app paths (blocks "//evil.com" / "https://..." redirects)
+  const returnTo =
+    rawReturnTo && rawReturnTo.startsWith("/") && !rawReturnTo.startsWith("//")
+      ? rawReturnTo
+      : null;
+
+  // Already logged in (e.g. reached via browser back/forward) → leave the
+  // auth screen without adding a history entry.
+  useEffect(() => {
+    if (getTokenPair().token) {
+      router.replace(returnTo ?? `/${locale}/profile`);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const [mode, setMode] = useState<"phone" | "otp">("phone");
   const [phoneValue, setPhoneValue] = useState("");
@@ -36,7 +51,16 @@ export default function AuthMobileScreen() {
 
   const onVerified = () => {
     reset();
-    router.push(returnTo ?? `/${locale}/profile`);
+    const cameFromGuard = searchParams.get("guard") === "1";
+    if (returnTo && !cameFromGuard && window.history.length > 1) {
+      // We came here from returnTo (e.g. product page → auth). Step back so
+      // the auth screen is not left behind in history: product → auth → back
+      // gives [..., product], and the page's own back button then works.
+      router.back();
+    } else {
+      // Opened directly (no previous page) → swap auth for the target page.
+      router.replace(returnTo ?? `/${locale}/profile`);
+    }
   };
 
   return (

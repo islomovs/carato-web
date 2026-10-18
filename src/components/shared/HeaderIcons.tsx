@@ -1,6 +1,6 @@
 import { useRouter } from "next/navigation";
 import { LanguageSwitcher } from "../shared/LanguageSwitcher";
-import { getTokenPair } from "@/lib/axios/instance";
+import { useIsAuthenticated } from "@/lib/authStore";
 import IconButton from "./IconButton";
 
 import { useCartStore } from "@/lib/cartStore";
@@ -13,7 +13,7 @@ type HeaderIconsProps = {
 
 export default function HeaderIcons({ setSearchOpen }: HeaderIconsProps) {
   const router = useRouter();
-  const isAuthenticated = Boolean(getTokenPair().token);
+  const isAuthenticated = useIsAuthenticated();
 
   const cartCount = useCartStore((s) => s.totalQuantity());
   const wishlistCount = useWishlistStore((s) => s.totalCount());

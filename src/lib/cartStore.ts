@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { create } from "zustand";
-import api from "@/lib/axios/instance";
+import api, { AUTH_LOGOUT_EVENT, getTokenPair } from "@/lib/axios/instance";
 import { debounce } from "./debounce";
 import { ProductVariant } from "@/services/product";
 
@@ -57,6 +57,14 @@ export const useCartStore = create<CartStore>((set, get) => {
     500 // wait 0.5 sec after last click
   );
 
+  // Wipe the cart when the user logs out / the session expires
+  if (typeof window !== "undefined") {
+    window.addEventListener(AUTH_LOGOUT_EVENT, () => {
+      syncQuantity.cancel();
+      set({ cartItems: [], error: null, loading: false });
+    });
+  }
+
   return {
     cartItems: [],
     loading: false,
@@ -64,6 +72,11 @@ export const useCartStore = create<CartStore>((set, get) => {
 
     /** GET CART */
     fetchCart: async (locale: string) => {
+      // Logged out → no cart (and don't keep showing a previous user's items)
+      if (!getTokenPair().token) {
+        set({ cartItems: [], loading: false, error: null });
+        return;
+      }
       set({ loading: true, error: null });
       try {
         const res = await api.get("/api/v1/basket/all", {
@@ -105,10 +118,19 @@ export const useCartStore = create<CartStore>((set, get) => {
         const productRes = await api.get(`/api/v1/products/${slug}`);
         const product = productRes.data;
 
+        // Keep only the chosen size, matching the shape /basket/all returns
+        // (cart code reads variants[0] as "the size in the cart").
+        const sizeVariants = (product.variants ?? []).filter(
+          (v: ProductVariant) => v.size?.id === sizeId
+        );
+
         updatedCart = [
           ...cart,
           {
-            product,
+            product: {
+              ...product,
+              variants: sizeVariants.length ? sizeVariants : product.variants,
+            },
             quantity,
           },
         ];
@@ -185,6 +207,9 @@ export const useCartStore = create<CartStore>((set, get) => {
       );
 
       set({ cartItems: updatedCart });
+
+      // Drop any pending quantity sync so it can't re-add the removed item
+      syncQuantity.cancel();
 
       try {
         await api.delete("/api/v1/basket/remove", {

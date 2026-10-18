@@ -4,7 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import clsx from "clsx";
 import { useLocale, useTranslations } from "next-intl";
-import { getTokenPair } from "@/lib/axios/instance";
+import { useIsAuthenticated } from "@/lib/authStore";
 import { useState, useEffect } from "react";
 
 export default function MobileAppBar() {
@@ -17,7 +17,7 @@ export default function MobileAppBar() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  const isAuthenticated = mounted ? Boolean(getTokenPair().token) : false;
+  const isAuthenticated = useIsAuthenticated();
 
   const navItems = [
     { label: t("home"), href: `/${locale}`, icon: "/icons/home.svg" },

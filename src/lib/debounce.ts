@@ -5,8 +5,11 @@ export function debounce<F extends (...args: any[]) => void>(
 ) {
   let timer: NodeJS.Timeout;
 
-  return (...args: Parameters<F>) => {
+  const debounced = (...args: Parameters<F>) => {
     clearTimeout(timer);
     timer = setTimeout(() => fn(...args), delay);
   };
+  debounced.cancel = () => clearTimeout(timer);
+
+  return debounced;
 }

@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // src/lib/axios/instance.ts
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from "axios";
+import { useAuthModalStore } from "@/lib/authModalStore";
+import { useAuthStore } from "@/lib/authStore";
 
 const API_BASE = "https://api.carato.uz";
 
@@ -31,12 +33,42 @@ function setTokenPair({ token, refreshToken }: TokenPair) {
   else localStorage.removeItem(TOKEN_KEY);
   if (refreshToken) localStorage.setItem(REFRESH_KEY, refreshToken);
   else localStorage.removeItem(REFRESH_KEY);
+  useAuthStore.getState().setAuthenticated(Boolean(token));
 }
+
+export const AUTH_LOGOUT_EVENT = "auth:logout";
 
 function clearTokenPair() {
   if (typeof window === "undefined") return;
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(REFRESH_KEY);
+  useAuthStore.getState().setAuthenticated(false);
+  // Let user-scoped stores (cart, wishlist) wipe their in-memory data
+  window.dispatchEvent(new Event(AUTH_LOGOUT_EVENT));
+}
+
+/**
+ * Called when the refresh token is rejected (expired / revoked).
+ * Clears tokens and asks the user to log in again instead of leaving them
+ * on a page that still looks logged-in while every request fails.
+ */
+function handleSessionExpired() {
+  clearTokenPair();
+  if (typeof window === "undefined") return;
+
+  const { pathname, search } = window.location;
+  const firstSegment = pathname.split("/")[1];
+  const locale = ["uz", "ru"].includes(firstSegment) ? firstSegment : "uz";
+
+  if (window.innerWidth < 768) {
+    // Mobile uses the full-page auth screen
+    if (pathname.startsWith(`/${locale}/auth`)) return;
+    const returnTo = encodeURIComponent(pathname + search);
+    window.location.assign(`/${locale}/auth?returnTo=${returnTo}`);
+  } else {
+    // Desktop uses the global auth modal
+    useAuthModalStore.getState().openAuth();
+  }
 }
 
 const api: AxiosInstance = axios.create({
@@ -140,7 +172,7 @@ api.interceptors.response.use(
         return api(originalConfig);
       } catch (errRefresh) {
         processQueue(errRefresh, null);
-        clearTokenPair();
+        handleSessionExpired();
         return Promise.reject(errRefresh);
       } finally {
         isRefreshing = false;

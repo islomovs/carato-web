@@ -1,6 +1,7 @@
 {
   "product": {
     "addToCart": "Savatchaga qo'shish",
+    "goToCart": "Savatchaga o'tish",
     "addedToWishlist": "Sevimlilarga qo'shildi",
     "removedFromWishlist": "Sevimlilardan o'chirildi",
     "close": "Yopish",

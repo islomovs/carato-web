@@ -1,6 +1,7 @@
 {
   "product": {
     "addToCart": "Добавить в корзину",
+    "goToCart": "Перейти в корзину",
     "addedToWishlist": "Добавлено в избранное",
     "removedFromWishlist": "Удалено из избранного",
     "close": "Закрыть",
