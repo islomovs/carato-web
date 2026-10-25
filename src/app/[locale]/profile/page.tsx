@@ -59,7 +59,7 @@ export default function Profile() {
 
                   {isActive && (
                     <motion.div
-                      layoutId="underline"
+                      layoutId="profile-tabs-underline"
                       transition={{
                         type: "spring",
                         stiffness: 300,

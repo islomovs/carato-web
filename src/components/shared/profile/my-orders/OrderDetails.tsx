@@ -87,7 +87,7 @@ export default function OrderDetails({
                       {tab.label}
                       {isActive && (
                         <motion.div
-                          layoutId="underline"
+                          layoutId="order-details-underline"
                           transition={{
                             type: "spring",
                             stiffness: 300,
