@@ -17,12 +17,17 @@ export default function DesktopNav({
   isCollectionsOpen,
   setIsCollectionsOpen,
 }: DesktopNavProps) {
+  const closeDropdowns = () => {
+    setIsCatalogOpen(false);
+    setIsCollectionsOpen(false);
+  };
+
   return (
     <nav className="hidden md:flex items-center justify-center gap-6 text-sm h-10 mt-2">
-      <Link href="/shops">
+      <Link href="/shops" onClick={closeDropdowns}>
         <NavButton>{t("shops")}</NavButton>
       </Link>
-      <Link href="/about">
+      <Link href="/about" onClick={closeDropdowns}>
         <NavButton>{t("about")}</NavButton>
       </Link>
       <NavButton

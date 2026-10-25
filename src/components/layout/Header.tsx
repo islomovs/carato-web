@@ -14,7 +14,7 @@ import DesktopNav from "../shared/DesktopNav";
 import MobileMenu from "../shared/MobileMenu";
 import HeaderIcons from "../shared/HeaderIcons";
 import { useIsAuthenticated } from "@/lib/authStore";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import SearchOverlay from "../shared/SearchOverlay";
 
 export default function Header({ transparent = false }: { transparent?: boolean }) {
@@ -26,7 +26,13 @@ export default function Header({ transparent = false }: { transparent?: boolean 
   const currentLang = useLocale();
   const isAuthenticated = useIsAuthenticated();
   const router = useRouter();
+  const pathname = usePathname();
 
+  // Close dropdowns when navigating to another page
+  useEffect(() => {
+    setIsCatalogOpen(false);
+    setIsCollectionsOpen(false);
+  }, [pathname]);
 
   const [scrollProgress, setScrollProgress] = useState(0);
   const [searchOpen, setSearchOpen] = useState(false);
