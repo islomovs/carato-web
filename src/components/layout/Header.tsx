@@ -102,7 +102,7 @@ export default function Header({ transparent = false }: { transparent?: boolean 
     <header
       className="fixed top-0 left-0 w-full flex justify-center px-2 md:px-8 z-50"
       style={
-        transparent && !menuOpen
+        transparent && !menuOpen && !anyDropdownOpen
           ? {
               backgroundColor: `rgba(255, 255, 255, ${scrollProgress})`,
               borderBottom: `1px solid rgba(238, 242, 246, ${scrollProgress})`,
