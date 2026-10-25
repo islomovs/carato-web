@@ -104,8 +104,11 @@ export default function ProductInfo({ product, isLoading }: ProductInfoProps) {
       return;
     }
     try {
-      await addToCart(product!.slug, selectedVariant.size.id!, 1);
-      router.push(`/${locale}/cart`);
+      // Don't add a second unit if this size is already in the cart
+      if (cartQty === 0) {
+        await addToCart(product!.slug, selectedVariant.size.id!, 1);
+      }
+      router.push(`/${locale}/checkout`);
     } catch {
       toast.error(t("addedToCartError"));
     }

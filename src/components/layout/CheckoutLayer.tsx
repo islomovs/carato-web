@@ -2,7 +2,7 @@
 "use client";
 
 import { TotalsColumn } from "../shared/checkout/TotalsColumn";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { ContactInfoSection } from "../shared/checkout/ContactInfoSection";
 import { DeliveryOptionsSection } from "../shared/checkout/DeliveryOptionsSection";
@@ -17,6 +17,7 @@ import { useCreateOrder } from "@/hooks/useCreateOrder";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useUserInfo } from "@/hooks/useUserInfo";
+import { createAtmosPayment } from "@/services/atmos";
 
 export type PaymentOption = "ATMOS" | "CASH";
 
@@ -34,11 +35,13 @@ export default function CheckoutLayer({
   const t = useTranslations("checkout");
   const { createOrder } = useCreateOrder();
   const router = useRouter();
+  const locale = useLocale();
   const { userInfo } = useUserInfo();
 
   const cartItems = useCartStore((state) => state.cartItems);
   const [deliveryPrice, setDeliveryPrice] = useState(0);
   const [promoDiscount, setPromoDiscount] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
   const { totalQuantity, totalPrice, totalOldPrice } = useCartStore();
   const savings = totalOldPrice() - totalPrice();
   const totalSum = totalPrice() + deliveryPrice;
@@ -119,6 +122,9 @@ export default function CheckoutLayer({
       toast.error(t("errors.paymentRequired"));
       return;
     }
+    // Prevent duplicate orders from repeated clicks
+    if (submitting) return;
+    setSubmitting(true);
 
     try {
       const productsPayload = cartItems.map((item) => {
@@ -142,16 +148,28 @@ export default function CheckoutLayer({
       console.log("Checkout Payload:", payload);
 
       const response = await createOrder(payload);
-      const checkoutUrl = response?.checkoutUrl;
 
-      if (data.paymentType === "ATMOS" && checkoutUrl) {
-        window.location.href = checkoutUrl;
-      } else {
-        router.push("/profile?tab=orders");
+      if (data.paymentType === "ATMOS") {
+        // Prefer the URL returned with the order, otherwise request one from Atmos
+        let checkoutUrl: string | undefined = response?.checkoutUrl;
+        if (!checkoutUrl && response?.id) {
+          try {
+            const res = await createAtmosPayment(response.id);
+            checkoutUrl = res?.checkoutUrl || res?.redirectUrl;
+          } catch (err) {
+            console.error("Failed to create Atmos payment:", err);
+          }
+        }
+        if (checkoutUrl) {
+          window.location.href = checkoutUrl;
+          return;
+        }
       }
+      router.push(`/${locale}/profile?tab=orders`);
     } catch (err) {
       console.error("Failed to create order:", err);
       toast.error("Could not place order. Please try again.");
+      setSubmitting(false);
     }
   };
 

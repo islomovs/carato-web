@@ -39,8 +39,11 @@ export default function OrderCard({ order, onOpenDetails }: OrderCardProps) {
 
   const statusKey = order.status?.toLowerCase() || "new";
   const statusInfo = statusMap[statusKey] || statusMap.new;
-  // Only show pay button if there's a checkout URL (cash orders won't have one)
-  const canPay = !order.isPaid && !!order.checkoutUrl && statusKey !== "cancelled";
+  // Show pay button for unpaid online (ATMOS) orders; cash orders have no checkout URL
+  const canPay =
+    !order.isPaid &&
+    statusKey !== "cancelled" &&
+    (!!order.checkoutUrl || order.paymentType?.toUpperCase() === "ATMOS");
 
   useEffect(() => {
     const el = scrollRef.current;

@@ -58,6 +58,7 @@ export type MyOrdersAll = {
   status: string;
   checkoutUrl: string;
   isPaid: boolean;
+  paymentType?: string;
   images: [
     {
       image: string;
