@@ -43,6 +43,8 @@
         "assembling": "Yig'ilmoqda",
         "delivering": "Yetkazilmoqda",
         "cancelled": "Bekor qilindi",
+        "processed": "Ishlov berilmoqda",
+        "withdrawable": "Yechib olish mumkin",
         "date": "Buyurtma sanasi",
         "totalAmount": "Jami summa",
         "comment": "Izoh",

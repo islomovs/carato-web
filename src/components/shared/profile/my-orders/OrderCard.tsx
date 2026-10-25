@@ -13,13 +13,13 @@ interface OrderCardProps {
   onOpenDetails: () => void;
 }
 
-const statusMap: Record<string, { label: string; color: string }> = {
-  new: { label: "Noviy", color: "bg-gray-500" },
-  assembling: { label: "V sborke", color: "bg-blue-500" },
-  delivering: { label: "V dostavke", color: "bg-orange-500" },
-  processed: { label: "V obrabotke", color: "bg-green-500" },
-  withdrawable: { label: "Dostup k vyvodu", color: "bg-teal-500" },
-  cancelled: { label: "Otmenen", color: "bg-red-600" },
+const statusColors: Record<string, string> = {
+  new: "bg-gray-500",
+  assembling: "bg-blue-500",
+  delivering: "bg-orange-500",
+  processed: "bg-green-500",
+  withdrawable: "bg-teal-500",
+  cancelled: "bg-red-600",
 };
 
 function formatDate(iso: string) {
@@ -37,8 +37,9 @@ export default function OrderCard({ order, onOpenDetails }: OrderCardProps) {
   const [isOverflowing, setIsOverflowing] = useState(false);
   const [paying, setPaying] = useState(false);
 
-  const statusKey = order.status?.toLowerCase() || "new";
-  const statusInfo = statusMap[statusKey] || statusMap.new;
+  const rawStatus = order.status?.toLowerCase() || "new";
+  const statusKey = rawStatus in statusColors ? rawStatus : "new";
+  const statusInfo = { label: t(statusKey), color: statusColors[statusKey] };
   // Show pay button for unpaid online (ATMOS) orders; cash orders have no checkout URL
   const canPay =
     !order.isPaid &&

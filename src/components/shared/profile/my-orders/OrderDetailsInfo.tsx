@@ -38,6 +38,8 @@ export default function OrderDetailsInfo({ order }: OrderDetailsInfoProps) {
     new: { label: t("new"), color: "bg-gray-500" },
     assembling: { label: t("assembling"), color: "bg-blue-500" },
     delivering: { label: t("delivering"), color: "bg-orange-500" },
+    processed: { label: t("processed"), color: "bg-green-500" },
+    withdrawable: { label: t("withdrawable"), color: "bg-teal-500" },
     cancelled: { label: t("cancelled"), color: "bg-red-600" },
   };
 

@@ -43,6 +43,8 @@
         "assembling": "В сборке",
         "delivering": "В доставке",
         "cancelled": "Отменён",
+        "processed": "В обработке",
+        "withdrawable": "Доступно к выводу",
         "date": "Дата заказа",
         "totalAmount": "Итоговая сумма",
         "comment": "Комментарий",
