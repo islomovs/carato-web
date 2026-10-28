@@ -179,7 +179,7 @@ export default function CatalogDropdown({
                       src={
                         selected?.desktopImage || // ← catalogue's own image
                         selected?.categories?.[0]?.desktopImage ||
-                        "/images/promo1.jpg"
+                        "/images/about-portrait.jpg"
                       }
                       alt="promo-big"
                       fill

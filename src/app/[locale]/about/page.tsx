@@ -1,24 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useTranslations } from "next-intl";
-
-const SPECIALS = [
-  ["special1Title", "special1Text"],
-  ["special2Title", "special2Text"],
-  ["special3Title", "special3Text"],
-  ["special4Title", "special4Text"],
-  ["special5Title", "special5Text"],
-] as const;
-
-const VALUES = [
-  ["value1Title", "value1Text"],
-  ["value2Title", "value2Text"],
-  ["value3Title", "value3Text"],
-  ["value4Title", "value4Text"],
-] as const;
-
-const BUYERS = ["buyers1", "buyers2", "buyers3", "buyers4"] as const;
+import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 
 const GRID_IMAGES = [
   "/images/p-5.jpg",
@@ -27,9 +11,14 @@ const GRID_IMAGES = [
   "/images/p-8.jpg",
 ];
 
+// Paths from the content handoff (01_content/links.json)
+const CATALOG_PATH = "/products/yuvelirnye-izdeliya";
+const PARTNERS_PATH = "/partners";
+
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="text-[20px] leading-[28px] md:text-[22px] md:leading-[30px] font-medium text-black">
+    // whitespace-pre-line: titles contain intentional "\n" line breaks
+    <h2 className="whitespace-pre-line text-[20px] leading-[28px] md:text-[22px] md:leading-[30px] font-medium text-black">
       {children}
     </h2>
   );
@@ -43,16 +32,14 @@ function SectionText({ children }: { children: React.ReactNode }) {
   );
 }
 
-function Citation({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="bg-[#EEF2F6] rounded-[4px] border-l-4 border-[#697586] px-5 md:px-6 py-4 flex flex-col gap-[10px]">
-      {children}
-    </div>
-  );
-}
+const CTA_PRIMARY =
+  "inline-flex items-center justify-center min-h-[48px] px-6 bg-black text-white border border-black hover:bg-white hover:text-black font-normal uppercase rounded-md text-sm transition-colors";
+const CTA_SECONDARY =
+  "inline-flex items-center justify-center min-h-[48px] px-6 bg-white text-black border border-black hover:bg-black hover:text-white font-normal uppercase rounded-md text-sm transition-colors";
 
 export default function AboutPage() {
   const t = useTranslations("about");
+  const locale = useLocale();
 
   return (
     <div className="w-full">
@@ -60,10 +47,11 @@ export default function AboutPage() {
       {/* -mt-[66px] on desktop pulls the block up so it starts at y=0 behind the header */}
       <div className="relative w-full h-[300px] md:h-[520px] md:-mt-[66px]">
         <Image
-          src="/images/promo1.jpg"
-          alt="Carato"
+          src="/images/about-portrait.jpg"
+          alt={t("imageAlt")}
           fill
-          className="object-cover"
+          // focus on face + earring so the earring is never cropped
+          className="object-cover object-[50%_38%]"
           priority
         />
         {/* top gradient keeps transparent-header elements readable */}
@@ -73,11 +61,22 @@ export default function AboutPage() {
       {/* ─── Main content — max 910 px centred, 16 px side padding on mobile ─── */}
       <div className="mx-auto max-w-[910px] px-4 md:px-0">
 
-        {/* Кто мы */}
+        {/* Intro */}
         <div className="mt-12 md:mt-20">
-          <SectionTitle>{t("whoTitle")}</SectionTitle>
+          <p className="text-[13px] tracking-[0.12em] uppercase text-[#697586] mb-2">
+            {t("eyebrow")}
+          </p>
+          <SectionTitle>{t("headline")}</SectionTitle>
           <div className="mt-2">
-            <SectionText>{t("whoText")}</SectionText>
+            <SectionText>{t("intro")}</SectionText>
+          </div>
+          <div className="mt-6 flex flex-col sm:flex-row gap-3">
+            <Link href={`/${locale}${CATALOG_PATH}`} className={CTA_PRIMARY}>
+              {t("catalogCta")}
+            </Link>
+            <Link href={`/${locale}${PARTNERS_PATH}`} className={CTA_SECONDARY}>
+              {t("partnerCta")}
+            </Link>
           </div>
         </div>
 
@@ -91,121 +90,79 @@ export default function AboutPage() {
           </div>
         </div>
 
-        {/* Наша миссия */}
+        {/* Story */}
         <div className="mt-12 md:mt-20">
-          <SectionTitle>{t("missionTitle")}</SectionTitle>
+          <SectionTitle>{t("storyTitle")}</SectionTitle>
           <div className="mt-2">
-            <SectionText>{t("missionText")}</SectionText>
+            <SectionText>{t("story")}</SectionText>
           </div>
         </div>
 
-        {/* Что делает нас особенными — citation block */}
-        <div className="mt-12 md:mt-20">
-          <SectionTitle>{t("specialTitle")}</SectionTitle>
-          <div className="mt-2">
-            <Citation>
-              {SPECIALS.map(([titleKey, textKey]) => (
-                <SectionText key={titleKey}>
-                  <span className="font-medium">{t(titleKey)}:</span>{" "}
-                  {t(textKey)}
-                </SectionText>
-              ))}
-            </Citation>
+        {/* Full-width macro image (386 px desktop / 400 px mobile, 16 px padded) */}
+        <figure className="mt-12 md:mt-20">
+          <div className="relative w-full h-[400px] md:h-[386px] overflow-hidden">
+            <Image
+              src="/images/about-detail.jpg"
+              alt={t("macroAlt")}
+              fill
+              // keep the earring centred in both wide and tall crops
+              className="object-cover object-[53%_42%]"
+            />
           </div>
-        </div>
+          <figcaption className="mt-2 text-[14px] font-light text-[#697586]">
+            {t("caption")}
+          </figcaption>
+        </figure>
 
-        {/* Full-width image (386 px desktop / 400 px mobile, 16 px padded) */}
-        <div className="mt-12 md:mt-20 relative w-full h-[400px] md:h-[386px] overflow-hidden">
-          <Image
-            src="/images/news-golden-harmony.jpg"
-            alt=""
-            fill
-            className="object-cover"
-          />
-        </div>
-
-        {/* История и путь — 2-column text on desktop */}
+        {/* Selection */}
         <div className="mt-12 md:mt-20">
-          <SectionTitle>{t("historyTitle")}</SectionTitle>
-          <div className="mt-2 flex flex-col md:flex-row md:gap-[52px]">
-            <div className="md:flex-1">
-              <SectionText>{t("historyLeft")}</SectionText>
-            </div>
-            <div className="mt-2 md:mt-0 md:flex-1">
-              <SectionText>{t("historyRight")}</SectionText>
-            </div>
+          <SectionTitle>{t("selectionTitle")}</SectionTitle>
+          <div className="mt-2">
+            <SectionText>{t("selection")}</SectionText>
           </div>
         </div>
 
       </div>
 
-      {/* ─── Наши ценности — image left (429×640 desktop) + numbered list right ─── */}
+      {/* ─── Details — product image left (429×640 desktop) + text right ─── */}
       <div className="mx-auto max-w-[910px] px-4 md:px-0 mt-12 md:mt-20">
         <div className="flex flex-col md:flex-row md:gap-[52px]">
 
-          {/* Image — 400 px mobile, 429×640 desktop */}
-          <div className="relative w-full md:w-[429px] md:shrink-0 h-[400px] md:h-[640px] overflow-hidden">
+          {/* Catalogue shot — shown whole (contain), never cropped */}
+          <div className="relative w-full md:w-[429px] md:shrink-0 h-[400px] md:h-[640px] overflow-hidden bg-white">
             <Image
-              src="/images/jewellery-rings.jpg"
-              alt=""
+              src="/images/about-product.jpg"
+              alt={t("productAlt")}
               fill
-              className="object-cover"
+              className="object-contain"
             />
           </div>
 
-          {/* Values — stacked on mobile (48 px gap via mt-12), centred vertically on desktop */}
           <div className="mt-12 md:mt-0 md:flex-1 md:flex md:items-center">
             <div>
-              <SectionTitle>{t("valuesTitle")}</SectionTitle>
-              <ol className="mt-2 flex flex-col gap-[10px]">
-                {VALUES.map(([titleKey, textKey], i) => (
-                  <li key={titleKey}>
-                    <SectionText>
-                      <span className="font-medium">
-                        {i + 1}.&nbsp;{t(titleKey)}
-                      </span>{" "}
-                      — {t(textKey)}
-                    </SectionText>
-                  </li>
-                ))}
-              </ol>
+              <SectionTitle>{t("detailsTitle")}</SectionTitle>
+              <div className="mt-2">
+                <SectionText>{t("details")}</SectionText>
+              </div>
             </div>
           </div>
 
         </div>
       </div>
 
-      {/* ─── Для покупателей + Для партнёров ─── */}
+      {/* ─── Partners ─── */}
       <div className="mx-auto max-w-[910px] px-4 md:px-0">
-
-        {/* Для покупателей */}
         <div className="mt-12 md:mt-20">
-          <SectionTitle>{t("buyersTitle")}</SectionTitle>
+          <SectionTitle>{t("partnerTitle")}</SectionTitle>
           <div className="mt-2">
-            <SectionText>{t("buyersIntro")}</SectionText>
+            <SectionText>{t("partnerText")}</SectionText>
           </div>
-          {/* bullet list — 20 px gap */}
-          <div className="mt-5">
-            <Citation>
-              {BUYERS.map((key) => (
-                <SectionText key={key}>{t(key)}</SectionText>
-              ))}
-            </Citation>
-          </div>
-          {/* outro — 20 px gap */}
-          <div className="mt-5">
-            <SectionText>{t("buyersOutro")}</SectionText>
+          <div className="mt-6">
+            <Link href={`/${locale}${PARTNERS_PATH}`} className={CTA_SECONDARY}>
+              {t("partnerCta")}
+            </Link>
           </div>
         </div>
-
-        {/* Для партнёров */}
-        <div className="mt-12 md:mt-20">
-          <SectionTitle>{t("partnersTitle")}</SectionTitle>
-          <div className="mt-2">
-            <SectionText>{t("partnersText")}</SectionText>
-          </div>
-        </div>
-
       </div>
 
       {/* ─── 4-image 2×2 grid ─── */}
