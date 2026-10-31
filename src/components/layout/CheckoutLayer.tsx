@@ -161,7 +161,13 @@ export default function CheckoutLayer({
           }
         }
         if (checkoutUrl) {
-          window.location.href = checkoutUrl;
+          // Leave Profile → Orders (not checkout) behind in history, so Back from the payment page lands there
+          window.history.replaceState(null, "", `/${locale}/profile?tab=orders`);
+          // Back may restore this page from bfcache with the stale checkout UI — reload to render the orders page
+          window.addEventListener("pageshow", (e) => {
+            if (e.persisted) window.location.reload();
+          });
+          window.location.assign(checkoutUrl);
           return;
         }
       }
