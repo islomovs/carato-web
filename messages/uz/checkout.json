@@ -38,6 +38,11 @@
       "deliveryDateRequired": "Yetkazib berish sanasi majburiy",
       "deliveryTimeRequired": "Yetkazib berish vaqti majburiy",
       "paymentRequired": "To'lov usuli majburiy"
+    },
+    "deliveryOptions": "Yetkazib berish usullari",
+    "deliveryTypes": {
+      "courier": "Kompaniya kuryeri",
+      "yandex": "Yandex Yetkazib berish"
     }
   }
 }

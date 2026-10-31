@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { Button } from "../../ui/button";
 import { UseFormSetValue, UseFormWatch } from "react-hook-form";
+import { useTranslations } from "next-intl";
 
 interface DeliveryOptionsSectionProps {
   watch: UseFormWatch<any>;
@@ -12,16 +13,17 @@ export function DeliveryOptionsSection({
   watch,
   setValue,
 }: DeliveryOptionsSectionProps) {
+  const t = useTranslations("checkout");
   const selected = watch("deliveryType");
 
   const options = [
-    { key: "courier", label: "Курьер компании" },
-    { key: "yandex", label: "Яндекс.Доставка" },
+    { key: "courier", label: t("deliveryTypes.courier") },
+    { key: "yandex", label: t("deliveryTypes.yandex") },
   ];
 
   return (
     <div>
-      <h3 className="text-[14px] md:text-base mb-4">Варианты доставки</h3>
+      <h3 className="text-[14px] md:text-base mb-4">{t("deliveryOptions")}</h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {options.map((opt: { key: string; label: string }) => {

@@ -32,6 +32,7 @@ interface OrderDetailsInfoProps {
 
 export default function OrderDetailsInfo({ order }: OrderDetailsInfoProps) {
   const t = useTranslations("profile");
+  const tCheckout = useTranslations("checkout");
   const [paying, setPaying] = useState(false);
 
   const statusMap: Record<string, { label: string; color: string }> = {
@@ -90,7 +91,14 @@ export default function OrderDetailsInfo({ order }: OrderDetailsInfoProps) {
             order.entrance ? `, подъезд ${order.entrance}` : ""
           }${order.floor ? `, этаж ${order.floor}` : ""}`}
         />
-        <OrderInfoRow label={t("deliveryMethod")} value={order.deliveryType} />
+        <OrderInfoRow
+          label={t("deliveryMethod")}
+          value={
+            tCheckout.has(`deliveryTypes.${order.deliveryType}`)
+              ? tCheckout(`deliveryTypes.${order.deliveryType}`)
+              : order.deliveryType
+          }
+        />
         <OrderInfoRow
           label={t("preferredDeliveryTime")}
           value={
