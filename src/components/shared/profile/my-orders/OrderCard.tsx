@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { MyOrdersAll } from "@/services/order";
 import { createAtmosPayment } from "@/services/atmos";
+import { closePaymentTab, openPaymentTab, sendPaymentTab } from "@/lib/paymentTab";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
@@ -57,9 +58,11 @@ export default function OrderCard({ order, onOpenDetails }: OrderCardProps) {
 
   const handlePay = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    // Payment opens in a new tab — opened now, inside the click, so it isn't blocked
+    const tab = openPaymentTab();
     // Use existing checkoutUrl if present, otherwise generate one
     if (order.checkoutUrl) {
-      window.location.href = order.checkoutUrl;
+      if (!sendPaymentTab(tab, order.checkoutUrl)) window.location.href = order.checkoutUrl;
       return;
     }
     setPaying(true);
@@ -67,11 +70,13 @@ export default function OrderCard({ order, onOpenDetails }: OrderCardProps) {
       const res = await createAtmosPayment(order.id);
       const redirectUrl = res?.checkoutUrl || res?.redirectUrl;
       if (redirectUrl) {
-        window.location.href = redirectUrl;
+        if (!sendPaymentTab(tab, redirectUrl)) window.location.href = redirectUrl;
       } else {
+        closePaymentTab(tab);
         toast.error(t("noPaymentLink"));
       }
     } catch {
+      closePaymentTab(tab);
       toast.error(t("paymentError"));
     } finally {
       setPaying(false);

@@ -2,6 +2,7 @@
 
 import { MyOrderItem } from "@/services/order";
 import { createAtmosPayment } from "@/services/atmos";
+import { closePaymentTab, openPaymentTab, sendPaymentTab } from "@/lib/paymentTab";
 import OrderInfoRow from "./OrderInfoRow";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
@@ -50,16 +51,25 @@ export default function OrderDetailsInfo({ order }: OrderDetailsInfoProps) {
     order.status?.toLowerCase() !== "cancelled";
 
   const handlePay = async () => {
+    // Payment opens in a new tab — opened now, inside the click, so it isn't blocked
+    const tab = openPaymentTab();
+    // Use existing checkoutUrl if present, otherwise generate one
+    if (order.checkoutUrl) {
+      if (!sendPaymentTab(tab, order.checkoutUrl)) window.location.href = order.checkoutUrl;
+      return;
+    }
     setPaying(true);
     try {
       const res = await createAtmosPayment(order.id);
       const redirectUrl = res?.checkoutUrl || res?.redirectUrl;
       if (redirectUrl) {
-        window.location.href = redirectUrl;
+        if (!sendPaymentTab(tab, redirectUrl)) window.location.href = redirectUrl;
       } else {
+        closePaymentTab(tab);
         toast.error(t("noPaymentLink"));
       }
     } catch {
+      closePaymentTab(tab);
       toast.error(t("paymentError"));
     } finally {
       setPaying(false);

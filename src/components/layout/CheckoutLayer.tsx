@@ -14,10 +14,11 @@ import PageHeader from "../shared/PageHeader";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/lib/cartStore";
 import { useCreateOrder } from "@/hooks/useCreateOrder";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { useUserInfo } from "@/hooks/useUserInfo";
 import { createAtmosPayment } from "@/services/atmos";
+import { closePaymentTab, openPaymentTab, sendPaymentTab } from "@/lib/paymentTab";
 
 export type PaymentOption = "ATMOS" | "CASH";
 
@@ -42,6 +43,7 @@ export default function CheckoutLayer({
   const [deliveryPrice, setDeliveryPrice] = useState(0);
   const [promoDiscount, setPromoDiscount] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const payTabRef = useRef<Window | null>(null);
   const { totalQuantity, totalPrice, totalOldPrice } = useCartStore();
   const savings = totalOldPrice() - totalPrice();
   const totalSum = totalPrice() + deliveryPrice;
@@ -106,24 +108,20 @@ export default function CheckoutLayer({
   }, [userInfo, reset]);
 
   const onSubmit = async (data: any) => {
-    if (!data.deliveryType) {
-      toast.error(t("errors.deliveryRequired"));
-      return;
-    }
-    if (!data.address) {
-      toast.error(t("errors.addressRequired"));
-      return;
-    }
-    if (!data.deliveryPreferredTime) {
-      toast.error(t("errors.dateTimeRequired"));
-      return;
-    }
-    if (!data.paymentType) {
-      toast.error(t("errors.paymentRequired"));
-      return;
-    }
+    // Tab opened in the submit click (see form onSubmit); closed on any early exit
+    const payTab = payTabRef.current;
+    payTabRef.current = null;
+    const fail = (message?: string) => {
+      closePaymentTab(payTab);
+      if (message) toast.error(message);
+    };
+
+    if (!data.deliveryType) return fail(t("errors.deliveryRequired"));
+    if (!data.address) return fail(t("errors.addressRequired"));
+    if (!data.deliveryPreferredTime) return fail(t("errors.dateTimeRequired"));
+    if (!data.paymentType) return fail(t("errors.paymentRequired"));
     // Prevent duplicate orders from repeated clicks
-    if (submitting) return;
+    if (submitting) return fail();
     setSubmitting(true);
 
     try {
@@ -148,6 +146,7 @@ export default function CheckoutLayer({
       console.log("Checkout Payload:", payload);
 
       const response = await createOrder(payload);
+      let paymentTabUsed = false;
 
       if (data.paymentType === "ATMOS") {
         // Prefer the URL returned with the order, otherwise request one from Atmos
@@ -160,8 +159,10 @@ export default function CheckoutLayer({
             console.error("Failed to create Atmos payment:", err);
           }
         }
-        if (checkoutUrl) {
-          // Leave Profile → Orders (not checkout) behind in history, so Back from the payment page lands there
+        // Payment opens in the new tab; this tab moves on to Profile → Orders
+        if (checkoutUrl) paymentTabUsed = sendPaymentTab(payTab, checkoutUrl);
+        if (checkoutUrl && !paymentTabUsed) {
+          // Tab was blocked: pay in this tab, leaving Profile → Orders behind in history for Back
           window.history.replaceState(null, "", `/${locale}/profile?tab=orders`);
           // Back may restore this page from bfcache with the stale checkout UI — reload to render the orders page
           window.addEventListener("pageshow", (e) => {
@@ -171,10 +172,12 @@ export default function CheckoutLayer({
           return;
         }
       }
-      router.push(`/${locale}/profile?tab=orders`);
+      // Cash order, or no payment link came back: drop the empty tab
+      if (!paymentTabUsed) closePaymentTab(payTab);
+      router.replace(`/${locale}/profile?tab=orders`);
     } catch (err) {
       console.error("Failed to create order:", err);
-      toast.error("Could not place order. Please try again.");
+      fail("Could not place order. Please try again.");
       setSubmitting(false);
     }
   };
@@ -210,7 +213,15 @@ export default function CheckoutLayer({
         }
       >
         <form
-          onSubmit={handleSubmit(onSubmit)}
+          onSubmit={(e) => {
+            // Online payment opens in a new tab: it must be opened here, inside the click
+            payTabRef.current =
+              watch("paymentType") === "ATMOS" && !submitting ? openPaymentTab() : null;
+            return handleSubmit(onSubmit, () => {
+              closePaymentTab(payTabRef.current);
+              payTabRef.current = null;
+            })(e);
+          }}
           className="flex-1 flex flex-col"
         >
           <div className="flex flex-row h-full md:mb-20">
