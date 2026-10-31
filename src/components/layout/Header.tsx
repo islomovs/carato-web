@@ -143,7 +143,7 @@ export default function Header({ transparent = false }: { transparent?: boolean 
           className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex h-[48px] items-center"
         >
           <Image
-            src="/images/carato-logo.png"
+            src="/images/carato-logo-black.png"
             alt="Carato"
             width={164}
             height={48}
