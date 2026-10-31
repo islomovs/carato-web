@@ -33,9 +33,9 @@ export default function Footer() {
 
         <Link href="/" className="flex items-center justify-center">
           <Image
-            src="/images/logo.png"
+            src="/images/logo-carato.png"
             alt="Carato"
-            width={120}
+            width={119}
             height={40}
             className="object-contain"
           />
