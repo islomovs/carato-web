@@ -9,6 +9,7 @@ export type WishlistItem = {
   category: { id: number; name: string; slug: string };
   discountPrice: number;
   discountPercent: number;
+  isPriceIncreased?: boolean | null;
   images: {
     image: string;
   }[];

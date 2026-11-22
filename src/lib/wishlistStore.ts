@@ -29,7 +29,31 @@ export const useWishlistStore = create<WishlistStore>((set, get) => ({
       const res = await api.get("/api/v1/wishlist/all", {
         headers: { "Accept-Language": locale },
       });
-      set({ items: res.data, loading: false });
+      const items: WishlistItem[] = res.data;
+      set({ items, loading: false });
+
+      // The wishlist API doesn't return isPriceIncreased (drives the price up/down arrow on cards);
+      // fill it in from each product's details. Skipped for items that already have it.
+      const missing = items.filter((i) => i.isPriceIncreased === undefined);
+      if (missing.length === 0) return;
+      const trends = new Map<string, boolean | null>();
+      await Promise.all(
+        missing.map(async (i) => {
+          try {
+            const { data } = await api.get(`/api/v1/products/${i.slug}`, {
+              headers: { "Accept-Language": locale },
+            });
+            trends.set(i.slug, data?.isPriceIncreased ?? null);
+          } catch {
+            // no arrow for this card
+          }
+        }),
+      );
+      set({
+        items: get().items.map((i) =>
+          trends.has(i.slug) ? { ...i, isPriceIncreased: trends.get(i.slug) } : i,
+        ),
+      });
     } catch (err: any) {
       set({ error: err.message, loading: false });
     }
