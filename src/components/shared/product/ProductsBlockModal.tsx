@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { getProductBySlug, Product } from "@/services/product";
 import { AnimatePresence, motion } from "framer-motion";
 import { Dialog } from "@/components/ui/dialog";
@@ -49,13 +50,17 @@ export default function ProductsBlockModal({
 
   const finalProduct = productData || selectedProductData;
 
-  return (
+  if (typeof document === "undefined") return null;
+
+  // Portal to <body>: cards often sit inside transformed/stacked containers (carousels),
+  // which would otherwise trap the sheet underneath the fixed mobile app bar.
+  return createPortal(
     <Dialog open={!!slug} onOpenChange={(open) => !open && onClose()}>
       <AnimatePresence>
         {slug && (
           <>
-            {/* Mobile bottom sheet */}
-            <div className="fixed inset-0 z-50 bg-black/60 md:hidden">
+            {/* Mobile bottom sheet — above the mobile app bar (z-50) */}
+            <div className="fixed inset-0 z-[60] bg-black/60 md:hidden">
               <motion.div
                 className="absolute bottom-0 left-0 w-full bg-white rounded-t-[24px] overflow-hidden"
                 initial={{ y: "100%" }}
@@ -178,6 +183,7 @@ export default function ProductsBlockModal({
           </>
         )}
       </AnimatePresence>
-    </Dialog>
+    </Dialog>,
+    document.body,
   );
 }
