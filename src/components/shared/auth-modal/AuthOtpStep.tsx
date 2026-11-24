@@ -51,6 +51,26 @@ export default function AuthOtpStep({
     }
   };
 
+  // Android Chrome: read the code straight from the SMS (WebOTP, user taps "Allow").
+  // Only works when the SMS ends with a line like "@carato.uz #123456".
+  useEffect(() => {
+    if (typeof window === "undefined" || !("OTPCredential" in window)) return;
+    const ac = new AbortController();
+    navigator.credentials
+      .get({ otp: { transport: ["sms"] }, signal: ac.signal } as CredentialRequestOptions)
+      .then((cred) => {
+        const otp = (cred as (Credential & { code?: string }) | null)?.code;
+        if (otp) {
+          setCode(otp.replace(/\D/g, "").slice(0, 6));
+          setError(null);
+        }
+      })
+      .catch(() => {
+        // aborted (step left) or not supported — manual entry still works
+      });
+    return () => ac.abort();
+  }, []);
+
   // Auto-submit when all 6 digits are entered
   useEffect(() => {
     if (code.length === 6) {
@@ -95,9 +115,11 @@ export default function AuthOtpStep({
               justifyContent: "space-between",
               width: "100%",
             }}
-            renderInput={(props) => (
+            renderInput={(props, index) => (
               <input
                 {...props}
+                // Lets iOS / Android keyboards offer the code from the SMS (one tap fills all boxes)
+                autoComplete={index === 0 ? "one-time-code" : "off"}
                 placeholder="-"
                 className={`text-center border rounded-[4px] text-[20px] font-medium focus:outline-none ${
                   error ? "border-red-500" : "border-black"
