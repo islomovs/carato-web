@@ -67,7 +67,7 @@ export default function SellerInfoCard({
               width={56}
               height={56}
               onError={() => setImgError(true)}
-              className="object-contain w-full h-full"
+              className="object-cover w-full h-full"
             />
           </div>
           <div className="flex flex-col gap-[2px]">
@@ -114,11 +114,12 @@ export default function SellerInfoCard({
           style={{ width: 56, height: 56 }}
         >
           <Image
-            src={seller.image || "/images/product-placeholder.png"}
+            src={sellerImageSrc}
             alt={seller.name}
             width={56}
             height={56}
-            className="object-contain w-full h-full"
+            onError={() => setImgError(true)}
+            className="object-cover w-full h-full"
           />
         </div>
         <div className="flex flex-col gap-[2px]">
