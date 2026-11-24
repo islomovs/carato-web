@@ -6,6 +6,9 @@ import clsx from "clsx";
 import { useLocale, useTranslations } from "next-intl";
 import { useIsAuthenticated } from "@/lib/authStore";
 import { useState, useEffect } from "react";
+import { Badge } from "@/components/ui/badge";
+import { useCartStore } from "@/lib/cartStore";
+import { useWishlistStore } from "@/lib/wishlistStore";
 
 export default function MobileAppBar() {
   const t = useTranslations("appBar");
@@ -18,12 +21,14 @@ export default function MobileAppBar() {
   useEffect(() => setMounted(true), []);
 
   const isAuthenticated = useIsAuthenticated();
+  const cartCount = useCartStore((s) => s.totalQuantity());
+  const wishlistCount = useWishlistStore((s) => s.totalCount());
 
-  const navItems = [
+  const navItems: { label: string; href: string; icon: string; badge?: number }[] = [
     { label: t("home"), href: `/${locale}`, icon: "/icons/home.svg" },
     { label: t("catalog"), href: `/${locale}/catalog`, icon: "/icons/grid.svg" },
-    { label: t("wishlist"), href: `/${locale}/wishlist`, icon: "/icons/heart.svg" },
-    { label: t("cart"), href: `/${locale}/cart`, icon: "/icons/shopping-bag.svg" },
+    { label: t("wishlist"), href: `/${locale}/wishlist`, icon: "/icons/heart.svg", badge: wishlistCount },
+    { label: t("cart"), href: `/${locale}/cart`, icon: "/icons/shopping-bag.svg", badge: cartCount },
     {
       label: t("profile"),
       href: isAuthenticated ? `/${locale}/profile` : `/${locale}/auth`,
@@ -48,16 +53,27 @@ export default function MobileAppBar() {
             onClick={() => router.push(item.href)}
             className="flex flex-col items-center justify-center flex-1"
           >
-            <Image
-              src={item.icon}
-              alt={item.label}
-              width={20}
-              height={20}
-              className={clsx(
-                "transition",
-                active ? "brightness-0" : "opacity-50",
+            <span className="relative">
+              <Image
+                src={item.icon}
+                alt={item.label}
+                width={20}
+                height={20}
+                className={clsx(
+                  "transition",
+                  active ? "brightness-0" : "opacity-50",
+                )}
+              />
+              {/* Counts load on the client — render only after mount to avoid hydration mismatch */}
+              {mounted && isAuthenticated && !!item.badge && item.badge > 0 && (
+                <Badge
+                  variant="destructive"
+                  className="absolute -top-[6px] -right-[10px] h-4 min-w-[16px] px-[4px] text-[10px] leading-none flex items-center justify-center"
+                >
+                  {item.badge > 99 ? "99+" : item.badge}
+                </Badge>
               )}
-            />
+            </span>
             <span
               className={clsx(
                 "text-[12px] font-medium mt-[4px] leading-3",
