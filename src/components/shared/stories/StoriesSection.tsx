@@ -38,6 +38,11 @@ export default function StoriesSection() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const isPausedRef = useRef(false);
 
+  // The slide whose media is actually on screen (image decoded / video playing).
+  // Progress only runs while this matches the current slide.
+  const [readySlide, setReadySlide] = useState<string | null>(null);
+  const readyRef = useRef(false);
+
   const duration = 4000;
 
   // ─── open a story: fetch its media ─────────────────────────────────────────
@@ -123,7 +128,7 @@ export default function StoriesSection() {
       const step = 100 / (duration / 50);
 
       timerRef.current = setInterval(() => {
-        if (isPausedRef.current) return;
+        if (isPausedRef.current || !readyRef.current) return;
 
         progressRef.current += step;
 
@@ -177,6 +182,10 @@ export default function StoriesSection() {
     activeStoryIndex !== null ? stories[activeStoryIndex] : null;
   const currentMedia = activeMedia[activeImageIndex] ?? null;
   const currentIsVideo = isVideoUrl(currentMedia?.image ?? "");
+  const slideKey = `${activeStoryIndex}-${activeImageIndex}`;
+  const mediaReady = !mediaLoading && readySlide === slideKey;
+  readyRef.current = mediaReady;
+  const markReady = () => setReadySlide(slideKey);
 
   // Build a shape StoryProgressBars / StoryNavigation expect
   // (they were written against the old mock shape with .images[])
@@ -291,6 +300,9 @@ export default function StoriesSection() {
                           playsInline
                           muted={isMuted}
                           className="w-full h-full object-cover"
+                          onPlaying={markReady}
+                          onWaiting={() => setReadySlide(null)}
+                          onError={markReady}
                           onTimeUpdate={handleVideoTimeUpdate}
                           onEnded={goNext}
                         />
@@ -304,11 +316,20 @@ export default function StoriesSection() {
                           fill
                           className="object-cover"
                           priority
+                          onLoad={markReady}
+                          onError={markReady}
                         />
                       )}
                     </motion.div>
                   )}
                 </AnimatePresence>
+
+                {/* Spinner until the slide's media is visible (progress waits for it) */}
+                {!mediaLoading && currentMedia && !mediaReady && (
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-[84]">
+                    <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  </div>
+                )}
 
                 {/* CTA */}
                 {currentMedia?.redirectTo && (
