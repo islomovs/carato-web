@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import React, { useState, useEffect } from "react";
-import OtpInput from "react-otp-input";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+
+const OTP_LENGTH = 6;
 
 type Props = {
   phone: string;
@@ -23,6 +24,8 @@ export default function AuthOtpStep({
 }: Props) {
   const t = useTranslations("auth");
   const [code, setCode] = useState("");
+  const [focused, setFocused] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [timer, setTimer] = useState<number>(32);
   const [resendDisabled, setResendDisabled] = useState(true);
@@ -61,7 +64,7 @@ export default function AuthOtpStep({
       .then((cred) => {
         const otp = (cred as (Credential & { code?: string }) | null)?.code;
         if (otp) {
-          setCode(otp.replace(/\D/g, "").slice(0, 6));
+          setCode(otp.replace(/\D/g, "").slice(0, OTP_LENGTH));
           setError(null);
         }
       })
@@ -73,7 +76,7 @@ export default function AuthOtpStep({
 
   // Auto-submit when all 6 digits are entered
   useEffect(() => {
-    if (code.length === 6) {
+    if (code.length === OTP_LENGTH) {
       handleSubmit();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -102,35 +105,55 @@ export default function AuthOtpStep({
       {/* ✅ OTP Input */}
       <div className="mb-10 flex flex-col items-start">
         <div className="flex justify-center w-full mb-2">
-          <OtpInput
-            value={code}
-            onChange={(val: string) => {
-              setCode(val);
-              setError(null);
-            }}
-            numInputs={6}
-            inputType="tel"
-            containerStyle={{
-              display: "flex",
-              justifyContent: "space-between",
-              width: "100%",
-            }}
-            renderInput={(props, index) => (
-              <input
-                {...props}
-                // Lets iOS / Android keyboards offer the code from the SMS (one tap fills all boxes)
-                autoComplete={index === 0 ? "one-time-code" : "off"}
-                placeholder="-"
-                className={`text-center border rounded-[4px] text-[20px] font-medium focus:outline-none ${
-                  error ? "border-red-500" : "border-black"
-                }`}
-                style={{
-                  width: "60px",
-                  height: "60px",
-                }}
-              />
-            )}
-          />
+          {/*
+            One real input with autocomplete="one-time-code" laid invisibly over 6 display boxes.
+            iOS only offers the SMS code (QuickType bar) on the focused field when it carries
+            one-time-code, and splits/drops it across multi-input OTP widgets — a single field is reliable.
+          */}
+          <div
+            className="relative w-full flex justify-between"
+            onClick={() => inputRef.current?.focus()}
+          >
+            {Array.from({ length: OTP_LENGTH }).map((_, i) => {
+              const active = focused && i === Math.min(code.length, OTP_LENGTH - 1);
+              return (
+                <div
+                  key={i}
+                  className={`flex items-center justify-center border rounded-[4px] text-[20px] font-medium ${
+                    error ? "border-red-500" : "border-black"
+                  } ${active ? "ring-1 ring-black" : ""}`}
+                  style={{ width: "60px", height: "60px" }}
+                >
+                  {code[i] ?? <span className="text-[#9AA4B2]">-</span>}
+                </div>
+              );
+            })}
+            <input
+              ref={inputRef}
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              autoComplete="one-time-code"
+              name="otp"
+              autoFocus
+              maxLength={OTP_LENGTH}
+              value={code}
+              aria-label={t("titleOtp")}
+              onChange={(e) => {
+                setCode(e.target.value.replace(/\D/g, "").slice(0, OTP_LENGTH));
+                setError(null);
+              }}
+              onFocus={(e) => {
+                setFocused(true);
+                // keep the caret at the end — digits are always appended/removed from the end
+                const len = e.target.value.length;
+                requestAnimationFrame(() => e.target.setSelectionRange(len, len));
+              }}
+              onBlur={() => setFocused(false)}
+              // 16px font stops iOS from zooming on focus; text/caret hidden, boxes show the digits
+              className="absolute inset-0 w-full h-full opacity-[0.01] text-[16px] bg-transparent text-transparent caret-transparent outline-none"
+            />
+          </div>
         </div>
 
         {/* ✅ Error text */}
