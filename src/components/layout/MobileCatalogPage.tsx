@@ -246,7 +246,7 @@ export default function MobileCatalogPage() {
                   className="cursor-pointer pb-6"
                   style={{ paddingRight: 16 }}
                   onClick={() =>
-                    router.push(`/${locale}/products/${item.slug ?? ""}`)
+                    router.push(`/${locale}/collections/${item.slug ?? ""}`)
                   }
                 >
                   {/* Image */}

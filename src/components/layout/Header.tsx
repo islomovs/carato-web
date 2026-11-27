@@ -16,6 +16,7 @@ import HeaderIcons from "../shared/HeaderIcons";
 import { useIsAuthenticated } from "@/lib/authStore";
 import { useRouter, usePathname } from "next/navigation";
 import SearchOverlay from "../shared/SearchOverlay";
+import { useMobileAppBarVisible } from "./MobileAppBarWrapper";
 
 export default function Header({ transparent = false }: { transparent?: boolean }) {
   const t = useTranslations("home.header");
@@ -96,7 +97,9 @@ export default function Header({ transparent = false }: { transparent?: boolean 
   }, [menuOpen, searchOpen]);
 
   const HEADER_HEIGHT_PX = 65;
-  const APPBAR_HEIGHT_PX = 52;
+  const appBarVisible = useMobileAppBarVisible();
+  // Menu ends above the bottom app bar, or at the screen bottom where the bar is hidden
+  const APPBAR_HEIGHT_PX = appBarVisible ? 52 : 0;
 
   return (
     <header
