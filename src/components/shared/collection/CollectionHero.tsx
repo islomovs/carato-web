@@ -21,17 +21,17 @@ export default function CollectionHero({
     return (
       <>
         {/* Mobile skeleton */}
-        <div className="md:hidden w-full h-[300px] bg-gray-200 animate-pulse" />
+        <div className="md:hidden w-full aspect-[136/166] bg-gray-200 animate-pulse" />
         {/* Desktop skeleton */}
-        <div className="hidden md:block w-full h-[420px] bg-gray-200 animate-pulse" />
+        <div className="hidden md:block w-full aspect-[329/200] bg-gray-200 animate-pulse" />
       </>
     );
   }
 
   return (
     <>
-      {/* ── Mobile hero ─────────────────────────────────────────── */}
-      <div className="md:hidden relative w-full h-[300px] overflow-hidden">
+      {/* ── Mobile hero — same 136:166 proportion as the collection cards in the mobile catalog ── */}
+      <div className="md:hidden relative w-full aspect-[136/166] overflow-hidden">
         {mobileImage && (
           <Image
             src={mobileImage}
@@ -65,8 +65,8 @@ export default function CollectionHero({
         </div>
       </div>
 
-      {/* ── Desktop hero ─────────────────────────────────────────── */}
-      <div className="hidden md:block relative w-full h-[420px] overflow-hidden mb-8">
+      {/* ── Desktop hero — same 329:200 proportion as the cards in the header Collections dropdown ── */}
+      <div className="hidden md:block relative w-full aspect-[329/200] overflow-hidden mb-8">
         {desktopImage && (
           <Image
             src={desktopImage}
